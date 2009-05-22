@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Getting Familiar With Hadoop</title>
+	    <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">	    
+    </head>
+
+    <body>
+	    <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
+		    <tr>
+			    <td valign="top" class="pagebody">
+				    <div class="pageheader">
+					    <span class="pagetitle">
+				    <a name="GettingFamiliar-WorkshopExercise%3AGettingFamiliarWithHadoop"></a>Workshop Exercise: Getting Familiar With Hadoop
+                                                    </span>
+				    </div>
+
+
+<p>This project is designed to give you hands-on experience getting acquainted with the Hadoop tools.</p>
+
+<p>The exercises for this training workshop will be conducted within a virtual machine running Ubuntu 8.10 (Intrepid Ibex). This virtual machine has been preconfigured as a self-contained "pseudo-distributed" Hadoop cluster. This means that it contains all the daemons required for distributed execution&#45;&#45;just as if it were running on a cluster in a data center&#45;&#45;but is actually operating by itself.</p>
+
+<p>Decompress the cloudera-training-0.3.0.tar.bz2 archive and you should see a directory named <tt>cloudera-training-0.3.0/</tt>. In this directory is a file named <tt>cloudera-training-0.3.0.vmx</tt>. You should be able to double-click the <tt>.vmx</tt> file to launch the virtual machine.</p>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>This assumes that you have already installed the pre-required software from VMWare. Windows and Linux users should download VMWare Player at <a href="http://www.vmware.com/products/player/">http://www.vmware.com/products/player/</a>. MacOSX users should purchase VMWare Fusion ($50) or download the free 30-day trial at <a href="http://www.vmware.com/products/fusion/">http://www.vmware.com/products/fusion/</a>.</td></tr></table></div>
+
+<p>When you start the virtual machine, it should automatically log you into Gnome (XWindows). You are logged in as a user named <tt>training</tt>. </p>
+
+<p>This user is a sudoer, so you can perform any actions necessary to configure your virtual machine. For the purposes of this training session, none are expected, but if you take this home, you might want to adjust things. You do not need a password to run commands via <tt>sudo</tt>. For reference, the user's password is also <tt>training</tt>.</p>
+
+
+<h2><a name="GettingFamiliar-Hadoop"></a>Hadoop</h2>
+
+<p>Hadoop is already installed, configured, and running on the virtual machine. We are running a slightly-modified version of Hadoop 0.18.3, which is part of Cloudera's Distribution for Hadoop (version 0.3.0). This contains Hadoop as well as some related programs (Pig and Hive and some other support utilities). </p>
+
+<p>Hadoop is installed in the <tt>/usr/lib/hadoop</tt> directory. We'll refer to this as <tt>$HADOOP_HOME</tt> throughout this document. If you start a terminal (double-click the icon on the desktop), <tt>$HADOOP_HOME</tt> will already be in your environment.</p>
+
+<p>Most of your interaction with the system will be through a command-line wrapper called <tt>hadoop</tt>.</p>
+
+<p>If you start a terminal and just run this program with no arguments, it will print a help message. To try this, run the following command:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop
+</pre>
+</div></div>
+
+<p>This wrapper program can access several different subsystems of Hadoop. Each of these subsystems has one or more commands associated with it. You'll need to become familiar with three of these to do most of your work.</p>
+
+<p>This activity reviews the basics of this process.</p>
+
+<h2><a name="GettingFamiliar-UpdatingtheTrainingExercises"></a>Updating the Training Exercises</h2>
+
+<p>The training exercises are loaded into the virtual machine from a public git (source control) repository. Make sure your virtual machine has the most recent copies of the exercises by running:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ cd git
+training@training-vm:~$ ./update-exercises
+</pre>
+</div></div>
+
+<p>This will download any updates to the exercises.</p>
+
+<h2><a name="GettingFamiliar-HDFSAccess"></a>HDFS Access</h2>
+
+<p>The first thing we'll want to do is use the Hadoop Distributed File System, HDFS. This is where data is stored in a way that makes it accessible to Hadoop MapReduce programs. The subsystem associated with the wrapper program is <tt>fs</tt>. </p>
+
+<p>If you run:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop fs
+</pre>
+</div></div>
+
+<p>...you'll see a help message describing all the commands associated with this subsystem. Let's try to look at the current contents of the filesystem:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@cloudera-training:~$ hadoop fs -ls /
+</pre>
+</div></div>
+
+<p>This will show you the contents of the root directory. This should have two entries. One of these is <tt>/user</tt>. Individual users have a "home" directory under this prefix, consisting of their username. (Your home directory is <tt>/user/training</tt>.) Try viewing the contents of the <tt>/user</tt> directory by running:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop fs -ls /user
+</pre>
+</div></div>
+
+<p>You can see your home directory in there. What happens if you run the following?</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@cloudera-training:~$ hadoop fs -ls /user/training
+</pre>
+</div></div>
+
+<p>There's no files in there, so it silently exits. This is different than if you ran <tt>hadoop fs -ls /foo</tt>, which refers to a directory you know doesn't exist.</p>
+
+<p>Note that the directory structure within HDFS has nothing to do with the directory structure of the local filesystem; they're completely separate namespaces.</p>
+
+<h3><a name="GettingFamiliar-UploadingFiles"></a>Uploading Files</h3>
+
+<p>Besides browsing the existing filesystem, another important thing can do with the FsShell (as this subsystem is properly referred to), is to upload new data into it.</p>
+
+<p>If you perform a "regular" <tt>ls</tt> command in your <tt>git/data</tt> directory in the local filesystem, you'll see a few files and directories, including two named <tt>shakespeare.tar.gz</tt> and <tt>shakespeare-streaming.tar.gz</tt>. Both of these files include the complete works of Shakespeare in text format, although they have been formatted slightly differently for convenience. We're going to work with the regular <tt>shakespeare.tar.gz</tt> for now.</p>
+
+<p>Unzip this by running:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ cd ~/git/data
+training@training-vm:~/git/data$ tar vzxf shakespeare.tar.gz
+</pre>
+</div></div>
+
+<p>This will inflate to a directory named <tt>input/</tt> containing a large file. We can insert this directory into HDFS by running:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop fs -put input /user/training/input
+</pre>
+</div></div>
+
+<p>This will copy the local <tt>input/</tt> directory into a remote directory named <tt>/user/training/input</tt>. Try to read the contents of your HDFS home directory now, to confirm this:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop fs -ls /user/training
+</pre>
+</div></div>
+
+<p>You should see an entry for the <tt>input</tt> directory. Now, try the same <tt>fs -ls</tt> command but with no pathname argument:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop fs -ls
+</pre>
+</div></div>
+
+<p>You should get the same results back. </p>
+
+<p>If you don't pass a directory name to the <tt>-ls</tt> command, it assumes you mean your home directory, <tt>/user/$USER</tt> a.k.a <tt>/user/training</tt>. </p>
+
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Relative paths</b><br /><p>If you pass any relative (non-absolute) paths to FsShell commands (or use relative paths in MapReduce programs), they will implicitly be relative to this base directory. For example, you can see the contents of the uploaded <tt>input</tt> directory by running:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop fs -ls input
+</pre>
+</div></div>
+
+<p>You also <em>could have</em> uploaded the Shakespeare files into HDFS by running:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop fs -put input input
+</pre>
+</div></div></td></tr></table></div>
+
+
+<h3><a name="GettingFamiliar-ViewingFiles"></a>Viewing Files</h3>
+
+<p>Now let's view some of the data in this directory:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop fs -cat input/all-shakespeare | head -n 50
+</pre>
+</div></div>
+
+<p>It will then print the first fifty lines of <em>Henry IV</em> to the terminal. This command is handy for viewing the output of your MapReduce programs. Very often, an individual output file of a MapReduce program will be very large, and you don't want to dump the entire thing to the terminal. You should usually pipe the output of the <tt>-cat</tt> command into either <tt>head</tt> (if you only want to see a couple lines) or <tt>less</tt> if you want the ability to control a scrolling buffer.</p>
+
+<p>e.g.:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop fs -cat input/all-shakespeare | less
+</pre>
+</div></div>
+
+<p>If you want to download a file and manipulate it in the local filesystem (e.g., with a text editor), the <tt>-get</tt> command takes two arguments, an HDFS path, and a local path, and copies the HDFS contents into the local filesystem.</p>
+
+<h3><a name="GettingFamiliar-OtherCommands"></a>Other Commands</h3>
+
+<p>There are several other commands associated with the FsShell subsystem; these can perform most common filesystem manipulations (<tt>rm</tt>, <tt>mv</tt>, <tt>cp</tt>, <tt>mkdir</tt>, etc.). Try playing around with a few of these if you'd like.</p>
+
+<h2><a name="GettingFamiliar-RunningaMapReduceProgram"></a>Running a MapReduce Program</h2>
+
+<p>The same wrapper program is used to launch MapReduce jobs. The source code for a job is contained in a compiled <tt>.jar</tt> file. Hadoop will load the JAR into HDFS and distribute it to the worker nodes, where the individual tasks of the MapReduce job will be executed. </p>
+
+<p>Hadoop ships with some example MapReduce programs to run. One of these is a distributed <em>grep</em> application which reads through a set of source documents for strings which match a user-provided regular expression.  Let's run this on the input documents you loaded in the previous segment:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop jar $HADOOP_HOME/hadoop-*-examples.jar grep input grep_output <span class="code-quote">"[Ww]herefore"</span>
+</pre>
+</div></div>
+
+<p>The format of this command is <tt>hadoop jar <em>jarfilename</em> [<em>arguments to pass to program here</em>]</tt></p>
+
+<p>This program will search for all instances of the word "wherefore" in the Shakespeare corpus, regardless of initial capitalization, and report back the number of occurrences of each matching string. The strings which matched the regular expression argument, as well as their frequency of occurrence, will be written to files in the output directory, called <tt>grep_output</tt>. Note that this behavior is different than what the UNIX <tt>grep</tt> tool typically does.</p>
+
+<p>Now, use <tt>fs -ls</tt> on the output directory to see the list of output files. Use <tt>fs -cat</tt> to view individual output files. (There should be one, named <tt>part-00000</tt>.)</p>
+
+<p>If you'd like, try to run another MapReduce job, substituting a different regular expression for <tt>"[Ww]herefore"</tt> in the command string. If you would like to send your results to a different output directory, substitute that output directory name for <tt>grep_output</tt> above. If you want to send your output to the <tt>grep_output</tt> directory again, you'll need to remove the existing directory named <tt>grep_output</tt> first. (Hadoop will refuse to run the job and stop with an error message if its output directory already exists.)</p>
+
+<p>To remove the <tt>grep_output</tt> directory, run:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop fs -rmr grep_output
+</pre>
+</div></div>
+
+<p>The <tt>-rmr</tt> command recursively removes entities from HDFS.</p>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Status pages</b><br />Hadoop also provides a web-based status tool to see what's occurring in your cluster. We'll cover this in more detail later, but for now, if you'd like to see what jobs have been run, open the web browser. The home page is set to point to the status page. Try starting a job and, while it's still running, refresh the status page. You'll see the running job listed; clicking on it will show you more intermediate status information.</td></tr></table></div>
+
+<h2><a name="GettingFamiliar-StoppingMapReduceJobs"></a>Stopping MapReduce Jobs</h2>
+
+<p>Finally, an important capability is stopping jobs that are already running. This is useful if, for example, you accidentally introduced an infinite loop into your Mapper, etc. An important point to remember is that pressing <tt>^C</tt> to kill the current process (which is displaying the MapReduce job's progress) does <b>not</b> actually stop the job itself. The MapReduce job, once submitted to the Hadoop daemons, runs independently of any initiating process. Loosing the connection to the initiating process does not kill a MapReduce job.</p>
+
+<p>Instead, you need to tell the Hadoop JobTracker to stop the job.</p>
+
+<p>Start another <tt>grep</tt> job like you did in the previous section. While it's running, pop open another terminal, and run:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop job -list
+</pre>
+</div></div>
+
+<p>This will list the job id's of all running jobs. A job id looks something like <tt>job_200902131742_0002</tt>. Copy the job id, and then kill the job by running:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop job -kill (jobid)
+</pre>
+</div></div>
+
+<p>The JobTracker will kill the job, and the program running in the original terminal, reporting its progress, will inform you that the job has failed.</p>
+
+<p>If you need to cancel a job and restart it (e.g., because you immediately thought of a bugfix after launching a job), make sure to properly kill the old job first.</p>
+
+				    
+                    			    </td>
+		    </tr>
+	    </table>
+    </body>
+</html>

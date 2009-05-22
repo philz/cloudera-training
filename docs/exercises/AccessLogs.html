@@ -1,0 +1,410 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Joining Access Logs With SQL Data</title>
+	    <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">	    
+    </head>
+
+    <body>
+	    <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
+		    <tr>
+			    <td valign="top" class="pagebody">
+				    <div class="pageheader">
+					    <span class="pagetitle">
+                            Training Exercise: Joining Access Logs With SQL Data
+                                                    </span>
+				    </div>
+
+<p>Good afternoon! The second half of this training workshop involves hands-on use of Hadoop MapReduce and Hive, an analytics package which runs on top of Hadoop.</p>
+
+<p>We will be working with two separate datasets. One of these is an <tt>access_log</tt> file from an Apache web server. The other is a database which resolves blocks of IP addresses to (city, nation) location information.</p>
+
+<p>The goals of this workshop are for you:</p>
+
+<ul>
+	<li>To write a Hadoop MapReduce job and understand how it works</li>
+	<li>To load data into the Hive warehouse and query this information</li>
+	<li>To import data from a SQL database into Hadoop</li>
+	<li>To perform an operation which joins two different datasets together</li>
+</ul>
+
+
+<p>The steps you will perform to achieve these goals are:</p>
+<ul>
+	<li>Use sqoop to connect to mysql and load a table into HDFS</li>
+	<li>Import the table from HDFS into Hive</li>
+	<li>Write a MapReduce job that parses the <tt>access_log</tt> file, emitting all the IP addresses that retrieved a certain file (URL).</li>
+	<li>Write Hive queries to join the datasets, resolving IP addresses to (city, country) pairs, and grouping the results together to get a table of (city, country, count) determining how many hits came from each city.</li>
+</ul>
+
+
+<h2><a name="AdvancedExerciseWriteup-TheVirtualMachine"></a>The Virtual Machine</h2>
+
+<p>The exercises for this training workshop will be conducted within a virtual machine running Ubuntu 8.10 (Intrepid Ibex). This virtual machine has been preconfigured with Cloudera's Distribution for Hadoop (<a href="http://www.cloudera.com/hadoop">http://www.cloudera.com/hadoop</a>), sqoop (a tool to import database tables into HDFS), and sample data for this training exercise.</p>
+
+<p>Decompress the advanced-training-vm.tar.bz2 archive and you should see a directory named <tt>advanced-training-0.3.0/</tt>. In this directory is a file named <tt>advanced-training-0.3.0.vmx</tt>. You should be able to double-click the <tt>.vmx</tt> file to launch the virtual machine.</p>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>This assumes that you have already installed the pre-required software from VMWare. Windows and Linux users should download VMWare Player at <a href="http://www.vmware.com/products/player/">http://www.vmware.com/products/player/</a>. MacOSX users should purchase VMWare Fusion ($50) or download the free 30-day trial at <a href="http://www.vmware.com/products/fusion/">http://www.vmware.com/products/fusion/</a>.</td></tr></table></div>
+
+<p>When you start the virtual machine, it should automatically log you into Gnome (XWindows). You are logged in as a user named <tt>training</tt>. </p>
+
+<p>This user is a sudoer, so you can perform any actions necessary to configure your virtual machine. For the purposes of this training session, none are expected, but if you take this home, you might want to adjust things. You do not need a password to run commands via <tt>sudo</tt>. For reference, the user's password is also <tt>training</tt>.</p>
+
+<h3><a name="AdvancedExerciseWriteup-UpdatingtheExercises"></a>Updating the Exercises</h3>
+
+<p>The exercises to be conducted in this virtual machine are stored in a public git repository on GitHub. To make sure you have the most up-to-date version of the exercises, run the following:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ cd ~/git
+$ ./update-exercises
+</pre>
+</div></div>
+
+<h3><a name="AdvancedExerciseWriteup-CheckingHadoop"></a>Checking Hadoop</h3>
+
+<p>Hadoop is already installed, configured, and running on the virtual machine. We are running a slightly-modified version of Hadoop 0.18.3, which is part of the Cloudera Hadoop Distribution (version 0.3). This contains Hadoop as well as some related programs (Pig and Hive and some other support utilities).</p>
+
+<p>We have aliased <tt>hadoop</tt> to run from the proper directory. In a terminal, run:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop fs -ls /
+</pre>
+</div></div>
+
+<p>Your output should look like:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+training@training-vm:~$ hadoop fs -ls /
+Found 4 items
+drwxr-xr-x   - hadoop supergroup          0 2009-03-19 02:11 /hadoop
+drwxr-xr-x   - hadoop supergroup          0 2009-03-19 18:30 /shared
+drwxrwxrwx   - hadoop supergroup          0 2009-03-19 11:30 /tmp
+drwxr-xr-x   - hadoop supergroup          0 2009-03-19 02:15 /user
+</pre>
+</div></div>
+
+<p>Now you're ready to get started with the exercise.</p>
+
+<h2><a name="AdvancedExerciseWriteup-The%7B%7Baccesslog%7D%7DFormat"></a>The <tt>access_log</tt> Format</h2>
+
+<p>The Apache web server generates log entries for every "hit" on the web site it serves. These log entries are put in text files&#45;&#45;one per line&#45;&#45;with the following layout:</p>
+
+<p><tt>ip-address identd authuser [DD/MMM/YYYY:hh:mm:ss TZ] "request string" status bytes "referrer" "user-agent"</tt></p>
+
+<p>The fields are each separated by a single space character. Fields in "double quotes" may
+themselves contain spaces. Missing fields are marked with a "-" character. An example (wrapped) line is:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+207.181.42.20 - - [07/Feb/2003:11:38:28 -0800] <span class="code-quote">"GET /archive/2003/02/01/space_sh.shtml HTTP/1.1"</span> 200 11966
+    <span class="code-quote">"http:<span class="code-comment">//www.google.com/search?hl=en&amp;lr=&amp;ie=UTF-8&amp;oe=UTF-8&amp;q=Space+Shuttle+Columbia+November+2002"</span>
+    <span class="code-quote">"Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; Q312461)"</span></span>
+</pre>
+</div></div>
+
+<p><b>Field descriptions:</b></p>
+<ul>
+	<li>ip-address - The IP address of the user who requested the file. e.g., <tt>207.181.42.20</tt></li>
+	<li>identd - Information from a corporate IDENTD server. Usually left empty ("-").</li>
+	<li>authuser - The username used to log in if this is an authenticated SSL session request. Usually left empty ("-").</li>
+	<li>timestamp - The date and time the request was made. e.g., <tt>[07/Feb/2003:11:38:28 -0800]</tt></li>
+	<li>"request string" - The first line of the HTTP request sent by the user. Usually of the form "GET <em>URL</em> HTTP/1.1" &#8211; e.g., <tt>"GET /archive/2003/02/01/space_sh.shtml HTTP/1.1"</tt>.</li>
+	<li>status - An integer return status reporting how the request was handled (e.g., 202 "OK", 404 "Not Found", etc).</li>
+	<li>bytes -The number of bytes transmitted in the response, excluding headers.</li>
+	<li>"referrer" - The URL of the page with the inbound link (if any) to the requested page.</li>
+	<li>"user-agent" - The <tt>user-agent</tt> (browser name and version) string transmitted by the user with the request.</li>
+</ul>
+
+
+<h2><a name="AdvancedExerciseWriteup-IPGeolocationDatabase"></a>IP Geolocation Database</h2>
+
+<p>We have loaded a MySQL database containing IP geolocation information. As part of the exercise, you will load tables from this database into HDFS, and import them into Hive to work with them. This project requires the use of multiple tables; we've gone ahead and loaded some of these into HDFS and imported them into Hive ahead of time for you. You must import two more tables.</p>
+
+<p>IP addresses are 32-bit values commonly represented in <em>dotted decimal</em> format as a set of 4 octets &#8211; 8-bit values. An example IP address may be 4.12.91.17. Each of the four numbers is between 0 and 255. The most significant octet is the leftmost one. We will refer to these four octets as <tt>A.B.C.D</tt>. This database resolves IP addresses to locations with the granularity of 256 address blocks. Effectively, it ignores the rightmost (least significant) octet of the IP address. The data is spread across 256 separate tables, all named ip4_n_ where <em>n</em> is between 0 and 255 inclusive. Each table includes the geolocation information for all IP addresses in a single <tt>A.&#42;.&#42;.&#42;</tt>. These tables have the fields:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+mysql&gt; describe ip4_99;
++---------+----------------------+------+-----+---------------------+-------+
+| Field   | Type                 | Null | Key | Default             | Extra |
++---------+----------------------+------+-----+---------------------+-------+
+| b       | tinyint(3) unsigned  | NO   | MUL | 0                   |       | 
+| c       | tinyint(3) unsigned  | NO   | MUL | 0                   |       | 
+| country | smallint(5) unsigned | NO   | MUL | 0                   |       | 
+| city    | smallint(5) unsigned | NO   | MUL | 0                   |       | 
+| cron    | datetime             | NO   | MUL | 0000-00-00 00:00:00 |       | 
++---------+----------------------+------+-----+---------------------+-------+
+</pre>
+</div></div>
+
+<p>We have already run a MapReduce job that condenses these into a single table that has been loaded into Hive. Later we will examine the process we used to do this.</p>
+
+<p>The 256 tables are condensed into a single Hive table for you that contains the fields:</p>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>a</td>
+<td class='confluenceTd'>int</td>
+<td class='confluenceTd'>The <tt>A</tt> part of the IP address (taken from the mysql table ID)</td>
+</tr>
+<tr>
+<td class='confluenceTd'>b</td>
+<td class='confluenceTd'>int</td>
+<td class='confluenceTd'>The <tt>B</tt> part of the IP address</td>
+</tr>
+<tr>
+<td class='confluenceTd'>c</td>
+<td class='confluenceTd'>int</td>
+<td class='confluenceTd'>The <tt>C</tt> part of the IP address</td>
+</tr>
+<tr>
+<td class='confluenceTd'>country</td>
+<td class='confluenceTd'>int</td>
+<td class='confluenceTd'>foreign key id into the countries table</td>
+</tr>
+<tr>
+<td class='confluenceTd'>city</td>
+<td class='confluenceTd'>int</td>
+<td class='confluenceTd'>foreign key id into the cityByCountry table</td>
+</tr>
+</tbody></table>
+
+<p>The <tt>countries</tt> table contains the fields:</p>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'>countryid</td>
+<td class='confluenceTd'>int</td>
+<td class='confluenceTd'>Primary key; id number associated with the country</td>
+</tr>
+<tr>
+<td class='confluenceTd'>countryname</td>
+<td class='confluenceTd'>String</td>
+<td class='confluenceTd'>The name of the country</td>
+</tr>
+</tbody></table>
+
+<p>The other table you will need is:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+mysql&gt; describe cityByCountry;
++---------+--------------+------+-----+---------+----------------+
+| Field   | Type         | Null | Key | Default | Extra          |
++---------+--------------+------+-----+---------+----------------+
+| city    | <span class="code-object">int</span>(11)      | NO   | PRI | NULL    | auto_increment | 
+| country | <span class="code-object">int</span>(11)      | NO   | MUL | 0       |                | 
+| name    | varchar(200) | NO   | MUL |         |                | 
+| lat     | <span class="code-object">float</span>        | YES  |     | NULL    |                | 
+| lng     | <span class="code-object">float</span>        | YES  |     | NULL    |                | 
+| state   | varchar(64)  | NO   |     |         |                | 
++---------+--------------+------+-----+---------+----------------+
+</pre>
+</div></div>
+
+<p>The <tt>countries</tt> and <tt>cityByCountry</tt> tables have been left in MySQL. As part of this exercise, you will use sqoop to read the data from this table into HDFS, and then you will load it into Hive.</p>
+
+
+<h2><a name="AdvancedExerciseWriteup-ExerciseInstructions"></a>Exercise Instructions</h2>
+
+<p>The following subsections describe how to implement each of the steps in our data processing pipeline.</p>
+
+<h3><a name="AdvancedExerciseWriteup-StarterSourceCode"></a>Starter Source Code</h3>
+
+<p>A substantial amount of boilerplate code is involved in writing MapReduce jobs. We have provided this "stub" code for you to work from. Open Eclipse in the virtual machine, and it will be available in a workspace</p>
+
+<div class='panelMacro'><table class='tipMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>If you're stuck, we put our solution source code in <tt>&#126;/git/exercises/accesslogs/solution</tt>. It's not in the workspace, though, to prevent accidental peeking. But don't be afraid to open it up in a text editor if you're stuck!</td></tr></table></div>
+
+<h3><a name="AdvancedExerciseWriteup-LoadDataFromMySQLToHive"></a>Load Data From MySQL To Hive</h3>
+
+<p>We have concatenated all the ip4_&#42; tables together for you and loaded them into Hive, so the biggest table has already been loaded in. (This was done for expedience; each table must be loaded separately, and the overhead of doing so would take an unfortunate amount of your work time this afternoon. It also does not work well with sqoop since these tables are not indexed.) </p>
+
+<p>These tables resolve the <tt>A.B.C</tt> portion of an IP address to a pair of identifiers for a city and country. To resolve these identifiers to the names of the cities and countries, they must be joined against the cityname and countryname tables.</p>
+
+<p>You must load in the <tt>countries</tt> and <tt>cityByCountry</tt> tables. <b>Use sqoop</b> to read these tables into HDFS:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ sqoop --connect jdbc:mysql:<span class="code-comment">//localhost/ip_to_geo --table countries \
+</span>    --username training --warehouse-dir /user/training
+$ sqoop --connect jdbc:mysql:<span class="code-comment">//localhost/ip_to_geo --table cityByCountry \
+</span>    --username training --warehouse-dir /user/training
+</pre>
+</div></div>
+
+<p>Then verify that they made it in to HDFS:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop fs -ls
+</pre>
+</div></div>
+
+<p>You should see directories named <tt>countries</tt> and <tt>cityByCountry</tt>. </p>
+
+<p>In your current directory (where you ran <tt>sqoop</tt>), you should see files named <tt>countries.java</tt> and <tt>cityByCountry.java</tt>. You'll be loading these tables into Hive and interacting with them there, but you could also use these classes to interact with the records via MapReduce jobs.</p>
+
+<h4><a name="AdvancedExerciseWriteup-LoadingtheDataintoHive"></a>Loading the Data into Hive</h4>
+
+<p>Now that the data is in HDFS, you must tell Hive to import it into its warehouse. Run the Hive shell from a terminal by running:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hive
+</pre>
+</div></div>
+
+<p>You'll get a prompt that looks like <tt>hive&gt;</tt></p>
+
+<p>You need to create a Hive table to hold the data. If your code first emitted the country id column, and then the country name, you might create a table as with the following command:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+hive&gt; CREATE TABLE countries (countryid <span class="code-object">int</span>, countryname <span class="code-object">String</span>) 
+  ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+</pre>
+</div></div>
+
+<p>You can name the Hive columns whatever you'd like, but your column order obviously must match the order used by the table in MySQL (which was preserved by sqoop).</p>
+
+<p>Now that the table's created, load the data into it. The data should be in a set of files in <tt>/user/training/countries</tt>. Before Hive can load this directory, you must delete the job-specific log data which was stored in there. (It's in a subdirectory called <tt>_logs</tt>.) </p>
+
+<p>Back at the command prompt, run:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop fs -rmr countries/_logs
+</pre>
+</div></div>
+
+<p>Now that the log dir is gone, switch back to the Hive shell. Import the Hive data with the command:</p>
+
+<p><tt>hive&gt; LOAD DATA INPATH '/user/training/countries' INTO TABLE countries</tt></p>
+
+<p>If you want to verify that it loaded the data correctly, run:</p>
+
+<p><tt>hive&gt; SELECT * FROM countries</tt></p>
+
+<p>You can add a <tt>LIMIT</tt> clause to grab just a few rows:</p>
+
+<p><tt>hive&gt; SELECT * FROM countries LIMIT 20</tt></p>
+
+<h4><a name="AdvancedExerciseWriteup-Loadingtheothertable"></a>Loading the other table</h4>
+
+<p>Now, repeat the above process for the <tt>cityByCountry</tt> table.</p>
+
+
+<h3><a name="AdvancedExerciseWriteup-RetrievetheIPaddressesofselectedrequestsinthe%7B%7Baccesslog%7D%7D"></a>Retrieve the IP addresses of selected requests in the <tt>access_log</tt> </h3>
+
+<p>The <tt>access_log</tt> file we have is a large log from a web site. This site hosts many files, including the infamous "Star Wars Kid" video, <tt>Star_Wars_Kid.wmv</tt>. (You can see the video itself at <a href="http://www.youtube.com/watch?v=HPPj6viIBmU">http://www.youtube.com/watch?v=HPPj6viIBmU</a>.)</p>
+
+<p>We would like to do three things:</p>
+
+<ul>
+	<li>Filter this log file so we find only hits to the following URLs:
+	<ul>
+		<li>"/random/video/Star_Wars_Kid.wmv"</li>
+		<li>"/random/video/Star_Wars_Kid_Remix.wmv"</li>
+	</ul>
+	</li>
+	<li>Extract only the <tt>A.B.C</tt> portion of the IP address of the requester.</li>
+	<li>Eliminate redundant requests by the same IP.</li>
+</ul>
+
+
+<p>The <tt>AccessLogFilter.java</tt> file contains stub code for this MapReduce program. </p>
+
+<p>The mapper receives as input a single line (record) from the access_log file. The mapper should parse this line, determine if it hits one of the relevant URLs, and if so, emit the IP address. </p>
+
+<p>If you want to write the parsing code for the access log record, you're more than welcome to do this yourself. If you'd like to "fast forward," the <tt>AccessLogRecord.java</tt> file contains a program you can use to expedite the process.</p>
+
+<div class='panelMacro'><table class='tipMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><p>Curious what the actual input data looks like? Grab a few lines for yourself:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop fs -cat /shared/access_logs/star_wars_kid.log | head -n 20
+</pre>
+</div></div></td></tr></table></div>
+
+<p>The reducer is used to determine unique IP addresses. We want to calculate the number of people in a given city who viewed this link. So multiple hits by the same IP address don't count. Furthermore, all the IP addresses in a single <tt>A.B.C</tt> resolve to the same city. Within this subspace of IP addresses, there are at most 256 <tt>A.B.C.D</tt> entries. This definitely fits in memory. So all of the entries in the same <tt>A.B.C</tt> should go to the same reducer. The reducer should then eliminate duplicate requests by the same <tt>A.B.C.D</tt>, emitting each such <tt>A.B.C.D</tt> at most once. Finally, the output of the reducer should be a <tt>Text</tt> string which contains only the A, B, and C fields, delimited by CTRL-A characters.</p>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>"Extra credit:" use a Combiner to remove redundant requests by the same IP address seen by a single mapper, before they hit the reducer.</td></tr></table></div>
+
+<p>After you write this code, run the MapReduce process. You should then create a table in Hive to hold your results, and load them in using the same process.</p>
+
+<p>To create the jar you need to run on Hadoop, do the following in a terminal:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ jar cvf accesslogs.jar -C ~/workspace/AccessLogs/bin .
+</pre>
+</div></div>
+
+<p>This will take all the compiled <tt>.class</tt> files from your project and then jar them up. To run the Hadoop program:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop jar ~/accesslogs.jar AccessLogFilter
+</pre>
+</div></div>
+
+<p>This will read the data from the <tt>/shared/access_logs</tt> directory on HDFS, process it, and write the results to <tt>/user/training/filtered_ip_addrs</tt>.</p>
+<h3><a name="AdvancedExerciseWriteup-JointheDatasetsinHive"></a>Join the Datasets in Hive</h3>
+
+<ul>
+	<li>You now have a table containing all the IP addresses (or their class C's) that viewed the page, as a result of your latest MapReduce job.</li>
+	<li>The <tt>ip_locations</tt> table (already loaded into Hive) will allow you to resolve IP addresses to locations. In the Hive client, type <tt>hive&gt; DESCRIBE ip_locations</tt> to see the schema for the table.</li>
+	<li>The <tt>countries</tt> table (already loaded into Hive) allows you to look up a country name based on its country id.</li>
+	<li>The <tt>cityByCountry</tt> table that you loaded in the first step allows you to look up a city name based on its city id.</li>
+</ul>
+
+
+<p>Write a set of Hive SELECT statements that join these tables together and aggregate counts, to give you a number of users from each (city, country) who viewed the file in question.</p>
+
+<ul>
+	<li>If you need a Hive reference see <a href="http://wiki.apache.org/hadoop/Hive/LanguageManual">http://wiki.apache.org/hadoop/Hive/LanguageManual</a>. There are also some syntax examples at <a href="http://wiki.apache.org/hadoop/Hive/GettingStarted">http://wiki.apache.org/hadoop/Hive/GettingStarted</a>.</li>
+	<li>Your SELECT statements should actually be <tt>INSERT OVERWRITE TABLE <em>someTableName</em> SELECT ...</tt> to capture the output of your job into a new table.</li>
+	<li>Hive seems to have trouble joining more than 2 tables in a single SELECT statement. To chain a series of joins together, run an <tt>INSERT OVERWRITE TABLE <em>someTable</em> SELECT ...</tt> to accomplish one join, then join <tt><em>someTable</em></tt> with the next table, giving another <tt>INSERT OVERWRITE TABLE <em>otherTable</em> SELECT ...</tt> statement.</li>
+	<li>Use <tt>GROUP BY</tt> and <tt>COUNT(1)</tt> to count a set of related items.</li>
+</ul>
+
+
+
+<h2><a name="AdvancedExerciseWriteup-DataExport"></a>Data Export</h2>
+
+<p>The above forms the basis of our exercise: using MapReduce. You may wish to examine the data locally as well. You can export the Hive table into a regular file (actually, a set of files) in HDFS by running: </p>
+
+<p><tt>hive&gt; INSERT OVERWRITE DIRECTORY '/user/YourUserName/someDir' SELECT * FROM someTable</tt><br/>
+<tt>$ hadoop fs -copyToLocal someDir someLocalDir</tt></p>
+
+<p>This will copy the files from <em>someDir</em> in HDFS to <em>someLocalDir</em> on your local filesystem. </p>
+
+<p>You can then load these files into Excel or another spreadsheet program, where you can perform visualization of aggregate data, etc. In our case, the data files we were using were not so large that this is a problem. If you were working with very large data, you would need to make sure that you used enough <tt>GROUP BY</tt> statements or other guarded <tt>SELECT</tt> statements to ensure that you only had to deal with a manageable amount of summary data locally.</p>
+
+<h3><a name="AdvancedExerciseWriteup-ANoteonMySQLImportandExport"></a>A Note on MySQL Import and Export</h3>
+
+<p>In this exercise, we imported data from MySQL into Hadoop. We used sqoop to execute a simple MapReduce job to write the contents of the table into an HDFS file, and worked with the dataset from there, because we wanted to join against it in Hive. If we had direct processing to do on the contents of the MySQL table, then this buffering step would have been unnecessary; we could have used sqoop in <tt>&#45;&#45;generate-only</tt> mode to give us the Java classes to read from the table, and done our processing in the mapper (and reducer) associated with the "load in" job. </p>
+
+<p>We also did not perform a MySQL export. The export process is very similar to the import process. The MapReduce job run by sqoop set up a job using the <tt>DBInputFormat</tt> and no configured output format (using the default <tt>TextOutputFormat</tt> that writes to HDFS). You can see this in the <tt>com.cloudera.sqlimport.mapred.ImportJob</tt> class in <tt>~/sqlimport/src</tt>. Exporting is done by reversing this; the input format is left as the default <tt>TextInputFormat</tt>, and the <tt>DBOutputFormat</tt> is used to write final key-value pairs back to the database. This would make use of the <tt>write()</tt> method of the generated table classes to populate the SQL statement which inserted the row back into the database. This would also require that mapper code be written to parse the text-based records in HDFS and populate the record class.</p>
+
+<p>In general, these processes should be done sparingly, because a set of 50 or 100 mappers can easily bring a SQL database to its knees. But the resources exist to allow you to quickly draw data from MySQL or other JDBC-compliant databases into MapReduce for more flexible processing and merging with larger, more complicated or unstructured data.</p>
+
+<h2><a name="AdvancedExerciseWriteup-Extensions"></a>Extensions</h2>
+
+<p>Time left over? We haven't done these, but there's more space to play...</p>
+
+<ul>
+	<li>Try to establish the top browser by country based on the <tt>user-agent</tt> field in the access_log</li>
+	<li>Look through the access_log for referrer strings coming from search engines. Which search engines are used more in which countries?</li>
+</ul>
+
+
+
+				    
+                    			    </td>
+		    </tr>
+	    </table>
+    </body>
+</html>

@@ -11,3 +11,10 @@ For information about Cloudera's Hadoop training, visit:
 http://www.cloudera.com/hadoop-training
 
 - See the LICENSE file for information about Copyright and licensing.
+
+- If you are inside the Cloudera virtual machine and would like to
+  update this repository to the most recent version, run:
+
+  $ ./update-exercises
+
+  in this directory.

@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Introduction to Hive</title>
+	    <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">	    
+    </head>
+
+    <body>
+	    <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
+		    <tr>
+			    <td valign="top" class="pagebody">
+				    <div class="pageheader">
+					    <span class="pagetitle">
+                            Workshop Exercise: Introduction To Hive
+                                                    </span>
+				    </div>
+
+<p>This project is designed to familiarize you with the <b>Hive</b> data warehouse
+system. In a previous exercise, we <a href="SqoopExercise.html">imported data from
+a database into Hive</a>. We will now use Hive's SQL-like language to interact with this
+data.</p>
+
+<p>Much of this exercise is drawn from the lecture component. You may <a
+href="../IntroToHive.pdf">review the slides for this</a> if you need to.</p> 
+
+<p>You may also find the 
+<a href="http://hadoop.apache.org/hive">Hive website</a> and
+<a href="http://wiki.apache.org/hadoop/Hive">wiki</a> useful references.</p>
+
+<hr/>
+<h2>Getting Started</h2>
+
+<p>To log in to the Hive shell, run <tt>hive</tt> at the terminal. You should see
+something like the following:
+</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hive
+Hive history file=/tmp/aaron/hive_job_log_aaron_200905271934_542324277.txt
+hive&gt; 
+</pre>
+</div></div>
+
+
+<hr>
+<h2>Examining the Data</h2>
+
+<p>You should have imported two tables of information from MySQL into Hive. You can
+confirm that the tables are present by running:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+hive&gt; SHOW TABLES;
+</pre>
+</div></div>
+
+<p>If the <tt>shake_freq</tt> and <tt>bible_freq</tt> tables aren't there, you should
+run through the <a href="SqoopExercise.html">Sqoop exercise</a> now.</p>
+
+<p>We can do some basic queries to view the data. For example, we can grab a set of
+lines with a simple SELECT statement:</p>
+
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+hive&gt; SELECT * FROM shake_freq LIMIT 10;
+</pre>
+</div></div>
+
+<p>This runs very quickly because we did not put any ordering or conditional (<tt>WHERE</tt>)
+restrictions on the output, so it reads straight from HDFS. You can verify this by
+running the same query, prepended with the <tt>EXPLAIN</tt> command:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+hive&gt; EXPLAIN SELECT * FROM shake_freq LIMIT 10;
+</pre>
+</div></div>
+
+<p>We can conditionally show lines, and sort the output:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+hive&gt; SELECT * FROM shake_freq WHERE freq &gt; 100 SORT BY freq ASC LIMIT 10;
+</pre>
+</div></div>
+
+<p>This query took a lot longer, because it actually involved running a MapReduce program.
+You should <tt>EXPLAIN</tt> this query too, and note how its execution plan is much more
+involved than the previous one.</p>
+
+<p>Note that we use a <tt>SORT BY</tt>
+clause instead of SQL's <tt>ORDER BY</tt> because it does not fully order the results;
+it merely specifies the sorting criterion to use in each reducer. If you set the number
+of reducers to 1 by running <tt>set mapred.reduce.tasks = 1</tt>, then <tt>SORT BY</tt>
+acts like <tt>ORDER BY</tt>.</p>
+
+<h2>Aggregate Functions</h2>
+
+<p>Much like SQL's support for aggregations over groups of records, Hive's query language
+has similar support for <tt>GROUP BY</tt> clauses and aggregate operators. The full list
+is available in the Hive Query language reference in the Hive 
+<a href="http://wiki.apache.org/hadoop/Hive">wiki</a>.</p>
+
+<p>You can determine which word frequency was most common (i.e., the <i>mode</i> frequency):</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+hive&gt; SELECT freq, COUNT(1) AS f2 FROM shake_freq GROUP BY freq
+    SORT BY f2 DESC LIMIT 10;
+</pre>
+</div></div>
+
+<p>You can also determine the mean frequency using the <tt>avg()</tt> aggregate:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+hive&gt; SELECT avg(freq) FROM shake_freq; 
+</pre>
+</div></div>
+
+<hr>
+<h2>Joining Tables</h2>
+
+<p>In addition to the Shakespeare data set, we have an identically-formatted dataset
+regarding the frequency of words in the King James Bible. This should be represented
+by a table named <tt>bible_freq</tt> that you imported as part of the
+<a href="SqoopExercise.html">Sqoop exercise</a>.
+</p>
+
+<p>Let's do an inner join where we compare the frequency of a word in the Shakespeare
+corpus and the bible corpus. We can <tt>SELECT</tt> data into a table, so that we can
+manipulate that data in subsequent queries.</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+hive&gt; CREATE TABLE merged (word STRING , shake_f INT, kjv_f INT);
+hive&gt; INSERT OVERWRITE TABLE merged SELECT s.word, s.freq, k.freq
+  FROM shake_freq s JOIN kjv k ON (s.word = k.word) 
+  WHERE s.freq &gt;= 1 AND k.freq &gt;= 1;
+</pre>
+</div></div>
+
+<p>Sanity check your output by reading some of it back:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+hive&gt; SELECT * FROM merged LIMIT 20;
+</pre>
+</div></div>
+
+<p>What words appeared most frequently in both corpuses?
+</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+hive&gt; SELECT word, shake_f, kjv_f, (shake_f + kjv_f) AS ss
+    FROM merged SORT BY ss DESC LIMIT 20;
+</pre>
+</div></div>
+
+<hr>
+<h2>Extension</h2>
+
+<p>A problem with this result is that it does not take into account the relative sizes
+of the two corpuses.  Design a set of queries that determine the <i>relative</i> frequencies
+of words in their respective corpuses, and use this to calculate which words are the
+most frequent across both corpuses. Do the results change dramatically if you take
+this difference into account?
+</p>
+
+</body>
+</html>

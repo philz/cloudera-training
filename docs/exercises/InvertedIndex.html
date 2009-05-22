@@ -1,0 +1,320 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Building an Inverted Index</title>
+	    <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">	    
+    </head>
+
+    <body>
+	    <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
+		    <tr>
+			    <td valign="top" class="pagebody">
+				    <div class="pageheader">
+					    <span class="pagetitle">
+                            Workshop Exercise: Building an Inverted Index
+                                                    </span>
+				    </div>
+
+<p>This project is designed to get you familiar with the MapReduce environment by having you write a one-pass MapReduce program to calculate an <b>inverted index</b> over a set of documents.</p>
+
+<p>Given a body of input text, an offset indexer uses Hadoop to produce an index of all the words in the text. For each word, the index has a list of all the locations where the word appears, and optionally a text excerpt of each line where the word appears. Running the line indexer on the complete works of Shakespeare, the following input lines:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+lucrece.txt, offset 38624: To cipher what is writ in learned books,
+orlando.txt, offset 66001: ORLANDO Which I take to be either a fool or a cipher.
+</pre>
+</div></div>
+
+<p>would produce the following output for the word "cipher:"</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+cipher    lucrece.txt@38624,orlando.txt@66001,...
+</pre>
+</div></div>
+
+<p>The goal of this exercise is to develop the inverted index program and run it in Hadoop on a set of documents. You may use the language of your choice for this project. Interpreters for Perl, PHP, Python, and Ruby have been installed, as well as Java (of course).</p>
+
+<p>If you are going to attempt this project in Java, follow the <b><a href="#InvertedIndex-java">Java instructions</a></b>. If you're going to use a scripting language, follow the <b><a href="#InvertedIndex-streaming">Streaming instructions</a></b>.</p>
+
+<p>Note: If you get stuck, there are example solutions in <tt>~/git/exercises/shakespeare/solution</tt>.</p>
+
+<p><a name="InvertedIndex-java"></a></p>
+<h2><a name="InvertedIndex-JavaInstructions"></a>Java Instructions</h2>
+
+<h3><a name="InvertedIndex-Step1%3AStartEclipse"></a>Step 1: Start Eclipse</h3>
+
+<p>Start Eclipse (via the icon on the desktop). A project has already been created for you called <tt>LineIndexer</tt>. This project is preloaded with a source code "skeleton" for the activity. This workspace also contains another project containing all the Hadoop source code and libraries. This is required as a build dependency for LineIndexer; it's also there for your reference and perusal.</p>
+
+<h3><a name="InvertedIndex-Step2%3ACreatetheMapperClass"></a>Step 2: Create the Mapper Class</h3>
+
+<p>Open the <tt>LineIndexMapper</tt> class and implement the <tt>map()</tt> method.</p>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><p>Review: The map function takes four parameters which by default correspond to:</p>
+<ol>
+	<li><tt>LongWritable key</tt> - the byte-offset of the current line in the file</li>
+	<li><tt>Text value</tt> - the line from the file</li>
+	<li><tt>OutputCollector</tt> - output - this has the .collect method to output a &lt;key, value&gt; pair</li>
+	<li><tt>Reporter reporter</tt> - allows us to retrieve some information about the job (like the current filename)</li>
+</ol>
+</td></tr></table></div>
+
+<p>The map function should output <tt>&lt;"word", "filename@offset"&gt;</tt> pairs. Despite the name of the task (Line Indexer) we will actually be referring to locations of individual words by the <b>byte offset</b> at which the line starts &#8211; not the "line number" in the conventional sense. This is because the line number is actually not available to us. (We will, however be indexing a line at a time--thus the name "Line Indexer.") Large files can be broken up into smaller chunks which are passed to mappers in parallel; these chunks are broken up on the line ends nearest to specific byte boundaries. Since there is no easy correspondence between lines and bytes, a mapper over the second chunk in the file would need to have read all of the first chunk to establish its starting line number &#8211; defeating the point of parallel processing!</p>
+
+<p>Your map function should extract individual words from the input it is given, and output the word as the key, and the current filename &amp; byte offset as the value. You need only output the byte offset where the line starts. Do not concern yourself with intra-line byte offsets.</p>
+
+<p>Hints:</p>
+
+<ol>
+	<li>Since in this example we want to output &lt;"word", "filename@offset"&gt; pairs, the types will both be Text.</li>
+	<li>To extract individual words from a string of text, see <tt>java.util.StringTokenizer</tt>.</li>
+	<li>To get the current filename, use the following code snippit:</li>
+</ol>
+
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+FileSplit fileSplit = (FileSplit)reporter.getInputSplit();
+<span class="code-object">String</span> fileName = fileSplit.getPath().getName();
+</pre>
+</div></div>
+
+<h3><a name="InvertedIndex-CreatetheReducerClass"></a>Create the Reducer Class</h3>
+
+<p>Open the <tt>LineIndexReducer</tt> class in the project.</p>
+
+<p>The line indexer Reducer takes in all the &lt;"word", "filename@offset"&gt; key/value pairs output by the Mapper for a single word. For example, for the word "cipher", the pairs look like: &lt;cipher, all-shakespeare.txt@38624&gt;, &lt;cipher, all-shakespeare.txt@12046&gt;, &lt;cipher, ... &gt;. Given all those &lt;key, value&gt; pairs, the reduce outputs a single value string. For the line indexer problem, the strategy is simply to concat all the values together to make a single large string, using "," to separate the values. The choice of "," is arbitrary &#8211; later code can split on the "," to recover the separate values. So for the key "cipher" the output value string will look like "all-shakespeare.txt@38624,all-shakespeare.txt@12046,all-shakespeare.txt@34739,...". To do this, the Reducer code simply iterates over values to get all the value strings, and concats them together into our output String.</p>
+
+<div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><p><b>Important:</b> The following Java programming advice is important for the performance of your program. Java supports a very straightforward string concatenation operator:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+    <span class="code-object">String</span> newString = s1 + s2;
+</pre>
+</div></div>
+<p>which could just as easily be:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+    s1 = s1 + s2;
+</pre>
+</div></div>
+
+<p>        This will create a new string containing the contents of s1 and s2, and return it to the reference on the left. This is O(|s1| + |s2|). If this is performed inside a loop, it rapidly devolves into O(n^2) behavior, which will make your reducer take an inordinately long amount of time. A linear-time string append operation is supported via the StringBuilder class; e.g.:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+    StringBuilder sb = <span class="code-keyword">new</span> StringBuilder();
+    sb.append(s1);
+    sb.append(s2);
+    sb.toString(); <span class="code-comment">// <span class="code-keyword">return</span> the fully concatenated string at the end.</span>
+</pre>
+</div></div></td></tr></table></div>
+
+<h3><a name="InvertedIndex-Examinethedriverprogram"></a>Examine the driver program</h3>
+
+<p>Open the <tt>LineIndexer</tt> class. This is the main "driver" for the program, which configures the MapReduce job. This class has already been written for you. You may want to examine it's body so you understand how MapReduce jobs are created and dispatched to Hadoop</p>
+
+<h3><a name="InvertedIndex-RunJUnittests"></a>Run JUnit tests</h3>
+
+<p>In the Package Explorer in Eclipse, open the <tt>test/index</tt> directory. Right click on <tt>AllTests.java</tt>, select "Run as..." and "JUnit test." This will use the Eclipse JUnit plugin to test your Mapper and Reducer. The unit tests have already been written in <tt>MapperTest.java</tt> and <tt>ReducerTest.java</tt>. These use a library developed by Cloudera to test mappers and reducers, called MRUnit. The source for this library is included in your workspace.</p>
+
+<h3><a name="InvertedIndex-Compileyoursystem"></a>Compile your system</h3>
+
+<p>Open a terminal window, navigate to <tt>~/workspace/LineIndexer/</tt>, and compile your Java sources into a jar:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ cd ~/workspace/LineIndexer
+$ ant
+</pre>
+</div></div>
+
+<p>This will create a file named <tt>indexer.jar</tt> in the current directory. If you're curious about the instructions ant followed to create the compiled object, read the <tt>build.xml</tt> file in a text editor.</p>
+
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>You can also run JUnit tests from the ant buildfile by running <tt>ant test</tt></td></tr></table></div>
+
+<h3><a name="InvertedIndex-Runyourprogram"></a>Run your program</h3>
+
+<p>In the previous exercise, you should have loaded your sample input data into Hadoop. See Aaron for help if you got stuck. Now we're going to run our program over it.</p>
+
+<p>Run:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop jar indexer.jar index.LineIndexer
+</pre>
+</div></div>
+
+<p>This will read all the files in the <tt>input</tt> directory in HDFS and compute an inverted index. It will be written to a directory named <tt>output</tt>.</p>
+
+<p>View your results by using <tt>hadoop fs -cat <em>filename</em></tt>. You may want to pipe this into <tt>less</tt>. </p>
+
+<p>If your program didn't work, go back and fix places you think are buggy. Recompile using the steps above, and then re-run the program. Before you run the program again, though, you'll need to remove the output directory that you already created:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop fs -rmr output
+</pre>
+</div></div>
+
+<p>... or else Hadoop will refuse to run the job and print an error message ("Directory already exists").</p>
+
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Testing the mapper</b><br /><p>If you want to test just the mapper without a reducer, add the following line to <tt>LineIndexer.java</tt>'s <tt>runJob()</tt> method:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+conf.setNumReduceTasks(0);
+</pre>
+</div></div>
+
+<p>The results of the mappers will be written straight to HDFS with no processing by the reducer.</p></td></tr></table></div>
+
+<p>You may note that the <tt>StringTokenizer</tt> class doesn't do anything clever with regards to punctuation or capitalization. If you've got extra time, you might want to improve your mapper to merge these related tokens.</p>
+
+<h3><a name="InvertedIndex-Solutions"></a>Solutions</h3>
+
+<p>Example solution source code is available in the <tt>~/git/exercises/shakespeare/solution</tt> directory; the Java source is in the <tt>index/</tt> package subdirectory.</p>
+
+
+<p><a name="InvertedIndex-streaming"></a></p>
+<h2><a name="InvertedIndex-StreamingInstructions"></a>Streaming Instructions</h2>
+
+<p>If you plan to use a scripting language to run this example, follow this set of instructions.</p>
+
+<p>If you need additional reference material, see the official Streaming documentation at <a href="http://hadoop.apache.org/core/docs/current/streaming.html">http://hadoop.apache.org/core/docs/current/streaming.html</a></p>
+
+<h3><a name="InvertedIndex-Loadthestreamingspecificinputdata"></a>Load the streaming-specific input data</h3>
+
+<p>In the <a href="GettingFamiliar.html">Getting Familiar</a> exercise, we loaded the Shakespeare corpus into HDFS. Due to internal differences in how Java MapReduce and streaming work, some important metadata will be unavailable to your mapper script. We've preprocessed the text files and inlined this metadata into the documents. You should remove the original input files from HDFS and load the streaming-specific input files as follows:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ cd ~/git/data
+$ hadoop fs -rmr input
+$ rm -rf input
+$ tar zxf shakespeare-streaming.tar.gz
+$ hadoop fs -put input input
+</pre>
+</div></div>
+
+<h3><a name="InvertedIndex-Createyourmapperscript"></a>Create your mapper script</h3>
+
+<p>Pop open the text editor of your choice (pico, vim, emacs, and gEdit have all been loaded into this virtual machine). Create a new script program to run as the mapper.</p>
+
+<p>The mapper will receive on stdin lines containing:</p>
+<ul>
+	<li>a key consisting of <tt><em>filename</em> "@" <em>offset</em></tt></li>
+	<li>a tab character ('\t')</li>
+	<li>a value consisting of the line of the input file which occurs at that offset.</li>
+	<li>a newline character ('\n')</li>
+</ul>
+
+
+<p>For example, here are a few lines from one of the files:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+hamlet@0		HAMLET
+hamlet@8	
+hamlet@9	
+hamlet@10		DRAMATIS PERSONAE
+hamlet@29	
+hamlet@30	
+hamlet@31	CLAUDIUS	king of Denmark. (KING CLAUDIUS:)
+hamlet@74	
+hamlet@75	HAMLET	son to the late, and nephew to the present king.
+hamlet@131	
+</pre>
+</div></div>
+
+<p>Note that after the <tt>hamlet@<em>offset</em></tt> string is a tab (<tt>\t</tt>) character.</p>
+
+<p>Your map function should extract individual words from the input it is given, and output the word as the key, and the current filename &amp; byte offset as the value. You need only output the byte offset where the line starts. Do not concern yourself with intra-line byte offsets.</p>
+
+<p>You emit intermediate (key, value) pairs to the reducer by writing strings of the form <tt>"key <em>tab</em> value <em>newline</em>"</tt> to stdout.</p>
+
+<h3><a name="InvertedIndex-Createyourreducerscript"></a>Create your reducer script</h3>
+
+<p>You should create another program to run as the reducer. The lines sent from your mapper instances will be sent to the appropriate reducer instance. Several values with the same key will be sent to your program on stdin as successive lines of input. Each line contains a key, a tab, a value, and a newline; this is the same format for the input as received by the mapper. All the lines with the same key will be sent one after another, possibly followed by a set of lines with a different key, until the reducing process is complete.</p>
+
+<p>The line indexer reducer takes in all the &lt;"word", "filename@offset"&gt; key/value pairs output by the Mapper for a single word. For example, for the word "cipher", the pairs look like: &lt;cipher, shakespeare.txt@38624&gt;, &lt;cipher, shakespeare.txt@12046&gt;, &lt;cipher, ... &gt;. Given all those &lt;key, value&gt; pairs, the reduce outputs a single value string. For the line indexer problem, the strategy is simply to concat all the values together to make a single large string, using "," to separate the values. The choice of "," is arbitrary &#8211; later code can split on the "," to recover the separate values. So for the key "cipher" the output value string will look like "shakespeare.txt@38624,shakespeare.txt@12046,shakespeare.txt@34739,...". To do this, the Reducer code simply iterates over values to get all the value strings, and concats them together into our output String.</p>
+
+<h3><a name="InvertedIndex-Rununittests"></a>Run unit tests</h3>
+
+<p>Two test scripts named <tt>test-mapper.sh</tt> and <tt>test-reducer.sh</tt> have been written; these take as arguments the name of the mapper or reducer script respectively; they determine if the output conforms to the expected format.</p>
+
+<p>To run them, use:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ cd ~/git/exercises/shakespeare/test/streaming
+$ ./test-mapper.sh mapper-script-name
+$ ./test-reducer.sh reducer-script-name
+</pre>
+</div></div>
+
+<h3><a name="InvertedIndex-Runthestreamingprogram"></a>Run the streaming program </h3>
+
+<p>Make sure your input scripts are executable:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ chmod a+x (mapper/script/name)
+$ chmod a+x (reducer/script/name)
+</pre>
+</div></div>
+
+<p>You can then run your program with Hadoop streaming via:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop jar $HADOOP_HOME/contrib/streaming/hadoop-*-streaming.jar -input input \
+    -output output -file (path/to/mapper/script) -file (path/to/reducer/script) \
+    -mapper (mapper-basename) -reducer (reducer-basename) -inputformat \
+    org.apache.hadoop.mapred.KeyValueTextInputFormat
+</pre>
+</div></div>
+
+<p>The <tt>-file</tt> arguments tell what files from the local filesystem should be loaded into the runtime environment. In this case, that's your two scripts for the mapper and the reducer.</p>
+
+<p>The <tt>-mapper</tt> and <tt>-reducer</tt> arguments tell what command to run in the runtime environment to launch your process. This is just the filename of your scripts (with no paths associated with them). Alternatively, since you're running your MapReduce process inside a single VM (as opposed to a distributed environment), you could just specify the full absolute path to the mapper and reducer scripts to the <tt>-mapper</tt> and <tt>-reducer</tt> arguments, and omit the <tt>-file</tt> arguments.</p>
+
+<p>This will read all the files in the <tt>input</tt> directory in HDFS and compute an inverted index. It will be written to a directory named <tt>output</tt>.</p>
+
+<p>So, for example, if your mapper program was in <tt>/home/training/mapper.py</tt> and your reducer program was in <tt>/home/training/reducer.py</tt>, you could run:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ chmod a+x ~/mapper.py
+$ chmod a+x ~/reducer.py
+$ hadoop jar $HADOOP_HOME/contrib/streaming/hadoop-*-streaming.jar -input input \
+    -output output -file ~/mapper.py -file ~/reducer.py -mapper mapper.py \
+    -reducer reducer.py -inputformat org.apache.hadoop.mapred.KeyValueTextInputFormat
+</pre>
+</div></div>
+
+<p>View your results by using <tt>hadoop fs -cat output/part-00000</tt>. You may want to pipe this into <tt>less</tt>. </p>
+
+<p>If your program didn't work, go back and fix places you think are buggy. Recompile using the steps above, and then re-run the program. Before you run the program again, though, you'll need to remove the output directory that you already created:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop fs -rmr output
+</pre>
+</div></div>
+
+<p>... or else Hadoop will refuse to run the job and print an error message ("Directory already exists"). Then you can re-run your program until it gives you the results you need.</p>
+
+<div class='panelMacro'><table class='infoMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td><b>Debugging the mapper</b><br />If you want to test just the output of the mapper, without being processed by your reducer, run streaming with <tt>-reducer cat</tt> to pass the output of the mapper straight to the output.</td></tr></table></div>
+
+<h3><a name="InvertedIndex-Solutions"></a>Solutions</h3>
+
+<p>Example solution source code (written in python) is available in the <tt>~/git/exercises/shakespeare/solution</tt> directory.</p>
+
+<hr />
+
+<p>This document contains content (c) Copyright 2008 University of Washington; redistributed under the terms of the Creative Commons Attribution License 3.0. All other contents (c) Copyright 2009 Cloudera, Inc.</p>
+                    			    </td>
+		    </tr>
+	    </table>
+    </body>
+</html>

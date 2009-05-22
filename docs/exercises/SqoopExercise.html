@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Importing Databases With Sqoop</title>
+	    <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">	    
+    </head>
+
+    <body>
+	    <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
+		    <tr>
+			    <td valign="top" class="pagebody">
+				    <div class="pageheader">
+					    <span class="pagetitle">
+                            Workshop Exercise: Importing Databases With Sqoop
+                                                    </span>
+				    </div>
+
+<p>This project is designed to familiarize you with the <b>Sqoop</b> database import
+tool. In preparation for working with data in Hive (as part of a later exercise),
+you must first import the data from mysql into HDFS in a form that Hive can read.</p>
+
+<p><b>Sqoop</b> is a tool designed to read data from SQL databases and upload it to
+HDFS. Sqoop is run via a command called <tt>sqoop</tt>. You can view its command-line
+options by running:
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ sqoop --help
+</pre>
+</div></div>
+
+<p>On Cloudera's website, you will also find a more
+<a href="http://www.cloudera.com/hadoop-sqoop">complete reference for Sqoop</a>.</p>
+
+<hr>
+<h2>Examining the Data</h2>
+
+<p>The data we will be importing is available in the training VM in a mysql database.
+Let's take a look at some of this data now. Type the following to enter MySQL:
+</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ mysql training
+</pre>
+</div></div>
+
+<p>You can see the available tables by running:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+mysql&gt; SHOW TABLES;
+</pre>
+</div></div>
+
+<p>Two tables should be available, <tt>shake_freq</tt> and <tt>bible_freq</tt>.
+These contain the frequency of occurence for each word in the complete works of
+Shakespeare, and the King James Bible, respectively. You can examine the schema for
+one of these tables by running:
+</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+mysql&gt; DESCRIBE bible_freq;
+</pre>
+</div></div>
+
+<p>And you can view some of its contents by running:</p>
+
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+mysql&gt; SELECT * FROM bible_freq LIMIT 20;
+</pre>
+</div></div>
+
+
+<p>When you are done in MySQL, type <tt>\q</tt> to exit back to the bash shell.</p>
+
+<hr>
+<h2>Importing a Table</h2>
+
+<p>Sqoop requires a connect string that describes how to connect to the database.
+The connect string looks like a URL, and is communicated to Sqoop with the <tt>--connect</tt>
+argument. This describes the server and
+database to connect to; it may also specify the port. e.g.: 
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ sqoop --connect jdbc:mysql://database.example.com/employees
+</pre>
+</div></div>
+
+<p>This string will connect to a MySQL database named employees on the host database.example.com.
+It's important that you do not use the URL <tt>localhost</tt>
+if you intend to use Sqoop with a distributed
+Hadoop cluster. The connect string you supply will be used on all the TaskTracker nodes in your
+MapReduce cluster; if they're told to connect to the literal name <tt>localhost</tt>,
+they'll each reach a
+different database (or more likely, no database at all)! Instead, you should use the full hostname
+or IP address of the database host that can be seen by all your remote nodes. In this
+exercise, though, since we're going to only access data from within a standalone
+Hadoop instance in the virtual machine, it is okay to use <tt>localhost</tt>, but bear this
+in mind for later.</p>
+
+<p>
+You may need to authenticate against the database before you can access it. The
+<tt>--username</tt> and
+<tt>--password</tt> parameters can be used to supply a username and a password to
+the database. (Note:
+password access currently requires passing the password on the command-line, which is insecure.)
+</p>
+
+<p>Let's connect Sqoop to the database and verify that it works:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ sqoop --connect jdbc:mysql://localhost/training --username training --list-tables
+</pre>
+</div></div>
+
+<p>The results of this command should be the same list of tables you saw earlier using
+<tt>SHOW TABLES</tt> in the MySQL shell.</p>
+
+
+<p>You can now import the <tt>bible_freq</tt> table into HDFS using the following command:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ sqoop --connect jdbc:mysql://localhost/training --username training --table bible_freq \
+    --hive-import
+</pre>
+</div></div>
+
+<p>This instructs Sqoop to import the table into HDFS, and then use Hive to create a table
+with the same name in its metastore, and load in the newly-imported data.</p>
+
+<p>You can verify that this operation worked two ways. First, we can use <tt>hadoop</tt>
+to verify that the files have been loaded into Hive's warehouse directory:</p> 
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop fs -ls /user/hive/warehouse
+</pre>
+</div></div>
+
+<p>You should see a <tt>bible_freq</tt> directory in here, for the table. Another
+<tt>ls</tt> command shows us the files inside: </p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop fs -ls /user/hive/warehouse/bible_freq
+</pre>
+</div></div>
+
+<p>Going further, we can <tt>cat</tt> one of these files back to the console, verifying
+its contents are in the right format:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop fs -cat /user/hive/warehouse/bible_freq/part-00000 | head
+</pre>
+</div></div>
+
+<p>And finally, we can invoke Hive itself, to ensure that it has read the table
+in the correct fashion:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hive
+Hive history file=/tmp/aaron/hive_job_log_aaron_200905271934_542324277.txt
+hive&gt; SHOW TABLES;
+</pre>
+</div></div>
+
+<p>Since the table is there, we can both read some rows, and describe its schema:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+hive&gt; DESCRIBE bible_freq;
+hive&gt; SELECT * FROM bible_freq LIMIT 20;
+</pre>
+</div></div>
+
+<p>Now, <b>repeat this process</b> to load the <tt>shake_freq</tt> table containing the
+Shakespeare dataset. We'll explore these datasets further in the next exercises, which
+manipulate data in HDFS using Hive and Pig.</p>
+
+</body>
+</html>
