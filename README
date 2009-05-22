@@ -1,0 +1,13 @@
+Welcome to the Cloudera Training Exercise git repository!
+
+This git repository contains all the code and instructions for the training
+exercises used in Cloudera Hadoop training sessions. These are designed to
+be conducted in the free training virtual machine available at:
+  http://www.cloudera.com/hadoop-training-virtual-machine
+
+You may, of course, run them wherever you'd like :)
+
+For information about Cloudera's Hadoop training, visit:
+http://www.cloudera.com/hadoop-training
+
+- See the LICENSE file for information about Copyright and licensing.

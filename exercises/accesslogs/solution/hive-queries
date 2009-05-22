@@ -1,0 +1,33 @@
+
+# Read the output of the MapReduce access_log parser into Hive.
+# Don't forget to -rmr filtered_ip_addrs/_logs first.
+CREATE TABLE filtered_ips (a int, b int, c int);
+LOAD DATA INPATH 'filtered_ip_addrs' INTO TABLE filtered_ips;
+
+# sanity check: does it work without the GROUP BY?
+
+CREATE TABLE joined (cityid STRING, countryid STRING);
+
+INSERT OVERWRITE TABLE joined SELECT ip_locations.cityid, ip_locations.countryid FROM filtered_ips JOIN ip_locations ON (filtered_ips.a = ip_locations.a AND filtered_ips.b = ip_locations.b AND filtered_ips.c = ip_locations.c);
+
+# The real main pass: Join filtered_ips with the ip_locations table to get a list of
+# cityid and countryids. Aggregate as we do this.
+CREATE TABLE grouped (cityid INT, countryid INT, numhits INT);
+
+INSERT OVERWRITE TABLE grouped SELECT ip_locations.cityid, ip_locations.countryid, COUNT(1) FROM filtered_ips JOIN ip_locations ON (filtered_ips.a = ip_locations.a AND filtered_ips.b = ip_locations.b AND filtered_ips.c = ip_locations.c) GROUP BY ip_locations.cityid, ip_locations.countryid;
+
+# Join these results with the city names to add another column.
+CREATE TABLE named_cities (cityid INT, countryid INT, numhits INT, cityname STRING);
+
+INSERT OVERWRITE TABLE named_cities SELECT grouped.cityid, grouped.countryid, grouped.numhits, city_names.cityname FROM grouped JOIN city_names ON (city_names.cityid = grouped.cityid);
+
+# Finally, join the above with the country names, adding the final column.
+CREATE TABLE named_all (cityid INT, countryid INT, numhits INT, cityname STRING, countryname STRING);
+
+INSERT OVERWRITE TABLE named_all SELECT named_cities.cityid, named_cities.countryid, named_cities.numhits, named_cities.cityname, country_names.countryname FROM named_cities JOIN country_names ON (country_names.countryid = named_cities.countryid);
+
+# Now that the data's all there, let's see the top 100 locations.
+set mapred.reduce.tasks=1;
+SELECT * FROM named_all SORT BY numhits DESC LIMIT 100;
+
+

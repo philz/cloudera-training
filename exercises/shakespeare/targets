@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+# (c) Copyright 2009 Cloudera, Inc.
+#
+# Basic training workshop materials.
+
+# Build the tarball of source code we expect users to run
+inv_index_stub = PackageTarget(package_name = "shakespeare-src",
+  steps = [
+    CopyDir(
+      src_dir = "stub-src",
+      dest_dir = "$/src/LineIndexer"),
+    CopyDir(
+      src_dir = "test",
+      dest_dir = "$/src/LineIndexer/test",
+      exclude_patterns = [ "*.sh" ]),
+    CopyDir(
+      src_dir = "test",
+      exclude_patterns = [ "index/*", "index" ]),
+    CopyDir(src_dir = "src", dest_dir = "$/solution"),
+
+    # for unit testing, include MRUnit
+    CopyDir(
+      src_dir = "//projects/mrunit/",
+      dest_dir="$/src/MRUnit",
+      exclude_patterns = [ "targets" ]),
+    IncludeOutput(
+      target_name = "//projects/mrunit",
+      dest_dir = "$/src/LineIndexer/lib/")
+  ])
+
+jar = JarTarget(
+  jar_name = "indexer.jar",
+  sources = [ "solution/java/" ],
+  required_targets = [ "//thirdparty/hadoop-0.18.3" ])
+
+stub_jar = JarTarget(
+  jar_name = "indexer_stub.jar",
+  sources = [ "stub-src/" ],
+  required_targets = [ "//thirdparty/hadoop-0.18.3" ])
+
+test = JavaTestTarget(
+  sources = [ "test/" ],
+  main_class_name = "index.AllTests",
+  required_targets = [ ":jar",
+                      "//projects/mrunit" ])
+
+dataset = RsyncTarget(
+  filename = "shakespeare.tar.gz",
+  md5sum = "fd6a1eeb3e6d8bd38a1f78aab6f2c8d5")
+

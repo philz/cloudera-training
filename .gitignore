@@ -1,0 +1,18 @@
+# compiler output files are not versioned
+*.pyc
+*.pyo
+*.obj
+*.o
+*.class
+
+# OS X Finder residue
+.DS_Store
+
+# sqlite database files
+*.db
+
+# tmp files from text editors
+*~
+.*.swp
+
+

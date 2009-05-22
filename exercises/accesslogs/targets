@@ -1,0 +1,26 @@
+#!/usr/bin/env python
+# (c) Copyright 2009 Cloudera, Inc.
+#
+# Basic training workshop materials.
+
+# Build the tarball of source code we expect users to run
+access_logs_stub = PackageTarget(package_name = "accesslogs",
+  steps = [
+    CopyDir(src_dir = "stub-src")
+  ])
+
+access_logs_jar = JarTarget(
+  jar_name = "accesslogs.jar",
+  sources = [ "solution/java/" ],
+  required_targets = [ "//projects/HadoopDist:supportedHadoopPackage" ])
+
+stub_jar = JarTarget(
+  jar_name = "accesslogs_stub.jar",
+  sources = [ "stub-src/" ],
+  required_targets = [ "//projects/HadoopDist:supportedHadoopPackage" ])
+
+stub_test = JavaTestTarget(
+  sources = [ "stub-test/" ],
+  main_class_name = "AllTests",
+  required_targets = [ ":stub_jar" ])
+
