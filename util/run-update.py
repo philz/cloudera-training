@@ -8,7 +8,8 @@ usage_string = """
     --workspace       Discard your current Eclipse workspace and rebuild
                       based on the exercises available in the repository.
     --reset           Resets the git repository to "factory defaults"
-    -f                Force changes. Don't prompt for --reset.
+    -f                Force changes. Don't prompt for --reset. Don't warn
+                      about a username mismatch.
 
   This script updates your git repository to the most recent
   version of the files. 
@@ -34,6 +35,7 @@ class RepoException(Exception):
   def __repr__(self):
     return repr(self.cause)
 
+TRAINING_USER = "training"
     
 # This is the URL we expect for the 'origin' ref in the git repo
 CLOUDERA_ORIGIN_URL = "git://github.com/cloudera/cloudera-training.git"
@@ -48,6 +50,30 @@ WORKSPACE_SRC = "pristine-workspace"
 # consult this file in the src and target workspace directories.
 WORKSPACE_VER_FILE = ".cloudera-workspace-version"
 
+def check_for_user(force):
+  """ To check that we're running in the VM, check that the username is
+      'training' or 'root'. Prompt if we're not (and force=False).
+  """
+  global TRAINING_USER
+
+  username = os.getlogin()
+  if username == TRAINING_USER or username == "root":
+    # All's well.
+    return 
+  else:
+    print """WARNING: Your username of '%(username)s' isn't what we expected.
+If you run this script outside of the Cloudera Training VM, it may install
+files and databases in locations you don't expect. 
+""" % { "username" : username }
+
+    if force:
+      print "Since -f was given, we're continuing anyway..."
+    else:
+      print "If you're sure you want to do this, type 'yes' to continue."
+      response = raw_input("> ")
+      if response.lower() != "yes":
+        print "Action canceled by user request."
+        sys.exit(1)
 
 def check_for_repo():
   """ Ensure that we're at the root of the cloudera-training git repository.
@@ -60,8 +86,9 @@ def check_for_repo():
   if not os.path.exists(".git/config"):
     raise RepoException("""You don't seem to be running this from inside a git repository.
 You should change to the root of the Cloudera training git repository and
-re-execute this program. To do this, run:
+re-execute this program. To do this in the Cloudera training VM, run:
   $ cd ~/git
+  $ ./update-exercises
 """)
 
   # strip leading tab chars from the config file entries for Python's parser.
@@ -78,6 +105,7 @@ re-execute this program. To do this, run:
 You should change to the root of the Cloudera training git repository and
 re-execute this program. To do this, run:
   $ cd ~/git
+  $ ./update-exercises
 """)
   except ConfigParser.NoSectionError:
     raise RepoException("""Error: Your git repository seems corrupted (no 'origin' remote).
@@ -86,7 +114,7 @@ Please run the following command and try again:
 """ % { origin_url : CLOUDERA_ORIGIN_URL })
   except ConfigParser.NoOptionError:
     raise RepoException("""Error: Your git repository seems corrupted (no url for origin).
-Please run the following commands and try agai:
+Please run the following commands and try again:
   $ git remote rm origin
   $ git remote add origin %(origin_url)s
 """ % { origin_url : CLOUDERA_ORIGIN_URL })
@@ -220,6 +248,9 @@ def main(argv):
       else:
         print "Unknown argument. Try --help"
         return 1
+
+  # Check that we're the "training" user -- or root.
+  check_for_user(force)
 
   # Check that we're in the proper cloudera-training git repo.
   check_for_repo()

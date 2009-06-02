@@ -183,12 +183,55 @@ STORE out INTO ‘output’;
 
 
 <hr>
-<h2>Extensions</h2>
+<h2>Extension 1: Single-source high-frequency words</h2>
 
 <ul>
 <li>Write a script that determines the highest-frequency word from the Shakespeare data set
 that does not appear in the Bible dataset.</li>
-<li>Load the Shakespeare dataset into
+<li>Run the same script in reverse: what words appear frequently in the bible, but not
+in Shakespeare?</li>
+</ul>
+
+<hr>
+<h2>Extension 2: Proper Nouns</h2>
+
+<p>Goal: identify all the proper nouns used in Shakespeare's works.</p>
+
+<p>You'll need to write a Pig script, naturally. :) To help you, we've written a preprocessing
+script. You'll need to run it to generate an intermediate dataset in HDFS. This script
+creates an index from words to sentences. For each sentence a word appears in, it will
+emit a record of the form <tt>word (tab) sentence</tt>. For example, the input
+<tt>One sentence. Another sentence.</tt> will yield the following output:
+</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+Another  Another sentence.
+One One sentence.
+sentence  Another sentence.
+sentence  One sentence.
+</pre>
+</div></div>
+
+<p>The preprocessing script is based on the inverted index code, and is written in python.
+To run the script, execute:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ cd ~/git/exercises/shakespeare/sentence-idx
+$ ./run-indexer input
+</pre>
+</div></div>
+
+<p>This assumes that your Shakespeare data set has been loaded into the <tt>input<tt>
+directory in HDFS. It will create its output in a directory called <tt>input_idx</tt>.
+</p>
+
+<p><b>Hint: regular expressions</b>. We can approximate proper nouns as being words
+which are capitalized, but not at the start of a sentence. You can build regular
+expressions to process the (word, sentence) pairs and filter those which are interesting.
+See the <a href="../IntroToPig.pdf">Intro to Pig slides</a> for hints on using
+regular expressions and string matching syntax in Pig.</p>
 
 </body>
 </html>

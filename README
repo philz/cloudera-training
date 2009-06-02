@@ -15,6 +15,7 @@ http://www.cloudera.com/hadoop-training
 - If you are inside the Cloudera virtual machine and would like to
   update this repository to the most recent version, run:
 
+  $ cd ~/git
   $ ./update-exercises
 
   ... in this directory. This will also unpack the training database

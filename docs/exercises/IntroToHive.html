@@ -159,8 +159,8 @@ hive&gt; SELECT word, shake_f, kjv_f, (shake_f + kjv_f) AS ss
 </pre>
 </div></div>
 
-<hr>
-<h2>Extension</h2>
+<hr/>
+<h2>Extension 1: Relative Frequencies</h2>
 
 <p>A problem with this result is that it does not take into account the relative sizes
 of the two corpuses.  Design a set of queries that determine the <i>relative</i> frequencies
@@ -168,6 +168,48 @@ of words in their respective corpuses, and use this to calculate which words are
 most frequent across both corpuses. Do the results change dramatically if you take
 this difference into account?
 </p>
+
+<hr/>
+
+<h2>Extension 2: Related Words</h2>
+
+<p>Goal: Determine which words occur in the same sentence.</p>
+
+<p>This requires some more Hadoop-based data processing, which we've done for you
+by writing a preprocessing
+script. You'll need to run it to generate an intermediate dataset in HDFS. This script
+creates an index from words to sentences. For each sentence a word appears in, it will
+emit a record of the form <tt>word (tab) sentence</tt>. For example, the input
+<tt>One sentence. Another sentence.</tt> will yield the following output:
+</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+Another  Another sentence.
+One One sentence.
+sentence  Another sentence.
+sentence  One sentence.
+</pre>
+</div></div>
+
+<p>The preprocessing script is based on the inverted index code, and is written in python.
+To run the script, execute:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ cd ~/git/exercises/shakespeare/sentence-idx
+$ ./run-indexer input
+</pre>
+</div></div>
+
+<p>This assumes that your Shakespeare data set has been loaded into the <tt>input<tt>
+directory in HDFS. It will create its output in a directory called <tt>input_idx</tt>.
+</p>
+
+<p>You'll need to create a table in Hive to hold this data and load the results of the
+MapReduce program into Hive. Then you'll need to use a join query to establish whether
+a given pair of words is part of the same sentence.</p> 
+
 
 </body>
 </html>
