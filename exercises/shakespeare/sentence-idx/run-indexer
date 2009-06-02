@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# Runs the sentence indexer on a dataset
+
+bin=`dirname $0`
+bin=`cd $bin && pwd`
+
+dataset=$1
+
+if [ -z "$dataset" ]; then
+  echo "Usage: $0 (dataset-path)"
+  echo "e.g., $0 bible"
+  echo "Will output results to bible_idx"
+fi
+
+output="${dataset}_idx"
+
+hadoop jar /usr/lib/hadoop/contrib/streaming/hadoop-*-streaming.jar -input "$dataset" \
+    -output "$output" -mapper mapper.py -reducer cat -file "$bin/mapper.py"
+
+

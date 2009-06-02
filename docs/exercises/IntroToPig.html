@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Introduction to Pig</title>
+	    <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">	    
+    </head>
+
+    <body>
+	    <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff">
+		    <tr>
+			    <td valign="top" class="pagebody">
+				    <div class="pageheader">
+					    <span class="pagetitle">
+                            Workshop Exercise: Introduction To Pig
+                                                    </span>
+				    </div>
+
+<p>This project is designed to familiarize you with the <b>Pig</b> data processing
+language. In a previous exercise, we <a href="SqoopExercise.html">imported data from
+a database into Hive</a>. The data is stored, however, in HDFS (in the
+<tt>/user/hive/warehouse</tt> directory), so we can work with it using other systems
+like Pig too.</p>
+
+<p>Much of this exercise is drawn from the lecture component. You may <a
+href="../IntroToPig.pdf">review the slides for this</a> if you need to.</p> 
+
+<p>You may also find the 
+<a href="http://hadoop.apache.org/pig">Pig website</a> and
+<a href="http://wiki.apache.org/pig">wiki</a> useful references.</p>
+
+<hr/>
+<h2>Getting Started</h2>
+
+<p>To log in to Grunt, the Pig shell, run <tt>pig -x local</tt> at the terminal. You should see
+something like the following:
+</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ cd git/data
+$ pig -x local
+grunt&gt;
+</pre>
+</div></div>
+
+<p>This will tell Pig to execute without connecting to HDFS, just the local filesystem.
+We're going to use this for the first exercise. Make sure you switch to the <tt>~/git/data</tt>
+directory, where a data file you'll need is present.</p>
+
+<h3>Aggregation</h3>
+
+<p>We can perform aggregation in Pig; e.g., counting the number of times users
+appear in the Excite data set:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+grunt&gt; log = LOAD 'excite-small.log' AS (user, timestamp, query);
+grunt&gt; grpd = GROUP log BY user;
+grunt&gt; cntd = FOREACH grpd GENERATE group, COUNT(log);
+grunt&gt; STORE cntd INTO 'output';
+</pre>
+</div></div>
+
+<p>To view the output of this operation, open another shell, change to the same directory
+as you launched Pig from, and <tt>cat</tt> or <tt>head</tt> the output file:</p>
+
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ cd ~/git/data
+$ head output 
+</pre>
+</div></div>
+
+<p>Note that commands are evaluated "lazily;" only when you run the <tt>STORE</tt> command
+which forces output to appear, is the full script executed. Without storing results,
+no MapReduce passes will run.</p>
+
+<h3>Filtering</h3>
+
+<p>In addition to performing aggregates, we can also filter the records we process, much
+as a <tt>WHERE</tt> clause does in SQL or Hive:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+grunt&gt; log = LOAD 'excite-small.log' AS (user, timestamp, query);
+grunt&gt; grpd = GROUP log BY user;
+grunt&gt; cntd = FOREACH grpd GENERATE group, COUNT(log);
+grunt&gt; fltrd = FILTER cntd BY cnt &gt; 50;
+grunt&gt; STORE fltrd INTO 'output';
+</pre>
+</div></div>
+
+<h3>Sorting</h3>
+
+<p>And finally, the results can be ordered:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+grunt&gt; log = LOAD 'excite-small.log' AS (user, timestamp, query);
+grunt&gt; grpd = GROUP log BY user;
+grunt&gt; cntd = FOREACH grpd GENERATE group, COUNT(log);
+grunt&gt; fltrd = FILTER cntd BY cnt &gt; 50;
+grunt&gt; srtd = ORDER fltrd BY cnt;
+grunt&gt; STORE srtd INTO 'output';
+</pre>
+</div></div>
+
+
+
+<hr/>
+<h2>Connect Pig to Hadoop</h2>
+
+<p>In addition to running against the local filesystem, you can run Pig in conjunction
+with HDFS and a MapReduce cluster (though inside the virtual machine, this cluster has
+only one node--itself). Running <tt>pig</tt> with no arguments will connect to the
+Hadoop cluster identified in its configuration file:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ pig
+2009-05-28 18:30:57,466 [main] INFO  org.apache.pig.backend.hadoop.executionengine.HExecutionEngine - Connecting to hadoop file system at: hdfs://localhost:8020
+2009-05-28 18:30:58,248 [main] INFO  org.apache.pig.backend.hadoop.executionengine.HExecutionEngine - Connecting to map-reduce job tracker at: localhost:8021
+grunt&gt;
+</pre>
+</div></div>
+
+
+
+<hr>
+<h2>Examining the Data</h2>
+
+<p>You should have imported two tables of information from MySQL into HDFS. Each table is
+in a directory under <tt>/user/hive/warehouse</tt>. You can see the directories by running:
+
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop fs -ls /user/hive/warehouse
+</pre>
+</div></div>
+
+<p>If the <tt>shake_freq</tt> and <tt>bible_freq</tt> tables aren't there, you should
+run through the <a href="SqoopExercise.html">Sqoop exercise</a> now.</p>
+
+<p>You can see that each table is represented simply by a set of files:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ hadoop fs -ls /user/hive/warehouse/shake_freq
+</pre>
+</div></div>
+
+<p>Now let's run a Pig job to see what words are in both datasets:
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+bard   = LOAD 'shake_freq' AS (freq, word);
+kjv    = LOAD 'bible_freq' AS (freq, word);
+inboth = JOIN bard BY word, kjv BY word;
+STORE inboth INTO 'output';
+</pre>
+</div></div>
+
+<p>Don't forget now that instead of looking for results in a local file named <tt>output</tt>,
+they'll be written to a directory in HDFS named <tt>output</tt>, so you'll need to use <tt>hadoop fs
+-ls</tt>, <tt>hadoop fs -cat</tt>, etc. to view your results.</p>
+
+<p>This query will find the words that are in the Bible and not in Shakespeare:
+</p>
+
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+bard   = LOAD ‘shake_freq’ AS (freq, word);
+kjv    = LOAD ‘bible_freq’ AS (freq, word);
+grpd   = COGROUP bard BY word, kjv BY word;
+nobard = FILTER grpd BY COUNT(bard) == 0;
+out    = FOREACH nobard GENERATE FLATTEN(kjv);
+STORE out INTO ‘output’;
+</pre>
+</div></div>
+
+
+<hr>
+<h2>Extensions</h2>
+
+<ul>
+<li>Write a script that determines the highest-frequency word from the Shakespeare data set
+that does not appear in the Bible dataset.</li>
+<li>Load the Shakespeare dataset into
+
+</body>
+</html>

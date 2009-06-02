@@ -1,0 +1,16 @@
+This script is used to generate data for the word->sentence index.
+It builds the word->sentence index in the mapper
+There is no reducer script -- each (word, sentence) pair is put on its
+own record. So the reducer is just 'cat'.
+
+To run this streaming script, just use the 'run-indexer' shell script in this
+directory.
+
+e.g.,
+
+
+./run-indexer bible
+
+... will process the 'bible' directory on HDFS and emit an output in 'bible_idx'
+
+

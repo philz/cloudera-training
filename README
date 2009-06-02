@@ -17,4 +17,11 @@ http://www.cloudera.com/hadoop-training
 
   $ ./update-exercises
 
-  in this directory.
+  ... in this directory. This will also unpack the training database
+into MySQL and set up your Eclipse environment. It is not recommended
+that you run this script outside the Cloudera virtual machine. To get
+the latest files without reconfiguring your broader development
+environment, run:
+
+  $ git pull
+
