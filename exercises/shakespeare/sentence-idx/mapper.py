@@ -22,7 +22,7 @@ def tokenize(sentence):
     if w:
       try:
         # Quick check -- is this purely a number? If so, skip it.
-        int(w):
+        int(w)
       except ValueError:
         # nope. It's a real word. Emit.
         print w + "\t" + sentence

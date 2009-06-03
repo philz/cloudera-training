@@ -137,9 +137,9 @@ manipulate that data in subsequent queries.</p>
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
 hive&gt; CREATE TABLE merged (word STRING , shake_f INT, kjv_f INT);
-hive&gt; INSERT OVERWRITE TABLE merged SELECT s.word, s.freq, k.freq
-  FROM shake_freq s JOIN kjv k ON (s.word = k.word) 
-  WHERE s.freq &gt;= 1 AND k.freq &gt;= 1;
+hive&gt; INSERT OVERWRITE TABLE merged SELECT s.word, s.freq, b.freq
+  FROM shake_freq s JOIN bible_freq b ON (s.word = b.word) 
+  WHERE s.freq &gt;= 1 AND b.freq &gt;= 1;
 </pre>
 </div></div>
 
@@ -202,7 +202,7 @@ $ ./run-indexer input
 </pre>
 </div></div>
 
-<p>This assumes that your Shakespeare data set has been loaded into the <tt>input<tt>
+<p>This assumes that your Shakespeare data set has been loaded into the <tt>input</tt>
 directory in HDFS. It will create its output in a directory called <tt>input_idx</tt>.
 </p>
 
@@ -210,6 +210,13 @@ directory in HDFS. It will create its output in a directory called <tt>input_idx
 MapReduce program into Hive. Then you'll need to use a join query to establish whether
 a given pair of words is part of the same sentence.</p> 
 
+<hr/>
+
+<h2>Solutions</h2>
+
+<p>When you're done and want to check your work (or if you get stuck and need a hint),
+solutions to both extensions are in the
+<tt>~/git/exercises/intro-to-hive/solution</tt> directory.</p>
 
 </body>
 </html>
