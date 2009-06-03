@@ -2,6 +2,8 @@
 #
 # Runs the sentence indexer on a dataset
 
+set -e
+
 bin=`dirname $0`
 bin=`cd $bin && pwd`
 
@@ -25,4 +27,8 @@ hadoop jar /usr/lib/hadoop/contrib/streaming/hadoop-*-streaming.jar -input "$dat
 
 # Remove the output dir's logs subdir; it just gets in the way.
 hadoop fs -rmr "$output/_logs"
+
+echo "Job complete"
+echo "Output stored in the '$output' directory"
+
 

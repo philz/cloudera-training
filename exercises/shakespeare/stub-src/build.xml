@@ -13,7 +13,7 @@
   <property name="testsrcdir"  value="${basedir}/test" />
   <property name="libdir"      value="${basedir}/lib" />
   <property name="jarname"     value="${basedir}/indexer.jar" />
-  <property name="hadoop-home" value="/usr/share/cloudera/hadoop" />
+  <property name="hadoop-home" value="/usr/lib/hadoop" />
   <property name="hadoop-libs" value="${hadoop-home}/lib" />
   <property name="junit-jar"   value="${libdir}/junit-4.4.jar" />
   <property name="mrunit-jar"  value="${libdir}/mrunit-0.1.jar" />

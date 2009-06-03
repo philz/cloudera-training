@@ -120,8 +120,10 @@ Hadoop cluster identified in its configuration file:</p>
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
 $ pig
-2009-05-28 18:30:57,466 [main] INFO  org.apache.pig.backend.hadoop.executionengine.HExecutionEngine - Connecting to hadoop file system at: hdfs://localhost:8020
-2009-05-28 18:30:58,248 [main] INFO  org.apache.pig.backend.hadoop.executionengine.HExecutionEngine - Connecting to map-reduce job tracker at: localhost:8021
+2009-05-28 18:30:57,466 [main] INFO  org.apache.pig.backend.hadoop.executionengine.HExecutionEngine
+- Connecting to hadoop file system at: hdfs://localhost:8020
+2009-05-28 18:30:58,248 [main] INFO  org.apache.pig.backend.hadoop.executionengine.HExecutionEngine
+- Connecting to map-reduce job tracker at: localhost:8021
 grunt&gt;
 </pre>
 </div></div>
@@ -155,8 +157,8 @@ $ hadoop fs -ls /user/hive/warehouse/shake_freq
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
-bard   = LOAD 'shake_freq' AS (freq, word);
-kjv    = LOAD 'bible_freq' AS (freq, word);
+bard   = LOAD '/user/hive/warehouse/shake_freq' USING PigStorage(',') AS (freq, word);
+kjv    = LOAD '/user/hive/warehouse/bible_freq' USING PigStorage(',') AS (freq, word);
 inboth = JOIN bard BY word, kjv BY word;
 STORE inboth INTO 'output';
 </pre>
@@ -172,8 +174,8 @@ they'll be written to a directory in HDFS named <tt>output</tt>, so you'll need 
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
-bard   = LOAD ‘shake_freq’ AS (freq, word);
-kjv    = LOAD ‘bible_freq’ AS (freq, word);
+bard   = LOAD '/user/hive/warehouse/shake_freq' USING PigStorage(',') AS (freq, word);
+kjv    = LOAD '/user/hive/warehouse/bible_freq' USING PigStorage(',') AS (freq, word);
 grpd   = COGROUP bard BY word, kjv BY word;
 nobard = FILTER grpd BY COUNT(bard) == 0;
 out    = FOREACH nobard GENERATE FLATTEN(kjv);
@@ -188,8 +190,6 @@ STORE out INTO ‘output’;
 <ul>
 <li>Write a script that determines the highest-frequency word from the Shakespeare data set
 that does not appear in the Bible dataset.</li>
-<li>Run the same script in reverse: what words appear frequently in the bible, but not
-in Shakespeare?</li>
 </ul>
 
 <hr>
@@ -213,6 +213,7 @@ sentence  One sentence.
 </pre>
 </div></div>
 
+
 <p>The preprocessing script is based on the inverted index code, and is written in python.
 To run the script, execute:</p>
 
@@ -223,7 +224,7 @@ $ ./run-indexer input
 </pre>
 </div></div>
 
-<p>This assumes that your Shakespeare data set has been loaded into the <tt>input<tt>
+<p>This assumes that your Shakespeare data set has been loaded into the <tt>input</tt>
 directory in HDFS. It will create its output in a directory called <tt>input_idx</tt>.
 </p>
 
@@ -232,6 +233,13 @@ which are capitalized, but not at the start of a sentence. You can build regular
 expressions to process the (word, sentence) pairs and filter those which are interesting.
 See the <a href="../IntroToPig.pdf">Intro to Pig slides</a> for hints on using
 regular expressions and string matching syntax in Pig.</p>
+
+<hr/>
+<h2>Solutions</h2>
+
+<p>When you're done and want to check your work (or if you get stuck and need a hint),
+solutions to both extensions are in the
+<tt>~/git/exercises/intro-to-pig/solution</tt> directory.</p>
 
 </body>
 </html>
