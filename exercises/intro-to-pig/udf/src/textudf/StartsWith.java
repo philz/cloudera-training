@@ -32,13 +32,13 @@ public class StartsWith extends FilterFunc {
       if (haystackObj instanceof String) {
         haystack = (String) haystackObj;
       } else {
-        throw IOException("Invalid datatype for haystack; expected String");
+        throw new IOException("Invalid datatype for haystack; expected String");
       }
 
       if (needleObj instanceof String) {
         needle = (String) needleObj;
       } else {
-        throw IOException("Invalid datatype for needle; expected String");
+        throw new IOException("Invalid datatype for needle; expected String");
       }
 
       return Boolean.valueOf(haystack.startsWith(needle));

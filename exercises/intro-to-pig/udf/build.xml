@@ -13,6 +13,8 @@
   <property name="jarname"     value="${basedir}/textudf.jar" />
   <property name="hadoop-home" value="/usr/lib/hadoop" />
   <property name="hadoop-libs" value="${hadoop-home}/lib" />
+  <property name="pig-home"    value="/usr/lib/pig" />
+  <property name="pig-libs"    value="${pig-home}/lib" />
 
   <target name="compile" description="Compile all Java sources">
     <mkdir dir="${bindir}" />
@@ -24,6 +26,12 @@
         </fileset>
         <fileset dir="${hadoop-home}">
           <include name="hadoop-*-core.jar" />
+        </fileset>
+        <fileset dir="${pig-libs}">
+          <include name="*.jar" />
+        </fileset>
+        <fileset dir="${pig-home}">
+          <include name="pig-*-core.jar" />
         </fileset>
       </classpath>
     </javac>

@@ -229,10 +229,40 @@ directory in HDFS. It will create its output in a directory called <tt>input_idx
 </p>
 
 <p><b>Hint: regular expressions</b>. We can approximate proper nouns as being words
-which are capitalized, but not at the start of a sentence. You can build regular
-expressions to process the (word, sentence) pairs and filter those which are interesting.
+which are capitalized, but not at the start of a sentence. Finding the correct words
+can be done by using a <tt>FILTER</tt> statement with a regular expression.
 See the <a href="../IntroToPig.pdf">Intro to Pig slides</a> for hints on using
 regular expressions and string matching syntax in Pig.</p>
+
+<p>You'll need to do something more involved to determine whether one string starts
+with another. Regular expressions must be constant strings, and can't be data dependent.
+Instead, you need to use a <i>user defined function</i> (UDF) to determine whether 
+one string starts with another. We've written a <tt>StartsWith()</tt> UDF for you, 
+in Java. You'll need to compile the jar that contains this. To do so, run:
+</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ cd ~/git/exercises/intro-to-pig/udf/
+$ ant
+</pre>
+</div></div>
+
+<p>This will emit a file named <tt>textudf.jar</tt>. Then in your pig script, the command
+<tt>REGISTER /path/to/textudf.jar;</tt> will load the jar file into your environment.
+You can then use the <tt>StartsWith()</tt> method that we wrote. Its signature is:</p>
+
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+/** Returns true if haystack.startsWith(needle) */
+boolean StartsWith(String haystack, String needle);
+</pre>
+</div></div>
+
+<p>If you're feeling ambitious, you could try to reimplement the UDF (or a similar one)
+yourself; see the
+<a href="http://hadoop.apache.org/pig/docs/r0.2.0/udf.html">UDF Manual</a> in
+the Pig documentation for more details as to how.</p>
 
 <hr/>
 <h2>Solutions</h2>
