@@ -3,7 +3,7 @@
 REGISTER textudf.jar;
 
 -- load the (word, sentence) pairs in.
-bard = LOAD 'input_idx' USING PigStorage(',') AS (word, sentence);
+bard = LOAD 'input_idx' USING PigStorage('\t') AS (word:chararray, sentence:chararray);
 
 -- Ignore anything that isn't a Capital word. We ignore FULLY capitalized words,
 -- as well as the word 'I'.

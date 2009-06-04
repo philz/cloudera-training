@@ -229,7 +229,9 @@ directory in HDFS. It will create its output in a directory called <tt>input_idx
 </p>
 
 <p><b>Hint: regular expressions</b>. We can approximate proper nouns as being words
-which are capitalized, but not at the start of a sentence. Finding the correct words
+which are capitalized, but not at the start of a sentence. (Note: due to the text we're
+using, this is actually going to generate a lot of false positives--but this serves
+for exercise purposes.) Finding the correct words
 can be done by using a <tt>FILTER</tt> statement with a regular expression.
 See the <a href="../IntroToPig.pdf">Intro to Pig slides</a> for hints on using
 regular expressions and string matching syntax in Pig.</p>
