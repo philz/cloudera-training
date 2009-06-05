@@ -179,16 +179,17 @@ this difference into account?
 by writing a preprocessing
 script. You'll need to run it to generate an intermediate dataset in HDFS. This script
 creates an index from words to sentences. For each sentence a word appears in, it will
-emit a record of the form <tt>word (tab) sentence</tt>. For example, the input
+emit a record of the form <tt>word (tab) sentence_id</tt>. A <tt>sentence_id</tt> consists
+of the first word of a sentence, a space, and a numeric hash code. For example, the input
 <tt>One sentence. Another sentence.</tt> will yield the following output:
 </p>
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
-Another  Another sentence.
-One One sentence.
-sentence  Another sentence.
-sentence  One sentence.
+Another  Another 2050940439
+One One 1502083882
+sentence  Another 2050940439
+sentence  One 1502083882
 </pre>
 </div></div>
 

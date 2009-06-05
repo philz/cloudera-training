@@ -200,16 +200,16 @@ that does not appear in the Bible dataset.</li>
 <p>You'll need to write a Pig script, naturally. :) To help you, we've written a preprocessing
 script. You'll need to run it to generate an intermediate dataset in HDFS. This script
 creates an index from words to sentences. For each sentence a word appears in, it will
-emit a record of the form <tt>word (tab) sentence</tt>. For example, the input
+emit a record of the form <tt>word (tab) sentence_id</tt>. For example, the input
 <tt>One sentence. Another sentence.</tt> will yield the following output:
 </p>
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
-Another  Another sentence.
-One One sentence.
-sentence  Another sentence.
-sentence  One sentence.
+Another  Another 2050940439
+One One 1502083882
+sentence  Another 2050940439
+sentence  One 1502083882
 </pre>
 </div></div>
 
@@ -229,7 +229,8 @@ directory in HDFS. It will create its output in a directory called <tt>input_idx
 </p>
 
 <p><b>Hint: regular expressions</b>. We can approximate proper nouns as being words
-which are capitalized, but not at the start of a sentence. (Note: due to the text we're
+which are capitalized, but not at the start of a sentence. Recall that the <tt>sentence_id</tt>
+contains the first word of the sentence. (Note: due to the text we're
 using, this is actually going to generate a lot of false positives--but this serves
 for exercise purposes.) Finding the correct words
 can be done by using a <tt>FILTER</tt> statement with a regular expression.
