@@ -178,9 +178,10 @@ def workspace_needs_update():
     verstring = h.readline().strip()
     print "verstring is [" + verstring + "]"
     pristine_ver = int(verstring)
-  except:
+  except , e:
     # Can't read the version number in the pristine workspace. Weird. Skip this
     # with a warning, and continue.
+    print e
     print """
 WARNING: The pristine workspace directory contains an invalid version id.
 Have you modified any files in the pristine-workspace directory? If so,
