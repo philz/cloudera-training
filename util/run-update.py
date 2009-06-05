@@ -175,7 +175,9 @@ def workspace_needs_update():
 
   try:
     h = open(os.path.join(WORKSPACE_SRC, WORKSPACE_VER_FILE))
-    pristine_ver = int(h.readline().strip())
+    verstring = h.readline().strip()
+    print "verstring is [" + verstring + "]"
+    pristine_ver = int(verstring)
   except:
     # Can't read the version number in the pristine workspace. Weird. Skip this
     # with a warning, and continue.
