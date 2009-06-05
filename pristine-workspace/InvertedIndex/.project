@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>InvertedIndex</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>stub-src</name>
+			<type>2</type>
+			<location>/home/training/git/exercises/shakespeare/stub-src/src</location>
+		</link>
+		<link>
+			<name>test</name>
+			<type>2</type>
+			<location>/home/training/git/exercises/shakespeare/test/java</location>
+		</link>
+	</linkedResources>
+</projectDescription>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="udf-src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/hadoop-0.18.3-4cloudera0.3.0-core.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/pig/pig-0.2.0-core.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/pig/lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/pig/lib/commons-logging-api-1.0.4.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/pig/lib/javacc.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/pig/lib/jline-0.9.94.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/pig/lib/jsch-0.1.33.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/pig/lib/junit-4.1.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/pig/lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
