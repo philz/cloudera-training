@@ -46,7 +46,12 @@ cipher    lucrece.txt@38624,orlando.txt@66001,...
 
 <h3><a name="InvertedIndex-Step1%3AStartEclipse"></a>Step 1: Start Eclipse</h3>
 
-<p>Start Eclipse (via the icon on the desktop). A project has already been created for you called <tt>LineIndexer</tt>. This project is preloaded with a source code "skeleton" for the activity. This workspace also contains another project containing all the Hadoop source code and libraries. This is required as a build dependency for LineIndexer; it's also there for your reference and perusal.</p>
+<p>Start Eclipse (via the icon on the desktop). A project has already been 
+created for you called <tt>InvertedIndex</tt>. 
+This project is preloaded with a source code "skeleton" for the activity. 
+This workspace also contains another project containing all the Hadoop source code 
+and libraries. This is required as a build dependency for InvertedIndex; 
+it's also there for your reference and perusal.</p>
 
 <h3><a name="InvertedIndex-Step2%3ACreatetheMapperClass"></a>Step 2: Create the Mapper Class</h3>
 
@@ -121,11 +126,11 @@ FileSplit fileSplit = (FileSplit)reporter.getInputSplit();
 
 <h3><a name="InvertedIndex-Compileyoursystem"></a>Compile your system</h3>
 
-<p>Open a terminal window, navigate to <tt>~/workspace/LineIndexer/</tt>, and compile your Java sources into a jar:</p>
+<p>Open a terminal window, navigate to <tt>~/git/exercises/shakespeare/</tt>, and compile your Java sources into a jar:</p>
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
-$ cd ~/workspace/LineIndexer
+$ cd ~/git/exercises/shakespeare
 $ ant
 </pre>
 </div></div>
@@ -267,7 +272,7 @@ $ chmod a+x (reducer/script/name)
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
-$ hadoop jar $HADOOP_HOME/contrib/streaming/hadoop-*-streaming.jar -input input \
+$ hadoop jar /usr/lib/hadoop/contrib/streaming/hadoop-*-streaming.jar -input input \
     -output output -file (path/to/mapper/script) -file (path/to/reducer/script) \
     -mapper (mapper-basename) -reducer (reducer-basename) -inputformat \
     org.apache.hadoop.mapred.KeyValueTextInputFormat
@@ -286,7 +291,7 @@ $ hadoop jar $HADOOP_HOME/contrib/streaming/hadoop-*-streaming.jar -input input 
 <pre class="code-java">
 $ chmod a+x ~/mapper.py
 $ chmod a+x ~/reducer.py
-$ hadoop jar $HADOOP_HOME/contrib/streaming/hadoop-*-streaming.jar -input input \
+$ hadoop jar /usr/lib/hadoop/contrib/streaming/hadoop-*-streaming.jar -input input \
     -output output -file ~/mapper.py -file ~/reducer.py -mapper mapper.py \
     -reducer reducer.py -inputformat org.apache.hadoop.mapred.KeyValueTextInputFormat
 </pre>
