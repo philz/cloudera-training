@@ -9,14 +9,12 @@
 
 <project name="world" default="jar">
   <property name="bindir"      value="${basedir}/bin" />
-  <property name="srcdir"      value="${basedir}/src" />
+  <property name="srcdir"      value="${basedir}/stub-src/src" />
   <property name="testsrcdir"  value="${basedir}/test" />
-  <property name="libdir"      value="${basedir}/lib" />
   <property name="jarname"     value="${basedir}/indexer.jar" />
   <property name="hadoop-home" value="/usr/lib/hadoop" />
   <property name="hadoop-libs" value="${hadoop-home}/lib" />
-  <property name="junit-jar"   value="${libdir}/junit-4.4.jar" />
-  <property name="mrunit-jar"  value="${libdir}/mrunit-0.1.jar" />
+  <property name="hadoop-contrib" value="${hadoop-home}/contrib" />
 
   <target name="compile" description="Compile all Java sources">
     <mkdir dir="${bindir}" />
@@ -24,13 +22,15 @@
       <src path="${srcdir}" />
       <src path="${testsrcdir}" />
       <classpath>
-        <pathelement path="${junit-jar}" />
         <pathelement path="${mrunit-jar}" />
         <fileset dir="${hadoop-libs}">
           <include name="*.jar" />
         </fileset>
         <fileset dir="${hadoop-home}">
           <include name="hadoop-*-core.jar" />
+        </fileset>
+        <fileset dir="${hadoop-contrib}/mrunit">
+          <include name="*.jar" />
         </fileset>
       </classpath>
     </javac>
@@ -50,13 +50,14 @@
       <formatter type="brief" usefile="false" />
       <classpath>
         <pathelement path="${bindir}" />
-        <pathelement path="${junit-jar}" />
-        <pathelement path="${mrunit-jar}" />
         <fileset dir="${hadoop-libs}">
           <include name="*.jar" />
         </fileset>
         <fileset dir="${hadoop-home}">
           <include name="hadoop-*-core.jar" />
+        </fileset>
+        <fileset dir="${hadoop-contrib}/mrunit">
+          <include name="*.jar" />
         </fileset>
       </classpath>
       <test name="index.AllTests" />
