@@ -175,10 +175,8 @@ def workspace_needs_update():
 
   try:
     h = open(os.path.join(WORKSPACE_SRC, WORKSPACE_VER_FILE))
-    verstring = h.readline().strip()
-    print "verstring is [" + verstring + "]"
-    pristine_ver = int(verstring)
-  except , e:
+    pristine_ver = int(h.readline().strip())
+  except:
     # Can't read the version number in the pristine workspace. Weird. Skip this
     # with a warning, and continue.
     print e
@@ -196,7 +194,7 @@ Skipping workspace auto-deployment.
 
   deployed_ver_file = os.path.join(WORKSPACE_DIR, WORKSPACE_VER_FILE)
   try:
-    h = open(deployed_ver_File)
+    h = open(deployed_ver_file)
     deployed_ver = int(h.readline().strip())
   except:
     print """
