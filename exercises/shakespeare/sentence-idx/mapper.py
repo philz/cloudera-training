@@ -17,15 +17,26 @@ prevlines = []
 NONALPHA = re.compile("\W")
 
 def tokenize(sentence):
-  """ turn a sentence into word -> sentence mappings and emit them """
-  for w in NONALPHA.split(sentence):
-    if w:
-      try:
-        # Quick check -- is this purely a number? If so, skip it.
-        int(w)
-      except ValueError:
-        # nope. It's a real word. Emit.
-        print w + "\t" + sentence
+  """ Turn a sentence into word -> sentence mappings and emit them.
+      Instead of emitting the entire sentence, just emit the sentence's
+      first word, and the hash of the whole sentence.
+  """
+
+  words = NONALPHA.split(sentence)
+  while len(words) > 0 and len(words[0].strip()) == 0:
+    # throw out any leading empty strings.
+    words = words[1:]
+
+  if len(words) > 0:
+    sentence_output = words[0] + " " + str(hash(sentence))
+    for w in NONALPHA.split(sentence):
+      if w:
+        try:
+          # Quick check -- is this purely a number? If so, skip it.
+          int(w)
+        except ValueError:
+          # nope. It's a real word. Emit.
+          print w + "\t" + sentence_output
 
 
 def find_one_of(haystack, options):
