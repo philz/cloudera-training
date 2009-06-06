@@ -173,7 +173,7 @@ this difference into account?
 
 <h2>Extension 2: Related Words</h2>
 
-<p>Goal: Determine which words occur in the same sentence.</p>
+<p>Goal: Determine whether two words occur in the same sentence.</p>
 
 <p>This requires some more Hadoop-based data processing, which we've done for you
 by writing a preprocessing
@@ -210,6 +210,12 @@ directory in HDFS. It will create its output in a directory called <tt>input_idx
 <p>You'll need to create a table in Hive to hold this data and load the results of the
 MapReduce program into Hive. Then you'll need to use a join query to establish whether
 a given pair of words is part of the same sentence.</p> 
+
+<p><b>Tip:</b> If we had a large MapReduce cluster available to us, we could write
+more powerful joins that compute all pairs of related words together. Unfortunately,
+in the training VM this will likely require more RAM and time than are available
+in this training session. Try the word pairs <tt>('upside', 'down')</tt> for a positive
+match and <tt>('hanged', 'Till')</tt> for a negative match.</p>
 
 <hr/>
 
