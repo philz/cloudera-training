@@ -217,6 +217,12 @@ in the training VM this will likely require more RAM and time than are available
 in this training session. Try the word pairs <tt>('upside', 'down')</tt> for a positive
 match and <tt>('hanged', 'Till')</tt> for a negative match.</p>
 
+<p>As another brief aside: When using <tt>LOAD DATA</tt> to import the <tt>input_idx</tt>
+directory into Hive, you'll need to use the <i>entire</i> URL to the data in HDFS, and
+not just the relative path. e.g., <tt>hdfs://localhost:8020/user/training/input_idx</tt>.
+Hive is overly strict about the filesystem namespace.
+</p>
+
 <hr/>
 
 <h2>Solutions</h2>

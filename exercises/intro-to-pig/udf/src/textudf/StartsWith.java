@@ -5,9 +5,8 @@ import java.io.IOException;
 import java.util.Map;
 import org.apache.pig.FilterFunc;
 import org.apache.pig.backend.executionengine.ExecException;
-import org.apache.pig.data.DataBag;
+import org.apache.pig.data.DataByteArray;
 import org.apache.pig.data.Tuple;
-import org.apache.pig.data.DataType;
 import org.apache.pig.impl.util.WrappedIOException;
 
 
@@ -29,14 +28,14 @@ public class StartsWith extends FilterFunc {
       String haystack = null;
       String needle = null;
 
-      if (haystackObj instanceof String) {
-        haystack = (String) haystackObj;
+      if (haystackObj instanceof String || haystackObj instanceof DataByteArray) {
+        haystack = haystackObj.toString();
       } else {
         throw new IOException("Invalid datatype for haystack; expected String");
       }
 
-      if (needleObj instanceof String) {
-        needle = (String) needleObj;
+      if (needleObj instanceof String || needleObj instanceof DataByteArray) {
+        needle = needleObj.toString();
       } else {
         throw new IOException("Invalid datatype for needle; expected String");
       }

@@ -248,7 +248,15 @@ hamlet@131
 
 <p>Two test scripts named <tt>test-mapper.sh</tt> and <tt>test-reducer.sh</tt> have been written; these take as arguments the name of the mapper or reducer script respectively; they determine if the output conforms to the expected format.</p>
 
-<p>To run them, use:</p>
+<p>First, make sure your input scripts are executable:</p>
+<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
+<pre class="code-java">
+$ chmod a+x (mapper/script/name)
+$ chmod a+x (reducer/script/name)
+</pre>
+</div></div>
+
+<p>Then to run the test harness on your scripts, use:</p>
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
@@ -260,15 +268,9 @@ $ ./test-reducer.sh reducer-script-name
 
 <h3><a name="InvertedIndex-Runthestreamingprogram"></a>Run the streaming program </h3>
 
-<p>Make sure your input scripts are executable:</p>
-<div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
-<pre class="code-java">
-$ chmod a+x (mapper/script/name)
-$ chmod a+x (reducer/script/name)
-</pre>
-</div></div>
 
-<p>You can then run your program with Hadoop streaming via:</p>
+<p>After your scripts pass the unit tests, you can then run your program
+with Hadoop streaming via:</p>
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
