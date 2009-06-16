@@ -140,7 +140,7 @@ def reset_git_repo():
 def update_repo():
   """ Get the latest changes """
   print "Updating repository..."
-  ret = os.system("git pull")
+  ret = os.system("git pull origin master:master")
   if ret > 0:
     raise RepoException("Could not download updates. Are you connected to the network?")
 
