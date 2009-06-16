@@ -37,8 +37,9 @@ class RepoException(Exception):
 
 TRAINING_USER = "training"
     
-# This is the URL we expect for the 'origin' ref in the git repo
-CLOUDERA_ORIGIN_URL = "git://github.com/cloudera/cloudera-training.git"
+# This is the URL we expect for the 'origin' ref in the git repo.
+# We don't care what protocol (git://, http://, etc) they use.
+CLOUDERA_ORIGIN_URL = "//github.com/cloudera/cloudera-training.git"
 
 # Where do we install the Eclipse workspace?
 WORKSPACE_DIR = os.path.expanduser("~/workspace")
@@ -100,7 +101,7 @@ re-execute this program. To do this in the Cloudera training VM, run:
   parser.read("/tmp/cloudera-git-config")
   try:
     seen_origin_url = parser.get('remote "origin"', "url")
-    if seen_origin_url != CLOUDERA_ORIGIN_URL:
+    if not seen_origin_url.endswith(CLOUDERA_ORIGIN_URL):
       raise RepoException("""It seems like you're running this script in the wrong repository.
 You should change to the root of the Cloudera training git repository and
 re-execute this program. To do this, run:
@@ -111,13 +112,13 @@ re-execute this program. To do this, run:
     raise RepoException("""Error: Your git repository seems corrupted (no 'origin' remote).
 Please run the following command and try again:
   $ git remote add origin %(origin_url)s
-""" % { origin_url : CLOUDERA_ORIGIN_URL })
+""" % { origin_url : "http:" + CLOUDERA_ORIGIN_URL })
   except ConfigParser.NoOptionError:
     raise RepoException("""Error: Your git repository seems corrupted (no url for origin).
 Please run the following commands and try again:
   $ git remote rm origin
   $ git remote add origin %(origin_url)s
-""" % { origin_url : CLOUDERA_ORIGIN_URL })
+""" % { origin_url : "http:" + CLOUDERA_ORIGIN_URL })
 
   print "Training exercise repository found."
 
