@@ -86,7 +86,7 @@ as a <tt>WHERE</tt> clause does in SQL or Hive:</p>
 <pre class="code-java">
 grunt&gt; log = LOAD 'excite-small.log' AS (user, timestamp, query);
 grunt&gt; grpd = GROUP log BY user;
-grunt&gt; cntd = FOREACH grpd GENERATE group, COUNT(log);
+grunt&gt; cntd = FOREACH grpd GENERATE group, COUNT(log) AS cnt;
 grunt&gt; fltrd = FILTER cntd BY cnt &gt; 50;
 grunt&gt; STORE fltrd INTO 'output';
 </pre>
@@ -100,7 +100,7 @@ grunt&gt; STORE fltrd INTO 'output';
 <pre class="code-java">
 grunt&gt; log = LOAD 'excite-small.log' AS (user, timestamp, query);
 grunt&gt; grpd = GROUP log BY user;
-grunt&gt; cntd = FOREACH grpd GENERATE group, COUNT(log);
+grunt&gt; cntd = FOREACH grpd GENERATE group, COUNT(log) AS cnt;
 grunt&gt; fltrd = FILTER cntd BY cnt &gt; 50;
 grunt&gt; srtd = ORDER fltrd BY cnt;
 grunt&gt; STORE srtd INTO 'output';
@@ -212,6 +212,12 @@ sentence  Another 2050940439
 sentence  One 1502083882
 </pre>
 </div></div>
+
+<p>This script requires having the Shakespeare text loaded into HDFS. If you have not
+already completed the <a href="GettingFamiliar.html">Getting Familiar With Hadoop</a>
+exercise, please follow the instructions in the 
+<a href="GettingFamiliar.html#GettingFamiliar-UploadingFiles">Uploading Files</a>
+section of the exercise to load the Shakespeare dataset into HDFS.</p>
 
 
 <p>The preprocessing script is based on the inverted index code, and is written in python.
