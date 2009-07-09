@@ -21,6 +21,11 @@
 			<location>/usr/src/hadoop/core</location>
 		</link>
 		<link>
+			<name>examples</name>
+			<type>2</type>
+			<location>/usr/src/hadoop/examples</location>
+		</link>
+		<link>
 			<name>hdfs</name>
 			<type>2</type>
 			<location>/usr/src/hadoop/hdfs</location>

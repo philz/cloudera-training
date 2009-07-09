@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="examples"/>
 	<classpathentry kind="src" path="core"/>
 	<classpathentry kind="src" path="hdfs"/>
 	<classpathentry kind="src" path="mapred"/>
@@ -33,5 +34,8 @@
 	<classpathentry kind="lib" path="/usr/lib/hadoop/lib/slf4j-api-1.4.3.jar"/>
 	<classpathentry kind="lib" path="/usr/lib/hadoop/lib/slf4j-log4j12-1.4.3.jar"/>
 	<classpathentry kind="lib" path="/usr/lib/hadoop/lib/xmlenc-0.52.jar"/>
+	<classpathentry kind="lib" path="/usr/share/apache-ant-1.7.1/lib/ant.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/jvm/java-6-sun/lib/tools.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/lib/jetty-ext/jsp-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
