@@ -75,8 +75,7 @@ it's also there for your reference and perusal.</p>
 <ol>
 	<li>Since in this example we want to output &lt;"word", "filename@offset"&gt; pairs, the types will both be Text.</li>
 	<li>To extract individual words from a string of text, see <tt>java.util.StringTokenizer</tt>.</li>
-	<li>To get the current filename, use the following code snippit:</li>
-</ol>
+	<li>To get the current filename, use the following code snippit:
 
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
@@ -85,6 +84,11 @@ FileSplit fileSplit = (FileSplit)reporter.getInputSplit();
 <span class="code-object">String</span> fileName = fileSplit.getPath().getName();
 </pre>
 </div></div>
+</li>
+  <li>If you need more help interoperating with Hadoop components, refer to the 
+  <a href="http://hadoop.apache.org/common/docs/r0.18.3/api/index.html">Javadoc for Hadoop</a>
+  online.</li>
+</ol>
 
 <h3><a name="InvertedIndex-CreatetheReducerClass"></a>Create the Reducer Class</h3>
 
