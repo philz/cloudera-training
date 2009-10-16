@@ -1,0 +1,713 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="description" content="Module 8: PigTutorial">
+<title>Hadoop Tutorial</title>
+
+<link rel="stylesheet" type="text/css" href="resource/combo.css">
+<script src="resource/fpc.js" type="text/javascript" defer="defer"></script></head><body style="margin: 0pt;"><iframe style="border-width: 0pt; position: absolute; visibility: visible; width: 10em; height: 10em; top: -134px; left: -134px;" title="Text Resize Monitor" id="_yuiResizeMonitor"></iframe>
+<div id="clearfooter" style="padding-top: 20px;">
+<!-- used to make room for the #footer -->
+</div>
+<div id="bodycontainer">
+
+<!--[if IE 6]>
+
+<style type="text/css" media="screen">
+#topAreaR p{margin:0;padding:0;}
+
+#headeraL{float:left;color:#9f9f9f;font-size:85%;}
+#searchFld{height:1.46em;border:1px solid #cecece;}
+#searchFld{margin:0;}
+#sub{position:relative;left:2px;}
+
+#headeraL{height:4em;}
+
+#subHIntCont{position:relative;top:0em;}
+
+#ydnNav{float:left;padding:0;top:1em;}
+.yuimenubaritemlabel{padding:0;}
+
+#headerSubSandbag {top:5.9em;}
+
+h4.fullHorange{width:98%;margin:0;}
+#recBlPst{width:18em;}
+#recBlPst3{width:17em;}
+#upcomingEventsBoxCont{width:17.7em;float:right;padding:0;}
+#upcomingEventsBox{float:right;margin:0}
+#upcomingEventsBox .blogRackTitle{margin-left:.3em;width:15em}
+#upcomingEventsBox .blogRackDate{margin-left:.67em;}
+
+#topFeaturedTabs ul li strong strong{background-color:#9dc1d6;}
+#topFeaturedTabs ul li strong strong strong{background-color:#9dc1d6;}
+#topFeaturedTabs ul li a:hover strong strong{background-color:#6fa4c3;}
+#topFeaturedTabs ul li a:hover strong strong strong{background-color:#6fa4c3;}
+
+.prefTabs{color:#aaa;float:left;position:relative;margin:.5em .8em 0em 2em;font-weight:bold;}
+#featureBox1, #featureBox2, #featureBox3, #featureBox4{border:1px solid #d9d9d9;}
+.innerSubMenuArea{border:1px solid #d9d9d9;}
+
+#breadcrumbs{position:relative;top:1.8em;}
+
+#getAppBox{border:1px solid #D9D9D9;}
+
+.recentPat{margin:0;margin-left:.3em;}
+#recentPatternsContainer {clear:both;float:left;}
+
+html body #doc4.yui-t7 #bd .yui-g .yui-gc div.first, .yui-gc div.first, .yui-gd .yui-g, .yui-gd .yui-u{width:67%;}
+html body #doc4.yui-t7 #bd .yui-g .yui-gb .yui-u, .yui-gb .yui-g, .yui-gb .yui-gb, .yui-gb .yui-gc, .yui-gb .yui-gd, .yui-gb .yui-ge, .yui-gb .yui-gf, .yui-gb .yui-u, .yui-gc .yui-u, .yui-gc .yui-g, .yui-gd .yui-u{width:29%;}
+html body #doc4.yui-t7 #bd .yui-g .yui-gb .yui-u, .yui-gb .yui-g, .yui-gb .yui-gb, .yui-gb .yui-gc, .yui-gb .yui-gd, .yui-gb .yui-ge, .yui-gb .yui-gf, .yui-gb .yui-u, .yui-gc .yui-u, .yui-gc .yui-g, .yui-gd .yui-u{margin-left:.5%;}
+
+</style>
+
+<![endif]-->
+<!--[if IE 7]>
+
+<style type="text/css" media="screen">
+#subHIntCont{position:relative;top:0;}
+#ydnNav{float:left;padding:.1em 0;position:relative;left:0;}
+#ydnNav .yuimenu .colGroup { margin-right: 1.5em;  }
+#breadcrumbs{position:relative;top:1.8em;}
+</style>
+
+<![endif]-->
+<div id="mainCMaxCont">
+    <div id="mainCContainer">
+        <div id="mainCIntCont">
+            <div id="internalContainer">
+                <div id="doc4" class="yui-t6">
+                    <div id="bd">
+                        <div id="yui-main">
+                        <div class="yui-b">
+<link href="resource/highlight.css" type="text/css" rel="stylesheet">
+
+<h2>Module 8: PigTutorial</h2>
+
+<div style="text-align: center;">
+<p> <a href="module7.html">Previous module</a> &nbsp;|&nbsp; <a href="index.html">Table of contents</a> &nbsp;|&nbsp; Next module </p>
+</div>
+
+<h3>Introduction</h3>
+<p>The Pig tutorial shows you how to run two Pig scripts in Local mode
+and Hadoop mode. </p>
+<ul>
+  <li class="bullist">
+    <p> <strong>Local Mode</strong>: To run the scripts in local mode,
+no Hadoop or HDFS installation is required. All files are installed and
+run from your local host and file system. </p>
+  </li>
+  <li class="bullist">
+
+    <p> <strong>Hadoop Mode</strong>: To run the scripts in hadoop
+(mapreduce) mode, you need access to a Hadoop cluster and HDFS
+installation available through Hadoop Virtual Machine provided with
+this tutorial.<br>
+    </p>
+  </li>
+</ul>
+<p>The Pig tutorial files are installed on the Hadoop Virtual Machine
+under "/home/hadoop-user/pig" directory. It includes the Pig JAR file
+(pig.jar) and the tutorial files (tutorial.jar, Pigs scripts, log
+files). These files work with Hadoop 0.18.0 and provide everything you
+need to run the Pig scripts. This <a href="http://wiki.apache.org/pig/PigTutorial">Pig Tutorial</a> is also
+available on the apache <a href="http://incubator.apache.org/pig/">Pig
+website</a>.<br>
+
+</p>
+<h4 class="sectionSubH" id="head-7ba1e0555c91e15db277a3ef2a6d23fb3a1ff1d0">Java
+Installation <small><small>(Note: already set-up on the Hadoop VM.)</small></small><br>
+</h4>
+<ol type="1">
+  <li>
+    <p>Java 1.6.x (from Sun) is installed on /usr/jre16.<br>
+    </p>
+  </li>
+  <li>
+
+    <p>The JAVA_HOME environment variable is set the root of your Java
+installation in "/home/hadoop-user/.profile" file. </p>
+  </li>
+</ol>
+<h4 class="sectionSubH" id="head-adc897d95ad2a312b1d8c81020e91ea40b45e0f1">Pig Installation
+<small><small>(Note: already set-up on the Hadoop VM.)</small></small><br>
+</h4>
+<ol type="1">
+  <li>
+    <p>The pig.jar and tutorial files are stored in
+"/home/hadoop-user/pig" directory.<br>
+    </p>
+
+  </li>
+  <li>
+    <p>The PIGDIR environment variable is set to
+"/home/hadoop-user/pig/"in the .profile file of hadoop-user. </p>
+  </li>
+</ol>
+<h4 class="sectionSubH" id="head-fa5a5cd24c700e8ee2588b51323dd89effcae143">Pig Scripts:
+Local Mode</h4>
+<p>To run the Pig scripts in local mode, do the following: </p>
+<ol type="1">
+  <li>
+
+    <p>Go to the /home/hadoop-user/pig directory on Hadoop VM. </p>
+  </li>
+  <li>
+    <p>Review <a href="#Pig_Script_1:_Query_Phrase_Popularity">Pig
+Script 1</a> and <a href="#Pig_Script_2:_Temporal_Query_Phrase">Pig
+Script 2</a>. </p>
+  </li>
+
+  <li>
+    <p>Execute the following command (using either script1-local.pig or
+script2-local.pig). </p>
+  </li>
+</ol>
+
+<pre class="codeblue">$ java -cp $PIGDIR/pig.jar org.apache.pig.Main -x local script1-local.pig
+</pre>
+
+<ol start="4" type="1">
+  <li>
+    <p>Review the result file (either script1-local-results.txt or
+script2-local-results.txt): </p>
+
+  </li>
+</ol>
+
+<pre class="codeblue">$ ls -l script1-local-results.txt<br>$ cat script1-local-results.txt
+</pre>
+
+<h4 class="sectionSubH" id="head-c4f27a31d25d59fe5ddb96eb5191174da97cb519">Pig Scripts:
+Hadoop Mode</h4>
+<p>To run the Pig scripts in hadoop (mapreduce) mode, do the following:
+</p>
+<ol type="1">
+  <li>
+    <p>Go to the /home/hadoop-user/pig directory on Hadoop VM. </p>
+
+  </li>
+  <li>
+    <p>Review <a href="#Pig_Script_1:_Query_Phrase_Popularity">Pig
+Script 1</a> and <a href="#Pig_Script_2:_Temporal_Query_Phrase">Pig
+Script 2</a>. </p>
+  </li>
+  <li>
+    <p>Copy the excite.log.bz2 file from the pigtmp directory to the
+HDFS directory. </p>
+
+  </li>
+</ol>
+<pre class="codeblue">$ hadoop fs –copyFromLocal excite.log.bz2 .
+</pre>
+<ol start="4" type="1">
+  <li>
+    <p>The HADOOPSITEPATH environment variable is set to the location
+of your hadoop-site.xml file i.e.
+"/home/hadoop-user/hadoop-tutorial-conf/" directory. </p>
+  </li>
+  <li>
+
+    <p>Execute the following command (using either script1-hadoop.pig
+or script2-hadoop.pig): </p>
+  </li>
+</ol>
+<pre class="codeblue">$ java -cp $PIGDIR/pig.jar:$HADOOPSITEPATH org.apache.pig.Main script1-hadoop.pig
+</pre>
+<ol start="6" type="1">
+  <li>
+    <p>Review the result files (located in either the
+script1-hadoop-results or script2-hadoop-results HDFS directory): </p>
+  </li>
+
+</ol>
+<pre class="codeblue">$ hadoop fs -ls script1-hadoop-results<br>$ hadoop fs -cat 'script1-hadoop-results/*' | less
+</pre>
+<p> </p>
+<h4 class="sectionSubH" id="head-030ef75506a00e977c93da8201333da1df14327a">Pig Tutorial File</h4>
+<p>The contents of the Pig tutorial&nbsp; are described here. </p>
+<div>
+<table>
+  <tbody>
+
+    <tr>
+      <td>
+      <p> <strong>File</strong> </p>
+      </td>
+      <td>
+      <p> <strong>Description</strong></p>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p> pig.jar </p>
+      </td>
+      <td>
+      <p> Pig JAR file </p>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p> tutorial.jar </p>
+      </td>
+      <td>
+      <p> User-defined functions (UDFs) and Java classes </p>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p> script1-local.pig </p>
+      </td>
+      <td>
+      <p> Pig Script 1, Query Phrase Popularity (local mode) </p>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p> script1-hadoop.pig </p>
+      </td>
+      <td>
+      <p> Pig Script 1, Query Phrase Popularity (Hadoop cluster) </p>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p> script2-local.pig </p>
+      </td>
+      <td>
+      <p> Pig Script 2, Temporal Query Phrase Popularity (local mode)</p>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p> script2-hadoop.pig </p>
+      </td>
+      <td>
+      <p> Pig Script 2, Temporal Query Phrase Popularity (Hadoop
+cluster) </p>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p> excite-small.log </p>
+      </td>
+      <td>
+      <p> Log file, Excite search engine (local mode) </p>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p> excite.log.bz2 </p>
+      </td>
+      <td>
+      <p> Log file, Excite search engine (Hadoop cluster) </p>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p>The user-defined functions (UDFs) are described here. </p>
+<div>
+<table>
+  <tbody>
+    <tr>
+      <td>
+
+      <p> <strong>UDF</strong> </p>
+      </td>
+      <td>
+      <p> <strong>Description</strong></p>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+      <p> ExtractHour </p>
+      </td>
+      <td>
+      <p> Extracts the hour from the record.</p>
+      </td>
+
+    </tr>
+    <tr>
+      <td>
+      <p> NGramGenerator </p>
+      </td>
+      <td>
+      <p> Composes n-grams from the set of words. </p>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p> NonURLDetector </p>
+      </td>
+      <td>
+      <p> Removes the record if the query field is empty or a URL. </p>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p> ScoreGenerator </p>
+      </td>
+      <td>
+      <p> Calculates a "popularity" score for the n-gram.</p>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p> ToLower </p>
+      </td>
+      <td>
+      <p> Changes the query field to lowercase. </p>
+
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p> TutorialUtil </p>
+      </td>
+      <td>
+      <p> Divides the query string into a set of words.</p>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p> </p>
+<h4 class="sectionSubH" id="head-f11bd69618a510c1de067045cd83be51be80ebe0"><a name="Pig_Script_1:_Query_Phrase_Popularity"></a>Pig Script 1: Query
+Phrase Popularity</h4>
+<p>The Query Phrase Popularity script (script1-local.pig or
+script1-hadoop.pig) processes a search query log file from the Excite
+search engine and finds search phrases that occur with particular high
+frequency during certain times of the day. </p>
+<p>The script is shown here: </p>
+<ul>
+
+  <li class="bullist">
+    <p> Register the tutorial JAR file so that the included UDFs can be
+called in the script. </p>
+  </li>
+</ul>
+<pre class="codeblue">REGISTER ./tutorial.jar; 
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigBuiltins">PigStorage</a> function
+to load the excite log file (excite.log or
+excite-small.log) into the “raw” bag as an array of records with the
+fields <strong>user</strong>, <strong>time</strong>, and <strong>query</strong>.
+    </p>
+
+  </li>
+</ul>
+<pre class="codeblue">raw = LOAD 'excite.log' USING PigStorage('\t') AS (user, time, query);
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Call the NonURLDetector UDF to remove records if the query
+field is empty or a URL. </p>
+  </li>
+</ul>
+
+<pre class="codeblue">clean1 = FILTER raw BY org.apache.pig.tutorial.NonURLDetector(query);
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Call the ToLower UDF to change the query field to lowercase. </p>
+  </li>
+</ul>
+
+<pre class="codeblue">clean2 = FOREACH clean1 GENERATE user, time, org.apache.pig.tutorial.ToLower(query) as query;
+</pre>
+
+<ul>
+  <li class="bullist">
+    <p> Because the log file only contains queries for a single day, we
+are only interested in the hour. The excite query log timestamp format
+is YYMMDDHHMMSS. Call the ExtractHour UDF to extract the hour (HH) from
+the time field. </p>
+  </li>
+</ul>
+<pre class="codeblue">houred = FOREACH clean2 GENERATE user, org.apache.pig.tutorial.ExtractHour(time) as hour, query;
+</pre>
+<ul>
+  <li class="bullist">
+
+    <p> Call the NGramGenerator UDF to compose the n-grams of the
+query. </p>
+  </li>
+</ul>
+<pre class="codeblue">ngramed1 = FOREACH houred GENERATE user, hour, flatten(org.apache.pig.tutorial.NGramGenerator(query)) as ngram;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#DISTINCT:_Eliminating_duplicates_in_data">DISTINCT</a>
+
+command to get the unique n-grams for all records. </p>
+  </li>
+</ul>
+<pre class="codeblue">ngramed2 = DISTINCT ngramed1;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#COGROUP:_Getting_the_relevant_data_together">GROUP</a>
+
+command to group records by n-gram and hour. </p>
+  </li>
+</ul>
+<pre class="codeblue">hour_frequency1 = GROUP ngramed2 BY (ngram, hour);
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigBuiltins">COUNT</a> function to
+get the count (occurrences) of each n-gram. </p>
+
+  </li>
+</ul>
+<pre class="codeblue">hour_frequency2 = FOREACH hour_frequency1 GENERATE flatten($0), COUNT($1) as count;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#COGROUP:_Getting_the_relevant_data_together">GROUP</a>
+command to group records by n-gram only. Each group now
+corresponds to a distinct n-gram and has the count for each hour. </p>
+
+  </li>
+</ul>
+<pre class="codeblue">uniq_frequency1 = GROUP hour_frequency2 BY group::ngram;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> For each group, identify the hour in which this n-gram is used
+with a particularly high frequency. Call the ScoreGenerator UDF to
+calculate a "popularity" score for the n-gram. </p>
+  </li>
+</ul>
+
+<pre class="codeblue">uniq_frequency2 = FOREACH uniq_frequency1 GENERATE flatten($0), flatten(org.apache.pig.tutorial.ScoreGenerator($1));
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#FOREACH_..._GENERATE:_Applying_transformations_to_the_data">FOREACH-GENERATE</a>
+command to assign names to the fields. </p>
+  </li>
+</ul>
+
+<pre class="codeblue">uniq_frequency3 = FOREACH uniq_frequency2 GENERATE $1 as hour, $0 as ngram, $2 as score, $3 as count, $4 as mean;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#FILTER:_Getting_rid_of_data_you_are_not_interested_in_">FILTER</a>
+command to move all records with a score less than or equal
+to 2.0. </p>
+  </li>
+</ul>
+
+<pre class="codeblue">filtered_uniq_frequency = FILTER uniq_frequency3 BY score &gt; 2.0;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#ORDER:_Sorting_data_according_to_some_field">ORDER</a>
+command to sort the remaining records by hour and score. </p>
+  </li>
+
+</ul>
+<pre class="codeblue">ordered_uniq_frequency = ORDER filtered_uniq_frequency BY (hour, score);
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigBuiltins">PigStorage</a> function
+to store the results. The output file contains
+a list of n-grams with the following fields: <strong>hour</strong>, <strong>ngram</strong>,
+    <strong>score</strong>, <strong>count</strong>, <strong>mean</strong>.
+    </p>
+
+  </li>
+</ul>
+<pre class="codeblue">STORE ordered_uniq_frequency INTO '/tmp/tutorial-results' USING PigStorage(); 
+</pre>
+<p> </p>
+<h4 class="sectionSubH" id="head-9126f65fbf06a5a734f34a6da07c1fab5dc200b4"><a name="Pig_Script_2:_Temporal_Query_Phrase"></a>Pig Script 2: Temporal
+Query Phrase Popularity</h4>
+<p>The Temporal Query Phrase Popularity script (script2-local.pig or
+script2-hadoop.pig) processes a search query log file from the Excite
+search engine and compares the occurrence of frequency of search
+phrases across two time periods separated by twelve hours. </p>
+<p>The script is shown here: </p>
+<ul>
+  <li class="bullist">
+
+    <p> Register the tutorial JAR file so that the user-defined
+functions (UDFs) can be called in the script. </p>
+  </li>
+</ul>
+<pre class="codeblue">REGISTER ./tutorial.jar;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigBuiltins">PigStorage</a> function
+to load the excite log file (excite.log or
+excite-small.log) into the “raw” bag as an array of records with the
+fields <strong>user</strong>, <strong>time</strong>, and <strong>query</strong>.
+    </p>
+
+  </li>
+</ul>
+<pre class="codeblue">raw = LOAD 'excite.log' USING PigStorage('\t') AS (user, time, query);
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Call the NonURLDetector UDF to remove records if the query
+field is empty or a URL. </p>
+  </li>
+</ul>
+
+<pre class="codeblue">clean1 = FILTER raw BY org.apache.pig.tutorial.NonURLDetector(query);
+</pre>
+
+<ul>
+  <li class="bullist">
+    <p> Call the ToLower UDF to change the query field to lowercase. </p>
+  </li>
+</ul>
+
+<pre class="codeblue">clean2 = FOREACH clean1 GENERATE user, time, org.apache.pig.tutorial.ToLower(query) as query;
+</pre>
+
+<ul>
+  <li class="bullist">
+    <p> Because the log file only contains queries for a single day, we
+are only interested in the hour. The excite query log timestamp format
+is YYMMDDHHMMSS. Call the ExtractHour UDF to extract the hour from the
+time field. </p>
+  </li>
+</ul>
+<pre class="codeblue">houred = FOREACH clean2 GENERATE user, org.apache.pig.tutorial.ExtractHour(time) as hour, query;
+</pre>
+<ul>
+  <li class="bullist">
+
+    <p> Call the NGramGenerator UDF to compose the n-grams of the
+query. </p>
+  </li>
+</ul>
+<pre class="codeblue">ngramed1 = FOREACH houred GENERATE user, hour, flatten(org.apache.pig.tutorial.NGramGenerator(query)) as ngram;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#DISTINCT:_Eliminating_duplicates_in_data">DISTINCT</a>
+
+command to get the unique n-grams for all records. </p>
+  </li>
+</ul>
+<pre class="codeblue">ngramed2 = DISTINCT ngramed1;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#COGROUP:_Getting_the_relevant_data_together">GROUP</a>
+
+command to group the records by n-gram and hour. </p>
+  </li>
+</ul>
+<pre class="codeblue">hour_frequency1 = GROUP ngramed2 BY (ngram, hour);
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigBuiltins">COUNT</a> function to
+get the count (occurrences) of each n-gram. </p>
+
+  </li>
+</ul>
+<pre class="codeblue">hour_frequency2 = FOREACH hour_frequency1 GENERATE flatten($0), COUNT($1) as count;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#FOREACH_..._GENERATE:_Applying_transformations_to_the_data">FOREACH-GENERATE</a>
+command to assign names to the fields. </p>
+
+  </li>
+</ul>
+<pre class="codeblue">hour_frequency3 = FOREACH hour_frequency2 GENERATE $0 as ngram, $1 as hour, $2 as count;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#FILTER:_Getting_rid_of_data_you_are_not_interested_in_">FILTER</a>
+command to get the n-grams for hour ‘00’ </p>
+
+  </li>
+</ul>
+<pre class="codeblue">hour00 = FILTER hour_frequency2 BY hour eq '00';
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Uses the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#FILTER:_Getting_rid_of_data_you_are_not_interested_in_">FILTER</a>
+command to get the n-grams for hour ‘12’ </p>
+
+  </li>
+</ul>
+<pre class="codeblue">hour12 = FILTER hour_frequency3 BY hour eq '12';
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#Joining">JOIN</a> command to
+get the n-grams that appear in both hours. </p>
+
+  </li>
+</ul>
+<pre class="codeblue">same = JOIN hour00 BY $0, hour12 BY $0;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigLatin#FOREACH_..._GENERATE:_Applying_transformations_to_the_data">FOREACH-GENERATE</a>
+command to record their frequency. </p>
+
+  </li>
+</ul>
+<pre class="codeblue">same1 = FOREACH same GENERATE hour_frequency2::hour00::group::ngram as ngram, $2 as count00, $5 as count12;
+</pre>
+<ul>
+  <li class="bullist">
+    <p> Use the <a class="external" rel="nofollow" href="http://wiki.apache.org/pig/PigBuiltins">PigStorage</a> function
+to store the results. The output file contains
+a list of n-grams with the following fields: <strong>hour</strong>, <strong>count00</strong>,
+    <strong>count12</strong>. </p>
+
+  </li>
+</ul>
+<pre class="codeblue">STORE same1 INTO '/tmp/tutorial-join-results' USING PigStorage();
+</pre>
+
+<div style="text-align: center;">
+<p> <a href="module7.html">Previous module</a> &nbsp;|&nbsp; <a href="index.html">Table of contents</a> &nbsp;|&nbsp; Next module </p>
+</div>
+                        </div>
+                        </div>
+                        <div class="yui-b" id="ydnRack">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div id="clearfooter" style="padding-top: 40px;">
+<!-- used to make room for the #footer -->
+</div>
+
+
+</body></html>

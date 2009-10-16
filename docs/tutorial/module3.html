@@ -1,0 +1,398 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="description" content="Module 3: Getting Started With Hadoop">
+<title>Hadoop Tutorial</title>
+
+<link rel="stylesheet" type="text/css" href="resource/combo.css">
+<script src="resource/fpc.js" type="text/javascript" defer="defer"></script></head><body style="margin: 0pt;"><iframe style="border-width: 0pt; position: absolute; visibility: visible; width: 10em; height: 10em; top: -134px; left: -134px;" title="Text Resize Monitor" id="_yuiResizeMonitor"></iframe>
+<div id="clearfooter" style="padding-top: 20px;">
+<!-- used to make room for the #footer -->
+</div>
+<div id="bodycontainer">
+
+<!--[if IE 6]>
+
+<style type="text/css" media="screen">
+#topAreaR p{margin:0;padding:0;}
+
+#headeraL{float:left;color:#9f9f9f;font-size:85%;}
+#searchFld{height:1.46em;border:1px solid #cecece;}
+#searchFld{margin:0;}
+#sub{position:relative;left:2px;}
+
+#headeraL{height:4em;}
+
+#subHIntCont{position:relative;top:0em;}
+
+#ydnNav{float:left;padding:0;top:1em;}
+.yuimenubaritemlabel{padding:0;}
+
+#headerSubSandbag {top:5.9em;}
+
+h4.fullHorange{width:98%;margin:0;}
+#recBlPst{width:18em;}
+#recBlPst3{width:17em;}
+#upcomingEventsBoxCont{width:17.7em;float:right;padding:0;}
+#upcomingEventsBox{float:right;margin:0}
+#upcomingEventsBox .blogRackTitle{margin-left:.3em;width:15em}
+#upcomingEventsBox .blogRackDate{margin-left:.67em;}
+
+#topFeaturedTabs ul li strong strong{background-color:#9dc1d6;}
+#topFeaturedTabs ul li strong strong strong{background-color:#9dc1d6;}
+#topFeaturedTabs ul li a:hover strong strong{background-color:#6fa4c3;}
+#topFeaturedTabs ul li a:hover strong strong strong{background-color:#6fa4c3;}
+
+.prefTabs{color:#aaa;float:left;position:relative;margin:.5em .8em 0em 2em;font-weight:bold;}
+#featureBox1, #featureBox2, #featureBox3, #featureBox4{border:1px solid #d9d9d9;}
+.innerSubMenuArea{border:1px solid #d9d9d9;}
+
+#breadcrumbs{position:relative;top:1.8em;}
+
+#getAppBox{border:1px solid #D9D9D9;}
+
+.recentPat{margin:0;margin-left:.3em;}
+#recentPatternsContainer {clear:both;float:left;}
+
+html body #doc4.yui-t7 #bd .yui-g .yui-gc div.first, .yui-gc div.first, .yui-gd .yui-g, .yui-gd .yui-u{width:67%;}
+html body #doc4.yui-t7 #bd .yui-g .yui-gb .yui-u, .yui-gb .yui-g, .yui-gb .yui-gb, .yui-gb .yui-gc, .yui-gb .yui-gd, .yui-gb .yui-ge, .yui-gb .yui-gf, .yui-gb .yui-u, .yui-gc .yui-u, .yui-gc .yui-g, .yui-gd .yui-u{width:29%;}
+html body #doc4.yui-t7 #bd .yui-g .yui-gb .yui-u, .yui-gb .yui-g, .yui-gb .yui-gb, .yui-gb .yui-gc, .yui-gb .yui-gd, .yui-gb .yui-ge, .yui-gb .yui-gf, .yui-gb .yui-u, .yui-gc .yui-u, .yui-gc .yui-g, .yui-gd .yui-u{margin-left:.5%;}
+
+</style>
+
+<![endif]-->
+<!--[if IE 7]>
+
+<style type="text/css" media="screen">
+#subHIntCont{position:relative;top:0;}
+#ydnNav{float:left;padding:.1em 0;position:relative;left:0;}
+#ydnNav .yuimenu .colGroup { margin-right: 1.5em;  }
+#breadcrumbs{position:relative;top:1.8em;}
+</style>
+
+<![endif]-->
+
+
+<div id="mainCMaxCont">
+    <div id="mainCContainer">
+        <div id="mainCIntCont">
+            <div id="internalContainer">
+                <div id="doc4" class="yui-t6">
+                    <div id="bd">
+                        <div id="yui-main">
+                        <div class="yui-b">
+<h2>Module 3: Getting Started With Hadoop</h2>
+
+<div style="text-align: center;">
+<p> <a href="module2.html">Previous module</a> &nbsp;|&nbsp; <a href="index.html">Table of contents</a> &nbsp;|&nbsp; <a href="module4.html">Next module</a> </p>
+</div>
+
+
+<a name="intro"></a>
+<h3>Introduction</h3>
+
+<p>Hadoop is an open source implementation of the
+MapReduce platform and distributed file system, written in Java. This
+module explains the basics of how to begin using Hadoop to experiment
+and learn from the rest of this tutorial.</p>
+
+
+<a name="goals"></a>
+<h3>Goals for this Module:</h3>
+
+<ul>
+  <li class="bullist">Set up a pre-configured Hadoop virtual machine</li>
+  <li class="bullist">Understand tools available to help you use Hadoop</li>
+</ul>
+
+<a name="outline"></a>
+<h3>Outline</h3>
+ 
+<ol>
+   
+  <li><a href="#intro">Introduction</a></li>
+
+  <li><a href="#goals">Goals for this Module</a></li>
+  <li><a href="#outline">Outline</a></li>
+  <li><a href="#prereq">Prerequisites</a></li>
+  <li><a href="#vm">A Virtual Machine Hadoop Environment</a></li>
+  <ol>
+    <li><a href="#vmware-install">Installing VMware Player</a></li>
+
+    <li><a href="#vm-setup">Setting up the Virtual Environment</a></li>
+    <li><a href="#vm-users">Virtual Machine User Accounts</a></li>
+    <li><a href="#vm-jobs">Running a Hadoop Job</a></li>
+  </ol>
+  <li><a href="#cdh">Installing on Real Clusters</a></li>
+  <li><a href="#refs">References &amp; Resources</a></li>
+
+  <li><a href="#tools">Complete Tools List</a></li>
+</ol>
+
+<a name="prereq"></a>
+<h3>Prerequisites</h3>
+ 
+<p>Developing for Hadoop requires a Java programming
+environment. You can download a Java Development Kit (JDK) for a wide
+variety of operating systems from <a href="http://java.sun.com/">http://java.sun.com</a>.
+Hadoop requires the Java Standard Edition (Java SE), version 6, which
+is the most current version at the time of this writing. </p>
+
+<a name="vm"> </a>
+<h3>A Virtual Machine Hadoop Environment</h3>
+
+
+<p>This section explains how to configure a virtual
+machine to run Hadoop within your host computer. After installing the
+virtual machine software and the virtual machine image, you will learn
+how to log in and run jobs within the Hadoop environment.</p>
+
+<p>Users of Linux, Mac OSX, or other Unix-like
+environments are able to install Hadoop and run it on one (or more)
+machines with no additional software beyond Java. If you are interested
+in doing this, there are instructions available on the Hadoop web site
+in the <a href="http://hadoop.apache.org/core/docs/current/quickstart.html">quickstart
+document</a>.</p>
+<p>Running Hadoop on top of Windows requires installing <a href="http://www.cygwin.com/">cygwin</a>, a Linux-like environment that
+runs within Windows. Hadoop works reasonably well on cygwin, but it is
+officially for "development purposes only." Hadoop on cygwin may be
+unstable, and installing cygwin itself can be cumbersome. </p>
+
+<p>To aid developers in getting started easily with Hadoop, we have
+provided a <i>virtual machine image</i> containing a preconfigured
+Hadoop installation. The virtual machine image will run inside of a
+"sandbox" environment in which we can run another operating system. The
+OS inside the sandbox does not know that there is another operating
+environment outside of it; it acts as though it is on its own computer.
+This sandbox environment is referred to as the "guest machine" running
+a "guest operating system." The actual physical machine running the VM
+software is referred to as the "host machine" and it runs the "host
+operating system." The virtual machine provides other host-machine
+applications with the appearance that another physical computer is
+available on the same network. Applications running on the host machine
+see the VM as a separate machine with its own IP address, and can
+interact with the programs inside the VM in this fashion. </p>
+
+<a name="fig3-1"></a>
+<div style="text-align: center;"><img src="resource/3529959532_e8224f0c13_o.png" alt="vm-in-windows" align="middle"> <br>
+Figure 3.1: A virtual machine encapsulates one operating system within
+another. Applications in the VM believe they run on a separate physical
+host from other applications in the external operating system. Here we
+demonstrate a Windows host machine and a Linux guest (virtual) machine.
+</div>
+ 
+<p>Application developers do not need to use the
+virtual machine to run Hadoop. Developers on Linux typically use Hadoop
+in their native development environment, and Windows users often
+install cygwin for Hadoop development. The virtual machine provided
+with this tutorial allows users a convenient alternative development
+platform with a minimum of configuration required. Another advantage of
+the virtual machine is its easy reset functionality. If your
+experiments break the Hadoop configuration or render the operating
+system unusable, you can always simply copy the virtual machine image
+from the CD back to where you installed it on your computer, and start
+from a known-good state.</p>
+ 
+<p>Our virtual machine will run Linux, and comes
+preconfigured to run Hadoop in pseudo-distributed mode on this system.
+(It is configured like a fully distributed system, but is actually
+running on a single machine instance.) 
+Hadoop programs can be written using editors or development environments
+such as Eclipse directly within the virtual machine without further
+configuration.</p>
+
+<p>It should be noted that the virtual machine will
+also run inside of another instance of Linux. Linux users can install
+the virtual machine software and run the Hadoop VM as well; the same
+separation between host processes and guest processes applies here. </p>
+
+<a name="vmware-install"></a>
+<h4 class="sectionSubH">Installing VMware Player</h4>
+ 
+<p>The virtual machine is designed to run
+inside of the <a href="http://www.vmware.com/player">VMware Player</a>.
+This can be downloaded from <a href="http://www.vmware.com/player">www.vmware.com/player</a>.
+Mac OSX users can run the virtual machine with
+<a href="http://www.vmware.com/player">VMware Fusion</a> (not free,
+but a 30-day free trial exists).
+</p>
+
+<p>To install VMWare player, you will need to register for a
+"virtualization starter kit." You will
+receive an email with a link to "Download VMware Player." Click the
+link, then click the "download now" button at the top of the screen
+under "most recent version" and follow the instructions. VMware Player
+is available for Windows or Linux. The latter is available in both 32-
+and 64-bit versions. </p>
+<p>VMware Player itself is approximately a 170 MB download. When the
+download has completed, run the installer program to set up VMware
+Player, and follow the prompts as directed. Installation in Windows is
+performed by a typical Windows installation process.</p>
+
+<a name="vm-setup"> </a>
+<h4 class="sectionSubH">Setting up the Virtual Environment</h4>
+ 
+
+<p>Next, download the <a href="http://cloudera.com/hadoop-training-virtual-machine">
+Hadoop Training Virtual Machine</a> from Cloudera's website. Unzip the file
+into a location on your hard drive. It is a zipped vmware folder
+(cloudera-training-vm-0.3) which includes a few files; a
+<tt>.vmdk</tt> file that is a snapshot of the virtual machine's hard
+drive, and a <tt>.vmx</tt> file which contains the configuration
+information to start the virtual machine. After unzipping the vmware
+folder zip file, to start the virtual machine,
+double-click on the <tt>cloudera-training-vm.vmx</tt> file in
+Windows Explorer.</p>
+ 
+<div style="text-align: center;"> <a name="fig3-2"> <img src="resource/3529146427_a0a04d1103_o.png" alt="vm-copy" align="middle"> <br>
+Figure 3.2: When you start the virtual machine for the first time, tell
+VMware Player that you have copied the VM image. </a></div>
+
+<a name="fig3-2"></a>
+<p>When you start the virtual machine for the first
+time, VMware Player will recognize that the virtual machine image is
+not in the same location it used to be. You should inform VMware Player
+that you <i>copied</i> this virtual machine image. VMware Player will
+then generate new session identifiers for this instance of the virtual
+machine. If you later move the VM image to a different location on your
+own hard drive, you should tell VMware Player that you have moved the
+image.</p>
+ 
+<p>If you ever corrupt the VM image (e.g., by
+inadvertently deleting or overwriting important files), you can always
+restore a pristine copy of the virtual machine by copying a fresh VM
+image off of this tutorial CD. (So don't be shy about exploring! You
+can always reset it to a functioning state.)</p>
+ 
+<p>After you select this option and click OK, the
+virtual machine should begin booting normally. You will see it perform
+the standard boot procedure for a Linux system. It will bind itself to
+an IP address on an unused network segment, and then display a prompt
+allowing a user to log in.</p>
+  
+<a name="vm-users"></a>
+<h4 class="sectionSubH">Virtual Machine User Accounts</h4>
+ 
+<p>The virtual machine comes preconfigured with a user account
+named "<tt>training</tt>." This user account has sudo permissions
+to perform system management functions, such as
+shutting down the virtual machine. This user is automatically logged
+in. The user's password is <tt>training</tt>.
+</p>
+ 
+<a name="vm-jobs"></a>
+<h4 class="sectionSubH">Running a Hadoop Job</h4>
+
+<p>Now that you've started the virtual machine, you might want to run
+some example Hadoop jobs. See the <a href="../exercises/GettingFamiliar.html">Getting
+Familiar with Hadoop</a> exercise contained in the virtual machine
+for some example Hadoop commands you can run to interact with HDFS
+and MapReduce.
+</p>
+
+<p>You will also notice that the virtual machine has a preconfigured
+Eclipse environment inside. Double-click the Eclipse icon on the desktop
+to launch Eclipse. Your workspace already contains some exercises as
+well as the Hadoop source code itself, for your reference. Instructions
+for these exercises are available in the
+<a href="../exercises/index.html">instructions/exercises</a> folder
+on the desktop.</p>
+
+<p>Congratulations! You should now have a functioning
+Hadoop development environment. In the next module, we will learn how
+to use it to perform powerful programming tasks.</p>
+
+<a name="cdh"> </a>
+<h3>Installing on Real Clusters</h3>
+
+<p>While the virtual machine comes preconfigured with Hadoop, you may want
+to install Hadoop directly on a real linux cluster. More details are covered
+in <a href="module7.html">module 7</a>, but your first reference should be
+to go to <a href="http://archive.cloudera.com">archive.cloudera.com</a>,
+where you can download <a href="http://www.cloudera.com/hadoop">Cloudera's
+Distribution for Hadoop</a> - a maintained, easy-to-install and deploy
+package containing a recent version of Apache Hadoop.</p>
+
+<a name="refs"></a>
+<h3>References &amp; Resources</h3>
+ 
+<p>These resources are links to general Hadoop sites.
+They should be your first stop for troubleshooting or more information.</p>
+ 
+<ul>
+   
+
+  <li class="bullist"><a href="http://www.cloudera.com/hadoop">Cloudera's Distribution
+  for Hadoop</a> - Information about Cloudera's packaged release of Hadoop</li>
+  <li class="bullist"><a href="http://archive.cloudera.com">Cloudera's Software
+  Archive</a> - Documentation regarding installation and configuration of
+  Cloudera's Distribution for Hadoop</li>
+  <li class="bullist"><a href="http://hadoop.apache.org/core/">Hadoop site</a> -
+Central location for downloads, documentation and information</li>
+  <li class="bullist"><a href="http://wiki.apache.org/hadoop/">Hadoop wiki</a> -
+User-powered documentation for Hadoop</li>
+  <li class="bullist"><a href="http://hadoop.apache.org/core/docs/current/api/index.html">JavaDoc</a>
+- Current Hadoop API documentation</li>
+  <li class="bullist"><a href="http://hadoop.apache.org/core/mailing_lists.html">Mailing
+list</a> info - Hadoop community discussion &amp; advice</li>
+
+</ul>
+ 
+<a name="tools"></a>
+<h3>Appendix: Complete Tools List</h3>
+ 
+<p>Included in this section is a complete list of
+programs necessary to run Hadoop, and optional programs which may be
+helpful in installing or using it. Some of these assume a Windows
+development environment (though not necessarily a Windows-based
+cluster).</p>
+
+
+<h4 class="sectionSubH">Necessary for Hadoop:</h4>
+  <ul>
+     
+    <li><a href="http://java.sun.com/">Java SE SDK</a> [<a href="http://java.sun.com/javase/downloads/?intcmp=1281">download</a>
+JDK 6 or higher]</li>
+    <li><a href="http://hadoop.apache.org/core/releases.html">Hadoop</a></li>
+
+  </ul>
+
+<h4 class="sectionSubH">Useful for this tutorial:</h4>
+  <ul>
+    <li><a href="http://info.vmware.com/content/GLP_VMwarePlayer">VMware
+Player</a></li>
+    <li><a href="http://www.eclipse.org/downloads/">Eclipse</a></li>
+  </ul>
+
+<h4 class="sectionSubH">Generally helpful utilities:</h4>
+  <ul>
+    <li><a href="http://www.winzip.com/">WinZip</a>, <a href="http://www.7-zip.org/">7-Zip</a>, or <a href="http://www.win-rar.com/">WinRAR</a></li>
+    <li><a href="http://www.chiark.greenend.org.uk/%7Esgtatham/putty/">putty
+and pscp</a></li>
+    <li><a href="http://winscp.net/">WinSCP</a></li>
+
+    <li><a href="http://www.cygwin.com/">cygwin</a></li>
+  </ul>
+
+<div style="text-align: center;">
+<p> <a href="module2.html">Previous module</a> &nbsp;|&nbsp; <a href="index.html">Table of contents</a> &nbsp;|&nbsp; <a href="module4.html">Next module</a> </p>
+
+</div>
+                        </div>
+                        </div>
+                        <div class="yui-b" id="ydnRack">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div id="clearfooter" style="padding-top: 40px;">
+<!-- used to make room for the #footer -->
+</div>
+
+</body></html>

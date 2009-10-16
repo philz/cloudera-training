@@ -1,0 +1,1659 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="description" content="Module 2: The Hadoop Distributed File System">
+<title>Hadoop Tutorial</title>
+
+<link rel="stylesheet" type="text/css" href="resource/combo.css">
+<script src="resource/fpc.js" type="text/javascript" defer="defer"></script></head><body style="margin: 0pt;"><iframe style="border-width: 0pt; position: absolute; visibility: visible; width: 10em; height: 10em; top: -134px; left: -134px;" title="Text Resize Monitor" id="_yuiResizeMonitor"></iframe>
+<div id="clearfooter" style="padding-top: 20px;">
+<!-- used to make room for the #footer -->
+</div>
+<div id="bodycontainer">
+
+<!--[if IE 6]>
+
+<style type="text/css" media="screen">
+#topAreaR p{margin:0;padding:0;}
+
+#headeraL{float:left;color:#9f9f9f;font-size:85%;}
+#searchFld{height:1.46em;border:1px solid #cecece;}
+#searchFld{margin:0;}
+#sub{position:relative;left:2px;}
+
+#headeraL{height:4em;}
+
+#subHIntCont{position:relative;top:0em;}
+
+#ydnNav{float:left;padding:0;top:1em;}
+.yuimenubaritemlabel{padding:0;}
+
+#headerSubSandbag {top:5.9em;}
+
+h4.fullHorange{width:98%;margin:0;}
+#recBlPst{width:18em;}
+#recBlPst3{width:17em;}
+#upcomingEventsBoxCont{width:17.7em;float:right;padding:0;}
+#upcomingEventsBox{float:right;margin:0}
+#upcomingEventsBox .blogRackTitle{margin-left:.3em;width:15em}
+#upcomingEventsBox .blogRackDate{margin-left:.67em;}
+
+#topFeaturedTabs ul li strong strong{background-color:#9dc1d6;}
+#topFeaturedTabs ul li strong strong strong{background-color:#9dc1d6;}
+#topFeaturedTabs ul li a:hover strong strong{background-color:#6fa4c3;}
+#topFeaturedTabs ul li a:hover strong strong strong{background-color:#6fa4c3;}
+
+.prefTabs{color:#aaa;float:left;position:relative;margin:.5em .8em 0em 2em;font-weight:bold;}
+#featureBox1, #featureBox2, #featureBox3, #featureBox4{border:1px solid #d9d9d9;}
+.innerSubMenuArea{border:1px solid #d9d9d9;}
+
+#breadcrumbs{position:relative;top:1.8em;}
+
+#getAppBox{border:1px solid #D9D9D9;}
+
+.recentPat{margin:0;margin-left:.3em;}
+#recentPatternsContainer {clear:both;float:left;}
+
+html body #doc4.yui-t7 #bd .yui-g .yui-gc div.first, .yui-gc div.first, .yui-gd .yui-g, .yui-gd .yui-u{width:67%;}
+html body #doc4.yui-t7 #bd .yui-g .yui-gb .yui-u, .yui-gb .yui-g, .yui-gb .yui-gb, .yui-gb .yui-gc, .yui-gb .yui-gd, .yui-gb .yui-ge, .yui-gb .yui-gf, .yui-gb .yui-u, .yui-gc .yui-u, .yui-gc .yui-g, .yui-gd .yui-u{width:29%;}
+html body #doc4.yui-t7 #bd .yui-g .yui-gb .yui-u, .yui-gb .yui-g, .yui-gb .yui-gb, .yui-gb .yui-gc, .yui-gb .yui-gd, .yui-gb .yui-ge, .yui-gb .yui-gf, .yui-gb .yui-u, .yui-gc .yui-u, .yui-gc .yui-g, .yui-gd .yui-u{margin-left:.5%;}
+
+</style>
+
+<![endif]-->
+<!--[if IE 7]>
+
+<style type="text/css" media="screen">
+#subHIntCont{position:relative;top:0;}
+#ydnNav{float:left;padding:.1em 0;position:relative;left:0;}
+#ydnNav .yuimenu .colGroup { margin-right: 1.5em;  }
+#breadcrumbs{position:relative;top:1.8em;}
+</style>
+
+<![endif]-->
+
+
+<div id="mainCMaxCont">
+    <div id="mainCContainer">
+        <div id="mainCIntCont">
+            <div id="internalContainer">
+                <div id="doc4" class="yui-t6">
+                    <div id="bd">
+                        <div id="yui-main">
+                        <div class="yui-b">
+
+<h2>Module 2: The Hadoop Distributed File System</h2>
+
+  <div style="text-align: center;">
+    <p>
+
+    <a href="module1.html">Previous module</a>&nbsp;|&nbsp;
+    <a href="index.html">Table of contents</a>&nbsp;|&nbsp;
+    <a href="module3.html">Next module</a>
+    </p>
+
+  </div>
+
+  <a name="intro"></a>
+  <h3>Introduction</h3>
+  <p><b>HDFS</b>, the Hadoop Distributed File System, is a
+  distributed file system designed to hold very large amounts
+  of data (terabytes or even petabytes), and provide high-throughput
+  access to this information. Files are stored in a redundant
+  fashion across multiple machines to ensure their
+  durability to failure and high availability to very parallel
+  applications. This module introduces the design of this
+  distributed file system and instructions on how to operate
+  it.</p>
+
+  <a name="goals"></a>
+  <h3>Goals for this Module:</h3>
+
+  <ul>
+    <li class="bullist">Understand the basic design of HDFS and how it relates
+        to basic distributed file system concepts</li>
+    <li class="bullist">Learn how to set up and use HDFS from the command line</li>
+    <li class="bullist">Learn how to use HDFS in your applications</li>
+  </ul>
+
+  <a name="outline"></a>
+  <h3>Outline</h3>
+
+  <ol>
+    <li><a href="#intro">Introduction</a></li>
+    <li><a href="#goals">Goals for this Module</a></li>
+    <li><a href="#outline">Outline</a></li>
+    <li><a href="#basics">Distributed File System Basics</a></li>
+    <li><a href="#config">Configuring HDFS</a></li>
+
+    <li><a href="#interacting">Interacting With HDFS</a></li>
+    <ol>
+      <li><a href="#commonops">Common Example Operations</a></li>
+      <li><a href="#commandref">HDFS Command Reference</a></li>
+      <li><a href="#admincommandref">DFSAdmin Command Reference</a></li>
+    </ol>
+    <li><a href="#mapreduce">Using HDFS in MapReduce</a></li>
+
+    <li><a href="#programmatically">Using HDFS Programmatically</a></li>
+    <li><a href="#perms">HDFS Permissions and Security</a></li>
+    <li><a href="#tasks">Additional HDFS Tasks</a></li>
+    <ol>
+      <li><a href="#rebalancing">Rebalancing Blocks</a></li>
+      <li><a href="#copying">Copying Large Sets of Files</a></li>
+
+      <li><a href="#decommission">Decommissioning Nodes</a></li>
+      <li><a href="#fsck">Verifying File System Health</a></li>
+      <li><a href="#rack">Rack Awareness</a></li>
+    </ol>
+    <li><a href="#web">HDFS Web Interface</a></li>
+    <li><a href="#refs">References</a></li>
+
+  </ol>
+
+  <a name="basics"></a>
+  <h3>Distributed File System Basics</h3>
+
+  <p>A distributed file system is designed to hold a large amount
+  of data and provide access to this data to many
+  clients distributed across a network.
+  There are a number of distributed file systems that solve
+  this problem in different ways.</p>
+
+  <p><b>NFS,</b> the Network File System, is the most
+  ubiquitous distributed file system. It is one of the
+  oldest still in use. While its design is straightforward,
+  it is also very constrained. NFS
+  provides remote access to a single logical volume stored on a
+  single machine. An NFS server makes a portion of its
+  local file system visible to external clients. The clients
+  can then mount this remote file system directly into their
+  own Linux file system, and interact with it as though it
+  were part of the local drive.</p>
+
+  <p>One of the primary advantages of this model is its
+  transparency. Clients do not need to be particularly
+  aware that they are working on files stored remotely.
+  The existing standard library methods like <tt>open()</tt>,
+  <tt>close()</tt>, <tt>fread()</tt>, etc. will work
+  on files hosted over NFS.</p>
+
+  <p>But as a distributed file system, it is limited in its
+  power. The files in an NFS volume all reside on a single
+  machine. This means that it will only store as much
+  information as can be stored in one machine, and does
+  not provide any reliability guarantees if that machine
+  goes down (e.g., by replicating the files to other
+  servers). Finally, as all the data is stored on a single
+  machine, all the clients must go to this machine to
+  retrieve their data. This can overload the server if
+  a large number of clients must be handled. Clients must
+  also always copy the data to their local machines before they
+  can operate on it.</p>
+
+  <p>HDFS is designed to be robust to a number of the problems
+  that other DFS's such as NFS are vulnerable to. In
+  particular:</p>
+
+  <ul>
+    <li class="bullist">HDFS is designed to store a very large amount of
+    information (terabytes or petabytes). This requires spreading
+    the data across a large number of machines. It also supports
+    much larger file sizes than NFS.</li>
+    <li class="bullist">HDFS should store data reliably. If individual machines
+    in the cluster malfunction, data should still be available.</li>
+    <li class="bullist">HDFS should provide fast, scalable access to this information.
+    It should be possible to serve a larger number of clients by
+    simply adding more machines to the cluster.</li>
+    <li class="bullist">HDFS should integrate well with Hadoop MapReduce, allowing
+    data to be read and computed upon locally when possible.</li>
+  </ul>
+
+  <p>But while HDFS is very scalable, its high performance
+  design also restricts it to a particular class of applications;
+  it is not as general-purpose as NFS.
+  There are a large number of additional decisions and trade-offs
+  that were made with HDFS. In particular:</p>
+  <ul>
+    <li class="bullist">Applications that use HDFS are assumed to perform long
+    sequential streaming reads from files. HDFS is optimized
+    to provide streaming read performance; this comes at the
+    expense of random seek times to arbitrary positions in files.</li>
+    <li class="bullist">Data will be written to the HDFS once and then read
+    several times; updates to files after they have already
+    been closed are not supported. (An extension to
+    Hadoop will provide support for appending new data to the ends
+    of files; it is scheduled to be included in Hadoop 0.19 but
+    is not available yet.)</li>
+    <li class="bullist">Due to the large size of files, and the sequential
+    nature of reads, the system does not provide a mechanism
+    for local caching of data. The overhead of caching is
+    great enough that data should simply be re-read from HDFS
+    source.</li>
+    <li class="bullist">Individual machines are assumed to fail on a
+    frequent basis, both permanently and
+    intermittently. The cluster must be able to withstand the complete
+    failure of several machines, possibly many happening
+    at the same time (e.g., if a rack fails all together).
+    While performance may degrade proportional
+    to the number of machines lost, the system as a whole should
+    not become overly slow, nor should information be lost.
+    Data replication strategies combat this problem.</li>
+
+  </ul>
+
+
+  <p>The design of HDFS is based on the design of <b>GFS</b>,
+  the Google File System. Its design was
+  described in <a href="#ref_gfs">a paper</a> published by Google.
+  </p>
+
+  <p>HDFS is a block-structured file system: individual
+  files are broken into blocks of a fixed size. These blocks
+  are stored across a cluster of one or more machines with
+  data storage capacity. Individual machines in the cluster
+  are referred to as <b>DataNodes</b>. A file can be made of
+  several blocks, and they are not necessarily stored on the same
+  machine; the target machines which hold each block are chosen
+  randomly on a block-by-block basis. Thus access to a
+  file may require the cooperation
+  of multiple machines, but supports file sizes far larger
+  than a single-machine DFS; individual files can require
+  more space than a single hard drive could hold.</p>
+
+  <p>If several machines must be involved in the serving of
+  a file, then a file could be rendered unavailable by the
+  loss of any one of those machines. HDFS combats this
+  problem by replicating each block across a number of
+  machines (3, by default).</p>
+
+  <div style="text-align: center;">
+    <a name="fig2-1"></a>
+    <img src="resource/3529146393_5c2e2c8065_o.png" alt="nodes-and-blocks" align="center">
+    <br>
+    Figure 2.1: DataNodes holding blocks of multiple files
+    with a replication factor of 2. The NameNode maps the
+    filenames onto the block ids.
+  </div>
+
+  <p>Most block-structured file systems use a block size on
+  the order of 4 or 8 KB. By contrast, the default block size
+  in HDFS is 64MB -- orders of magnitude larger. This
+  allows HDFS to decrease the amount of metadata storage
+  required per file (the list of blocks per file will be
+  smaller as the size of individual blocks increases).
+  Furthermore, it allows for fast streaming reads of data,
+  by keeping large amounts of data sequentially laid out
+  on the disk.
+  The consequence of this decision is that HDFS expects
+  to have very large files, and expects them to be
+  read sequentially. Unlike a file system such
+  as NTFS or EXT, which see many very small files,
+  HDFS expects to store a modest number of very large
+  files: hundreds of megabytes, or gigabytes each. After
+  all, a 100 MB file is not even two full blocks. Files on your computer
+  may also frequently be accessed "randomly,"
+  with applications cherry-picking small amounts of information
+  from several different locations in a file which are not
+  sequentially laid out.
+  By contrast, HDFS expects to read a block
+  start-to-finish for a program. This makes it particularly
+  useful to the MapReduce style of programming described
+  in <a href="module4.html">Module 4</a>. That having
+  been said, attempting to use HDFS as a general-purpose
+  distributed file system for a diverse set of applications
+  will be suboptimal.</p>
+
+  <p>Because HDFS stores files as a set of large blocks
+  across several machines, these files are not part of the
+  ordinary file system. Typing <tt>ls</tt> on a machine
+  running a DataNode daemon will display the contents of the
+  ordinary Linux file system being used to host the
+  Hadoop services -- but it will not include any of the files
+  stored inside the HDFS. This is because HDFS runs in
+  a <b>separate namespace</b>, isolated from the contents
+  of your local files. The files inside HDFS (or more
+  accurately: the blocks that make them up) are stored in a
+  particular directory managed by the DataNode service, but
+  the files will named only with block ids. You cannot
+  interact with HDFS-stored files using ordinary Linux file
+  modification tools (e.g., <tt>ls</tt>, <tt>cp</tt>,
+  <tt>mv</tt>, etc). However, HDFS does come with its own
+  utilities for file management, which act very similar
+  to these familiar tools. A later section in this
+  tutorial will introduce you to these commands and their
+  operation.</p>
+
+
+
+  <p>It is important for this file system to store its
+  metadata reliably. Furthermore, while the file data is accessed in a
+  write once and read many model, the metadata structures (e.g., the
+  names of files and directories) can be modified by a large
+  number of clients concurrently. It is important that this
+  information is never desynchronized. Therefore, it is all
+  handled by a single machine, called the <b>NameNode</b>.
+  The NameNode stores all the metadata for the file system.
+  Because of the relatively low amount of metadata per file
+  (it only tracks file names, permissions, and the locations
+  of each block of each file), all of this information
+  can be stored in the main memory of the NameNode machine,
+  allowing fast access to the metadata.</p>
+
+  <p>To open a file, a client contacts the NameNode and
+  retrieves a list of locations for the blocks that comprise
+  the file. These locations identify the DataNodes which
+  hold each block.
+  Clients then read file data directly from the DataNode
+  servers, possibly in parallel. The NameNode is not directly
+  involved in this bulk data transfer, keeping its overhead
+  to a minimum.</p>
+
+  <p>Of course, NameNode information must be preserved even
+  if the NameNode machine fails; there are multiple redundant
+  systems that allow the NameNode to preserve the file system's
+  metadata even if the NameNode itself crashes irrecoverably.
+  NameNode failure is more severe for the cluster than DataNode
+  failure. While individual DataNodes may crash and the entire
+  cluster will continue to operate, the loss of the NameNode
+  will render the cluster inaccessible until it is manually
+  restored. Fortunately, as the NameNode's involvement is
+  relatively minimal, the odds of it failing are considerably
+  lower than the odds of an arbitrary DataNode failing at any
+  given point in time.
+  </p>
+
+  <p>A more thorough overview of the architectural
+  decisions involved in the design and implementation of
+  HDFS is given in <a href="http://hadoop.apache.org/core/docs/current/hdfs_design.html">this
+  document</a> in the official Hadoop documentation. Before
+  continuing in this tutorial, it is advisable that you
+  read and understand the information presented there.</p>
+
+  <a name="config"></a>
+  <h3>Configuring HDFS</h3>
+
+  <p>The HDFS for your cluster can be configured in a very short
+  amount of time. First we will fill out the relevant sections
+  of the Hadoop configuration file, then format the NameNode.</p>
+
+<p>
+	</p><h4 class="sectionSubH">Cluster configuration</h4>
+
+
+  <p>These instructions for cluster configuration assume that you have
+  already downloaded and unzipped a copy of Hadoop.
+  <a href="module3.html">Module 3</a> discusses getting started
+  with Hadoop for this tutorial. <a href="module7.html">Module 7</a>
+  discusses how to set up a larger cluster and
+  provides preliminary setup instructions for
+  Hadoop, including downloading prerequisite software.</p>
+
+  <p>The HDFS configuration is located in a set of XML files
+  in the Hadoop configuration directory; <tt>conf/</tt> under
+  the main Hadoop install directory (where you unzipped Hadoop to).
+  The <tt>conf/hadoop-defaults.xml</tt> file contains default values
+  for every parameter in Hadoop. This file is considered read-only.
+  You override this configuration by setting new values in
+  <tt>conf/hadoop-site.xml</tt>. This file should be replicated
+  consistently across all machines in the cluster. (It is also
+  possible, though not advisable, to host it on NFS.)</p>
+
+  <p>Configuration settings are a set of key-value pairs of the
+  format:</p>
+
+  <div class="code"><pre class="codeblue">  &lt;property&gt;
+    &lt;name&gt;<i>property-name</i>&lt;/name&gt;
+    &lt;value&gt;<i>property-value</i>&lt;/value&gt;
+
+  &lt;/property&gt;</pre></div>
+
+  <p>Adding the line <tt>&lt;final&gt;true&lt;/final&gt;</tt> inside
+  the <tt>property</tt> body
+  will prevent properties from being overridden by user applications.
+  This is useful for most system-wide configuration options.</p>
+
+  <p>The following settings are necessary to configure HDFS:</p>
+
+  <table>
+  <tbody><tr><th>key</th><th>value</th><th>example</th></tr>
+  <tr><td>fs.default.name</td>
+      <td><i>protocol</i>://<i>servername</i>:<i>port</i></td>
+
+      <td>hdfs://alpha.milkman.org:9000</td>
+  </tr>
+  <tr><td>dfs.data.dir</td>
+      <td><i>pathname</i></td>
+      <td>/home/<i>username</i>/hdfs/data</td>
+  </tr>
+
+  <tr><td>dfs.name.dir</td>
+      <td><i>pathname</i></td>
+      <td>/home/<i>username</i>/hdfs/name</td>
+  </tr>
+  </tbody></table>
+
+
+  <p>These settings are described individually below:</p>
+
+  <p><b>fs.default.name</b> - This is the URI (protocol specifier,
+  hostname, and port) that describes
+  the NameNode for the cluster. Each node in the system on which Hadoop
+  is expected to operate needs to know the address of the NameNode. The
+  DataNode instances will register with this NameNode, and make their
+  data available through it. Individual client programs will connect
+  to this address to retrieve the locations of actual file blocks.</p>
+
+  <p><b>dfs.data.dir</b> - This is the path on the local file system
+  in which the DataNode instance should store its data. It is not
+  necessary that all DataNode instances store their data under the
+  same local path prefix, as they will all be on separate machines;
+  it is acceptable that these machines are heterogeneous. However, it
+  will simplify configuration if this directory is standardized throughout
+  the system. By default, Hadoop will place this under <tt>/tmp</tt>.
+  This is fine for testing purposes, but is an easy way to lose actual
+  data in a production system, and thus must be overridden.</p>
+
+  <p><b>dfs.name.dir</b> - This is the path on the local file system of
+  the NameNode instance where the NameNode metadata is stored. It is
+  only used by the NameNode instance to find its information, and does
+  not exist on the DataNodes. The caveat above about <tt>/tmp</tt>
+  applies to this as well; this setting must be overridden in a
+  production system.</p>
+
+  <p>Another configuration parameter, not listed above, is
+  <b>dfs.replication</b>. This is the default replication factor
+  for each block of data in the file system. For a production cluster,
+  this should usually be left at its default value of  3.
+  (You are free to increase your
+  replication factor, though this may be unnecessary and use more
+  space than is required. Fewer than three replicas impact the
+  high availability of information, and possibly the reliability
+  of its storage.)</p>
+
+  The following information can be pasted into the <tt>hadoop-site.xml</tt>
+  file for a single-node configuration:
+
+  <div class="code"><pre class="codeblue">&lt;configuration&gt;
+  &lt;property&gt;
+    &lt;name&gt;fs.default.name&lt;/name&gt;
+
+    &lt;value&gt;hdfs://<i>your.server.name.com</i>:9000&lt;/value&gt;
+  &lt;/property&gt;
+  &lt;property&gt;
+    &lt;name&gt;dfs.data.dir&lt;/name&gt;
+
+    &lt;value&gt;/home/<i>username</i>/hdfs/data&lt;/value&gt;
+  &lt;/property&gt;
+  &lt;property&gt;
+    &lt;name&gt;dfs.name.dir&lt;/name&gt;
+
+    &lt;value&gt;/home/<i>username</i>/hdfs/name&lt;/value&gt;
+  &lt;/property&gt;
+&lt;/configuration&gt;</pre></div>
+
+  <p>Of course, <tt>your.server.name.com</tt> needs to be changed,
+  as does <i>username</i>.
+  Using port 9000 for the NameNode is arbitrary.
+  </p>
+
+  <p>After copying this information into your <tt>conf/hadoop-site.xml</tt>
+  file, copy this to the <tt>conf/</tt> directories on all machines
+  in the cluster.</p>
+
+  <p>The master node needs to know the addresses of all the machines
+  to use as DataNodes; the startup scripts depend on this. Also
+  in the <tt>conf/</tt> directory, edit the file <tt>slaves</tt>
+
+  so that it contains a list of fully-qualified hostnames
+  for the slave instances, one host per line. On a multi-node
+  setup, the master node (e.g., <tt>localhost</tt>) is not usually
+  present in this file.</p>
+
+  <p>Then make the directories necessary:</p>
+
+  <div class="code"><pre class="codeblue">  user@EachMachine$ mkdir -p $HOME/hdfs/data
+
+  user@namenode$ mkdir -p $HOME/hdfs/name</pre></div>
+
+  <p>The user who owns the Hadoop instances will need to have read
+  and write access to each of these directories. It is not necessary
+  for all users to have access to these directories.
+  Set permissions with <tt>chmod</tt> as appropriate. In a large-scale
+  environment, it is
+  recommended that you create a user named "hadoop" on each node
+  for the express
+  purpose of owning and running Hadoop tasks. For a single individual's
+  machine, it is perfectly acceptable to run Hadoop under your own
+  username. It is not recommended that you run Hadoop as root.
+  </p>
+
+	<p>
+		</p><h4 class="sectionSubH">Starting HDFS</h4>
+	
+
+  <p>Now we must format the file system that we just configured:</p>
+
+  <div class="code"><pre class="codeblue">  user@namenode:hadoop$ bin/hadoop namenode -format</pre></div>
+
+  <p>This process should only be performed once. When it is
+  complete, we are free to start the distributed file system:</p>
+
+  <div class="code"><pre class="codeblue">  user@namenode:hadoop$ bin/start-dfs.sh</pre></div>
+
+  <p>This command will start the NameNode server on the master
+  machine (which is where the <tt>start-dfs.sh</tt> script was
+  invoked). It will also start the DataNode instances on each
+  of the slave machines. In a single-machine "cluster,"
+  this is the same machine as the NameNode instance. On a real
+  cluster of two or more machines, this script will ssh into
+  each slave machine and start a DataNode instance.</p>
+
+  <a name="interacting"></a>
+  <h3>Interacting With HDFS</h3>
+
+  <p>This section will familiarize you with the commands necessary
+  to interact with HDFS, loading and retrieving data, as well as
+  manipulating files. This section makes extensive use of the
+  command-line.
+
+  </p><p>The bulk of commands that communicate with the cluster are
+  performed by a monolithic script named <tt>bin/hadoop</tt>. This
+  will load the Hadoop system with the Java virtual machine
+  and execute a user command.
+  The commands are specified in the following form:</p>
+
+  <div class="code"><pre class="codeblue">  user@machine:hadoop$ bin/hadoop <i>moduleName</i> <i>-cmd</i> <i>args...</i></pre></div>
+
+  <p>The <i>moduleName</i> tells the program which subset of Hadoop
+  functionality to use. <i>-cmd</i> is the name of a specific
+  command within this module to execute. Its arguments follow
+  the command name.</p>
+
+  <p>Two such modules are relevant to HDFS: <b>dfs</b> and
+  <b>dfsadmin</b>. Their use is described in the sections below.</p>
+
+  <a name="commonops"></a>
+  <h4 class="sectionSubH">Common Example Operations</h4>
+
+  <p>The <b>dfs</b> module, also known as "FsShell,"
+  provides basic file manipulation operations. Their usage is
+  introduced here.</p>
+
+  <p>A cluster is only useful if it contains data of interest.
+  Therefore, the first operation to perform is loading information
+  into the cluster. For purposes of this example, we will assume
+  an example user named "someone" -- but substitute your own
+  username where it makes sense. Also note that any operation
+  on files in HDFS can be performed from any node with access
+  to the cluster, whose <tt>conf/hadoop-site.xml</tt> is
+  configured to set <tt>fs.default.name</tt> to your cluster's
+  NameNode. We will call the fictional machine on which we
+  are operating <i>anynode</i>. Commands are being run from
+  the "hadoop" directory where you installed Hadoop.
+  This may be <tt>/home/someone/src/hadoop</tt> on your
+  machine, or <tt>/home/foo/hadoop</tt> on someone else's.
+  These initial commands are centered around loading information
+  into HDFS, checking that it's there, and getting information
+  back out of HDFS.</p>
+
+	<p><b>Listing files</b></p>
+
+  <p>If we attempt to inspect HDFS, we will not find anything
+  interesting there:</p>
+
+  <div class="code"><pre class="codeblue">  someone@anynode:hadoop$ bin/hadoop dfs -ls
+  someone@anynode:hadoop$</pre></div>
+
+  <p>The "-ls" command returns silently. Without any
+  arguments, -ls will attempt to show the contents of your
+  "home" directory inside HDFS. Don't forget,
+  this is <b>not</b> the same as <tt>/home/$USER</tt> (e.g.,
+  <tt>/home/someone</tt>) on
+  the host machine (HDFS keeps a separate namespace from the
+  local files). There is no concept of a "current working
+  directory" or <tt>cd</tt> command in HDFS.
+  </p>
+
+  <p>If you provide -ls with an argument, you may see some
+  initial directory contents:</p>
+
+  <div class="code"><pre class="codeblue">  someone@anynode:hadoop$ bin/hadoop dfs -ls /
+  Found 2 items
+  drwxr-xr-x   - hadoop supergroup          0 2008-09-20 19:40 /hadoop
+  drwxr-xr-x   - hadoop supergroup          0 2008-09-20 20:08 /tmp</pre></div>
+
+  <p>These entries are created by the system.
+  This example output assumes that "hadoop" is the username
+  under which the Hadoop daemons (NameNode, DataNode, etc) were started.
+  "supergroup" is a special group whose membership includes
+  the username under which the HDFS instances were started (e.g.,
+  "hadoop").
+  These directories exist to allow the Hadoop MapReduce system to move
+  necessary data to the different job nodes; this is explained in more
+  detail in <a href="module4.html">Module 4</a>.</p>
+
+  <p>So we need to create our home directory, and then populate it
+  with some files.
+
+	</p><p><b>Inserting data into the cluster</b></p>
+
+  <p>Whereas a typical UNIX or Linux system stores individual users'
+  files in <tt>/home/$USER</tt>, the Hadoop DFS stores these in
+  <tt>/user/$USER</tt>. For some commands like <b>ls</b>, if a
+  directory name is required and is left blank, this is
+  the default directory name assumed. (Other commands require
+  explicit source and destination paths.)
+  Any relative paths used as arguments to HDFS,
+  Hadoop MapReduce, or other components of the system are assumed to be
+  relative to this base directory.</p>
+
+  <p><b>Step 1:</b> Create your home directory if it does not
+  already exist.</p>
+
+  <div class="code"><pre class="codeblue">  someone@anynode:hadoop$ bin/hadoop dfs -mkdir /user</pre></div>
+
+  <p>If there is no <tt>/user</tt> directory, create that first.
+  It will be automatically created later if necessary, but for
+  instructive purposes, it makes sense to create it manually
+  ourselves this time.
+
+  </p><p>Then we are free to add our own home directory:</p>
+
+  <div class="code"><pre class="codeblue">
+  someone@anynode:hadoop$ bin/hadoop dfs -mkdir /user/someone</pre></div>
+
+  <p>Of course, replace <tt>/user/someone</tt> with
+  <tt>/user/<i>yourUserName</i></tt>.</p>
+
+  <p><b>Step 2:</b> Upload a file.
+  To insert a single file into HDFS, we can use the <b>put</b>
+
+  command like so:</p>
+
+  <div class="code"><pre class="codeblue">  someone@anynode:hadoop$ bin/hadoop dfs -put /home/someone/interestingFile.txt /user/<i>yourUserName</i>/</pre></div>
+
+  <p>This copies <tt>/home/someone/interestingFile.txt</tt> from
+  the local file system into
+  <tt>/user/<i>yourUserName</i>/interestingFile.txt</tt> on HDFS.</p>
+
+  <p><b>Step 3:</b> Verify the file is in HDFS.
+  We can verify that the operation worked with either of the
+  two following (equivalent) commands:</p>
+
+  <div class="code"><pre class="codeblue">  someone@anynode:hadoop$ bin/hadoop dfs -ls /user/<i>yourUserName</i>
+  someone@anynode:hadoop$ bin/hadoop dfs -ls</pre></div>
+
+  <p>You should see a listing that starts with <tt>Found 1 items</tt>
+  and then includes information about the file you inserted.</p>
+
+  <p>The following table demonstrates example uses of the
+  <tt>put</tt> command, and their effects:</p>
+
+
+  <table>
+
+  <tbody><tr><th>Command:</th><th>Assuming:</th><th>Outcome:</th></tr>
+  <tr><td><tt>bin/hadoop dfs -put foo bar</tt></td>
+      <td>No file/directory named <tt>/user/$USER/bar</tt> exists
+          in HDFS</td>
+      <td>Uploads local file <tt>foo</tt> to a file named
+          <tt>/user/$USER/bar</tt></td>
+
+  </tr>
+  <tr><td><tt>bin/hadoop dfs -put foo bar</tt></td>
+      <td><tt>/user/$USER/bar</tt> is a directory</td>
+      <td>Uploads local file <tt>foo</tt> to a file named
+          <tt>/user/$USER/bar/foo</tt></td>
+
+  </tr>
+  <tr><td><tt>bin/hadoop dfs -put foo somedir/somefile</tt></td>
+      <td><tt>/user/$USER/somedir</tt> does not exist in HDFS
+      </td><td>Uploads local file <tt>foo</tt> to a file named
+          <tt>/user/$USER/somedir/somefile</tt>, creating
+          the missing directory</td>
+
+  </tr>
+  <tr><td><tt>bin/hadoop dfs -put foo bar</tt></td>
+      <td><tt>/user/$USER/bar</tt> is already a file
+          in HDFS</td>
+      <td>No change in HDFS, and an error is returned to the user.</td>
+  </tr>
+  </tbody></table>
+
+
+  <p>When the put command operates on a file, it is all-or-nothing.
+  Uploading a file into HDFS first copies the data onto the DataNodes.
+  When they all acknowledge that they have received all the data and
+  the file handle is closed, it is then made visible to the rest of
+  the system. Thus based on the return value of the put command, you
+  can be confident that a file has either been successfully uploaded,
+  or has "fully failed;" you will never get into a state
+  where a file is partially uploaded and the partial contents are
+  visible externally, but the upload disconnected and did not complete
+  the entire file contents. In a case like this, it will be as though
+  no upload took place.</p>
+
+
+  <p><b>Step 4:</b> Uploading multiple files at once.
+  The <b>put</b> command is more powerful than moving a single
+  file at a time. It can also be used to upload entire directory
+  trees into HDFS.</p>
+
+  <p>Create a local directory and put some files into it using
+  the <tt>cp</tt> command. Our example user may have a situation
+  like the following:</p>
+
+  <div class="code"><pre class="codeblue">  someone@anynode:hadoop$ ls -R myfiles
+  myfiles:
+  file1.txt  file2.txt  subdir/
+
+  myfiles/subdir:
+  anotherFile.txt
+  someone@anynode:hadoop$</pre></div>
+
+  <p>This entire <tt>myfiles/</tt> directory can be copied into
+  HDFS like so:</p>
+
+  <div class="code"><pre class="codeblue">  someone@anynode:hadoop$ bin/hadoop -put myfiles /user/<i>myUsername</i>
+  someone@anynode:hadoop$ bin/hadoop -ls
+  Found 1 items
+  /user/someone/myfiles   &lt;dir&gt;    2008-06-12 20:59    rwxr-xr-x    someone    supergroup
+  user@anynode:hadoop bin/hadoop -ls myfiles
+  Found 3 items
+  /user/someone/myfiles/file1.txt   &lt;r 1&gt;   186731  2008-06-12 20:59        rw-r--r--       someone   supergroup
+  /user/someone/myfiles/file2.txt   &lt;r 1&gt;   168     2008-06-12 20:59        rw-r--r--       someone   supergroup
+  /user/someone/myfiles/subdir      &lt;dir&gt;           2008-06-12 20:59        rwxr-xr-x       someone   supergroup</pre></div>
+
+  <p>Thus demonstrating that the tree was correctly uploaded recursively.
+  You'll note that in addition to the file path, <b>ls</b> also reports
+  the number of replicas of each file that exist (the "1" in
+  &lt;r 1&gt;), the file size, upload time, permissions, and owner
+  information.</p>
+
+  <p>Another synonym for <b>-put</b> is <b>-copyFromLocal</b>. The
+  syntax and functionality are identical.</p>
+
+	<p>
+		<b>Retrieving data from HDFS</b>
+	</p>
+
+  <p>There are multiple ways to retrieve files from the distributed
+  file system. One of the easiest is to use <b>cat</b> to display
+  the contents of a file on stdout. (It can, of course, also be used
+  to pipe the data into other applications or destinations.)</p>
+
+  <p><b>Step 1:</b> Display data with <b>cat</b>.</p>
+
+  <p>If you have not
+  already done so, upload some files into HDFS. In this example,
+  we assume that a file named "foo" has been loaded into
+  your home directory on HDFS.</p>
+
+  <div class="code"><pre class="codeblue">  someone@anynode:hadoop$ bin/hadoop dfs -cat foo
+  <i>(contents of foo are displayed here)</i>
+  someone@anynode:hadoop$</pre></div>
+
+  <p><b>Step 2:</b> Copy a file from HDFS to the local file system.</p>
+
+  <p>The <b>get</b> command is the inverse operation of <b>put</b>; it
+  will copy a file or directory (recursively) from HDFS into the target
+  of your choosing on the local file system. A synonymous operation
+  is called <b>-copyToLocal</b>.
+  </p>
+
+  <div class="code"><pre class="codeblue">  someone@anynode:hadoop$ bin/hadoop dfs -get foo localFoo
+  someone@anynode:hadoop$ ls
+  localFoo
+  someone@anynode:hadoop$ cat localFoo
+  <i>(contents of foo are displayed here)</i></pre></div>
+
+
+  <p>Like the put command, get will operate on directories in addition
+  to individual files.</p>
+
+
+	<p>
+		<b>Shutting Down HDFS</b>
+	</p>
+
+  <p>If you want to shut down the HDFS functionality of your
+  cluster (either because you do not want Hadoop occupying memory
+  resources when it is not in use, or because you want to restart
+  the cluster for upgrading, configuration changes, etc.), then
+  this can be accomplished by logging in to the NameNode machine
+  and running:</p>
+
+  <div class="code"><pre class="codeblue">  someone@namenode:hadoop$ bin/stop-dfs.sh</pre></div>
+
+  <p>This command must be performed by the same user who started
+  HDFS with <tt>bin/start-dfs.sh</tt>.</p>
+
+  <a name="commandref"></a>
+
+  <h4 class="sectionSubH">HDFS Command Reference</h4>
+
+  <p>There are many more commands in <tt>bin/hadoop dfs</tt> than
+  were demonstrated here, although these basic operations will
+  get you started. Running <tt>bin/hadoop dfs</tt> with no additional
+  arguments will list all commands which can be run with the
+  FsShell system. Furthermore, <tt>bin/hadoop dfs -help
+  <i>commandName</i></tt> will display a short usage summary for
+  the operation in question, if you are stuck.</p>
+
+  <p>A table of all operations is reproduced below. The
+  following conventions are used for parameters:</p>
+
+  <ul>
+    <li class="bullist"><i>italics</i> denote variables to be filled out by the user.</li>
+    <li class="bullist">"path" means any file or directory name.</li>
+
+    <li class="bullist">"path..." means one or more file or directory names.</li>
+    <li class="bullist">"file" means any filename.</li><li>
+    </li><li class="bullist">"src" and "dest" are path names in a
+       directed operation.</li>
+
+    <li class="bullist">"localSrc" and "localDest" are paths as
+    above, but on the local file system. All other file and path names
+    refer to objects inside HDFS.</li>
+    <li class="bullist">Parameters in [brackets] are optional.</li>
+  </ul>
+
+  <table>
+  <tbody><tr><th>Command</th><th>Operation</th></tr>
+
+  <tr><td>-ls <i>path</i></td>
+      <td>Lists the contents of the directory specified by <i>path</i>,
+      showing the names, permissions, owner, size and modification date
+      for each entry.</td>
+  </tr>
+  <tr><td>-lsr <i>path</i></td>
+      <td>Behaves like <tt>-ls</tt>, but recursively displays entries
+      in all subdirectories of <i>path</i>.</td>
+
+  </tr>
+  <tr><td>-du <i>path</i></td>
+      <td>Shows disk usage, in bytes, for all files which match
+      <i>path</i>; filenames are reported with the full HDFS
+      protocol prefix.</td>
+  </tr>
+  <tr><td>-dus <i>path</i></td>
+
+      <td>Like <tt>-du</tt>, but prints a summary of disk usage
+      of all files/directories in the path.</td>
+  </tr>
+  <tr><td>-mv <i>src</i> <i>dest</i></td>
+      <td>Moves the file or directory indicated by <i>src</i>
+
+      to <i>dest</i>, within HDFS.</td>
+  </tr>
+  <tr><td>-cp <i>src</i> <i>dest</i></td>
+      <td>Copies the file or directory identified by <i>src</i>
+
+      to <i>dest</i>, within HDFS.</td>
+  </tr>
+  <tr><td>-rm <i>path</i></td>
+      <td>Removes the file or empty directory identified by
+      <i>path</i>.</td>
+  </tr>
+
+  <tr><td>-rmr <i>path</i></td>
+      <td>Removes the file or directory identified by <i>path</i>.
+      Recursively deletes any child entries (i.e., files or
+      subdirectories of <i>path</i>).</td>
+  </tr>
+  <tr><td>-put <i>localSrc</i> <i>dest</i></td>
+
+      <td>Copies the file or directory from the local file system
+      identified by <i>localSrc</i> to <i>dest</i> within the
+      DFS.</td>
+  </tr>
+  <tr><td>-copyFromLocal <i>localSrc</i> <i>dest</i></td>
+
+      <td>Identical to <tt>-put</tt></td>
+  </tr>
+  <tr><td>-moveFromLocal <i>localSrc</i> <i>dest</i></td>
+      <td>Copies the file or directory from the local file system
+      identified by <i>localSrc</i> to <i>dest</i> within
+      HDFS, then deletes the local copy on success.
+      </td>
+
+  </tr>
+  <tr><td>-get [-crc] <i>src</i> <i>localDest</i></td>
+      <td>Copies the file or directory in HDFS identified
+      by <i>src</i> to the local file system path identified
+      by <i>localDest</i>.</td>
+  </tr>
+
+  <tr><td>-getmerge <i>src</i> <i>localDest</i> [addnl]</td>
+      <td>Retrieves all files that match the path <i>src</i>
+      in HDFS, and copies them to a single, merged file
+      in the local file system identified by <i>localDest</i>.</td>
+
+  </tr>
+  <tr><td>-cat <i>filename</i></td>
+      <td>Displays the contents of <i>filename</i> on stdout.</td>
+  </tr>
+  <tr><td>-copyToLocal [-crc] <i>src</i> <i>localDest</i></td>
+
+      <td>Identical to <tt>-get</tt></td>
+  </tr>
+  <tr><td>-moveToLocal [-crc] <i>src</i> <i>localDest</i></td>
+      <td>Works like <tt>-get</tt>, but deletes the HDFS copy
+      on success.</td>
+
+  </tr>
+  <tr><td>-mkdir <i>path</i></td>
+      <td>Creates a directory named <i>path</i> in
+      HDFS. Creates any parent directories in <i>path</i> that
+      are missing (e.g., like <tt>mkdir -p</tt> in Linux).</td>
+
+  </tr>
+  <tr><td>-setrep [-R] [-w] <i>rep</i> <i>path</i></td>
+      <td>Sets the target replication factor for files identified by
+      <i>path</i> to <i>rep</i>. (The actual replication factor
+      will move toward the target over time)</td>
+  </tr>
+
+  <tr><td>-touchz <i>path</i></td>
+      <td>Creates a file at <i>path</i> containing the current
+      time as a timestamp. Fails if a file already exists at
+      <i>path</i>, unless the file is already size 0.</td>
+  </tr>
+  <tr><td>-test -[ezd] <i>path</i></td>
+
+      <td>Returns 1 if <i>path</i> <b>e</b>xists; has
+      <b>z</b>ero length; or is a <b>d</b>irectory, or
+      0 otherwise.</td>
+  </tr>
+  <tr><td>-stat [format] <i>path</i></td>
+
+      <td>Prints information about <i>path</i>. <i>format</i>
+      is a string which accepts file size in blocks (%b), filename (%n),
+      block size (%o), replication (%r), and modification date (%y, %Y).
+      </td>
+  </tr>
+  <tr><td>-tail [-f] <i>file</i></td>
+      <td>Shows the lats 1KB of <i>file</i> on stdout.</td>
+
+  </tr>
+  <tr><td>-chmod [-R] <i>mode,mode,...</i> <i>path...</i></td>
+      <td>Changes the file permissions associated with one or
+      more objects identified by <i>path...</i>. Performs
+      changes recursively with <tt>-R</tt>. <i>mode</i> is
+      a 3-digit octal mode, or <tt>{augo}+/-{rwxX}</tt>.
+      Assumes <tt>a</tt> if no scope is specified and does not
+      apply a umask.</td>
+
+  </tr>
+  <tr><td>-chown [-R] [<i>owner</i>][:[<i>group</i>]] <i>path...</i></td>
+      <td>Sets the owning user and/or group for files
+      or directories identified by <i>path...</i>. Sets owner
+      recursively if <tt>-R</tt> is specified.</td>
+
+  </tr>
+  <tr><td>-chgrp [-R] <i>group</i> <i>path...</i></td>
+      <td>Sets the owning group for files or directories
+      identified by <i>path...</i>. Sets group recursively
+      if <tt>-R</tt> is specified.</td>
+  </tr>
+
+  <tr><td>-help <i>cmd</i></td>
+      <td>Returns usage information for one of the commands
+      listed above. You must omit the leading '-' character
+      in <i>cmd</i></td>
+  </tr>
+  </tbody></table>
+
+  <a name="admincommandref"></a>
+  <h4 class="sectionSubH">DFSAdmin Command Reference</h4>
+
+  <p>While the <b>dfs</b> module for <tt>bin/hadoop</tt> provides
+  common file and directory manipulation commands, they all work with
+  objects within the file system. The <b>dfsadmin</b> module manipulates
+  or queries the file system as a whole. The operation of the commands
+  in this module is described in this section.</p>
+
+  <p><b>Getting overall status:</b> A brief status report for
+  HDFS can be retrieved with <tt>bin/hadoop dfsadmin -report</tt>.
+  This returns basic information about the overall health of the
+  HDFS cluster, as well as some per-server metrics.</p>
+
+  <p><b>More involved status:</b> If you need to know more details
+  about what the state of the NameNode's metadata is, the command
+  <tt>bin/hadoop dfsadmin -metasave <i>filename</i></tt> will
+  record this information in <i>filename</i>. The metasave command
+  will enumerate lists of blocks which are under-replicated, in the
+  process of being replicated, and scheduled for deletion.
+  NB: The help for this command states that it "saves
+  NameNode's primary data structures," but this is a misnomer;
+  the NameNode's state cannot be restored from this information.
+  However, it will provide good information about how the NameNode
+  is managing HDFS's blocks.</p>
+
+  <p><b>Safemode:</b> Safemode is an HDFS state in which the file system
+  is mounted read-only; no replication is performed, nor can files
+  be created or deleted. This is automatically entered as the NameNode
+  starts, to allow all DataNodes time to check in with the NameNode
+  and announce which blocks they hold, before the NameNode determines
+  which blocks are under-replicated, etc. The NameNode waits until
+  a specific percentage of the blocks are present and accounted-for;
+  this is controlled in the configuration by the
+  <tt>dfs.safemode.threshold.pct</tt> parameter. After this threshold
+  is met, safemode is automatically exited, and HDFS allows
+  normal operations. The <tt>bin/hadoop dfsadmin -safemode <i>what</i></tt>
+
+  command allows the user to manipulate safemode based on
+  the value of <i>what</i>, described below:
+  </p><ul>
+    <li class="bullist"><tt>enter</tt> - Enters safemode</li>
+    <li class="bullist"><tt>leave</tt> - Forces the NameNode to exit safemode</li>
+    <li class="bullist"><tt>get</tt> - Returns a string indicating whether
+                       safemode is ON or OFF</li>
+
+    <li class="bullist"><tt>wait</tt> - Waits until safemode has exited and returns</li>
+  </ul>
+  
+
+  <p><b>Changing HDFS membership</b> - When decommissioning nodes,
+  it is important to disconnect nodes from HDFS gradually to ensure
+  that data is not lost. See the section on <a href="#decommission">decommissioning</a> later in this document
+  for an explanation of the use of the <tt>-refreshNodes</tt> dfsadmin
+  command.
+  </p>
+
+  <p><b>Upgrading HDFS versions</b> - When upgrading from one
+  version of Hadoop to the next, the file formats used by the NameNode
+  and DataNodes may change. When you first start the new version of
+  Hadoop on the cluster, you need to tell Hadoop to change the
+  HDFS version (or else it will not mount), using the command:
+  <tt>bin/start-dfs.sh -upgrade</tt>. It will then begin upgrading the
+  HDFS version. The status of an ongoing upgrade operation can be
+  queried with the <tt>bin/hadoop dfsadmin -upgradeProgress status</tt>
+  command. More verbose information can be retrieved with
+  <tt>bin/hadoop dfsadmin -upgradeProgress details</tt>. If the
+  upgrade is blocked and you would like to force it to continue,
+  use the command: <tt>bin/hadoop dfsadmin -upgradeProgress force</tt>.
+  (Note: be sure you know what you are doing if you use this last
+  command.)</p>
+
+  <p>When HDFS is upgraded, Hadoop retains backup information
+  allowing you to downgrade to the original HDFS version in case you
+  need to revert Hadoop versions. To back out the changes, stop the
+  cluster, re-install the older version of Hadoop, and then use
+  the command: <tt>bin/start-dfs.sh -rollback</tt>. It will restore
+  the previous HDFS state.</p>
+
+  <p>Only one such archival copy can be kept at a time. Thus, after
+  a few days of operation with the new version (when it is deemed
+  stable), the archival copy can be removed with the command
+  <tt>bin/hadoop dfsadmin -finalizeUpgrade</tt>. The rollback command
+  cannot be issued after this point. This must be performed before
+  a second Hadoop upgrade is allowed.</p>
+
+  <p><b>Getting help</b> - As with the <b>dfs</b> module, typing
+  <tt>bin/hadoop dfsadmin -help <i>cmd</i></tt> will provide more
+  usage information about the particular command.
+  </p>
+
+  <a name="mapreduce"></a>
+  <h3>Using HDFS in MapReduce</h3>
+
+  <p>The HDFS is a powerful companion to Hadoop MapReduce. By setting
+  the <tt>fs.default.name</tt> configuration option to point to
+  the NameNode (as was done above), Hadoop MapReduce jobs will
+  automatically draw their input files from HDFS. Using the regular
+  FileInputFormat subclasses, Hadoop will automatically draw its
+  input data sources from file paths within HDFS, and will distribute
+  the work over the cluster in an intelligent fashion to exploit
+  block locality where possible. The mechanics of Hadoop MapReduce
+  are discussed in much greater detail in <a href="module4.html">Module
+  4</a>.</p>
+
+  <a name="programmatically"></a>
+
+  <h3>Using HDFS Programmatically</h3>
+
+  <p>While HDFS can be manipulated explicitly through user commands,
+  or implicitly as the input to or output from a Hadoop MapReduce job,
+  you can also work with HDFS inside your own Java applications.
+  (A JNI-based wrapper, <a href="http://wiki.apache.org/hadoop/LibHDFS">libhdfs</a> also provides
+  this functionality in C/C++ programs.)</p>
+
+  <p>This section provides a short tutorial on using the Java-based
+  HDFS API. It will be based on the following code listing:</p>
+
+  <div class="code"><pre class="codeblue">
+1:  import java.io.File;
+2:  import java.io.IOException;
+3:
+4:  import org.apache.hadoop.conf.Configuration;
+5:  import org.apache.hadoop.fs.FileSystem;
+6:  import org.apache.hadoop.fs.FSDataInputStream;
+7:  import org.apache.hadoop.fs.FSDataOutputStream;
+8:  import org.apache.hadoop.fs.Path;
+9:
+10: public class HDFSHelloWorld {
+11:
+12:   public static final String theFilename = "hello.txt";
+13:   public static final String message = "Hello, world!\n";
+14:
+15:   public static void main (String [] args) throws IOException {
+16:
+17:     Configuration conf = new Configuration();
+18:     FileSystem fs = FileSystem.get(conf);
+19:
+20:     Path filenamePath = new Path(theFilename);
+21:
+22:     try {
+23:       if (fs.exists(filenamePath)) {
+24:         // remove the file first
+25:         fs.delete(filenamePath);
+26:       }
+27:
+28:       FSDataOutputStream out = fs.create(filenamePath);
+29:       out.writeUTF(message;
+30:       out.close();
+31:
+32:       FSDataInputStream in = fs.open(filenamePath);
+33:       String messageIn = in.readUTF();
+34:       System.out.print(messageIn);
+35:       in.close();
+46:     } catch (IOException ioe) {
+47:       System.err.println("IOException during operation: " + ioe.toString());
+48:       System.exit(1);
+49:     }
+40:   }
+41: }</pre></div>
+
+  <p>This program creates a file named <tt>hello.txt</tt>, writes
+  a short message into it, then reads it back and prints it to
+  the screen. If the file already existed, it is deleted first.</p>
+
+  <p>First we get a handle to an abstract <tt>FileSystem</tt> object,
+  as specified by the application configuration. The <tt>Configuration</tt>
+  object created uses the default parameters.</p>
+
+<div class="code"><pre class="codeblue">17:     Configuration conf = new Configuration();
+18:     FileSystem fs = FileSystem.get(conf);</pre></div>
+
+  <p>The <tt>FileSystem</tt> interface actually provides a generic
+  abstraction suitable for use in several file systems. Depending on
+  the Hadoop configuration, this may use HDFS or the local file system
+  or a different one altogether. If this test program is launched
+  via the ordinary '<tt>java <i>classname</i></tt>' command line, it may
+  not find <tt>conf/hadoop-site.xml</tt> and will use the local
+  file system. To ensure that it uses the proper Hadoop configuration,
+  launch this program through Hadoop by putting it in a jar and running:
+
+  </p><div class="code"><pre class="codeblue">$HADOOP_HOME/bin/hadoop jar <i>yourjar</i> HDFSHelloWorld</pre></div>
+
+  <p>Regardless of how you launch the program and which file system
+  it connects to, writing to a file is done in the same way:</p>
+  <div class="code"><pre class="codeblue">28:       FSDataOutputStream out = fs.create(filenamePath);
+29:       out.writeUTF(message);
+30:       out.close();</pre></div>
+
+  <p>First we create the file with the <tt>fs.create()</tt> call,
+  which returns an <tt>FSDataOutputStream</tt> used to write data
+  into the file. We then write the information using ordinary
+  stream writing functions; <tt>FSDataOutputStream</tt> extends the
+  <tt>java.io.DataOutputStream</tt> class. When we are done with
+  the file, we close the stream with <tt>out.close()</tt>.</p>
+
+  <p>This call to <tt>fs.create()</tt> will overwrite the file if it
+  already exists, but for sake of example, this program explicitly
+  removes the file first anyway (note that depending on this explicit
+  prior removal is technically a race condition). Testing for
+  whether a file exists and removing an existing file are performed
+  by lines 23-26:</p>
+
+  <div class="code"><pre class="codeblue">23:       if (fs.exists(filenamePath)) {
+24:         // remove the file first
+25:         fs.delete(filenamePath);
+26:       }</pre></div>
+
+  <p>Other operations such as copying, moving, and renaming are
+  equally straightforward operations on <tt>Path</tt> objects
+  performed by the <tt>FileSystem</tt>.</p>
+
+  <p>Finally, we re-open the file for read, and pull the bytes from
+  the file, converting them to a UTF-8 encoded string in the process,
+  and print to the screen:</p>
+
+  <div class="code"><pre class="codeblue">32:       FSDataInputStream in = fs.open(filenamePath);
+33:       String messageIn = in.readUTF();
+34:       System.out.print(messageIn);
+35:       in.close();</pre></div>
+
+  The <tt>fs.open()</tt> method returns an <tt>FSDataInputStream</tt>,
+  which subclasses <tt>java.io.DataInputStream</tt>. Data can be read
+  from the stream using the <tt>readUTF()</tt> operation, as on line 33.
+  When we are done with the
+  stream, we call <tt>close()</tt> to free the handle associated with
+  the file.
+
+  <p><b>More information:</b></p>
+
+  <p>Complete JavaDoc for the HDFS API is provided at
+  <a href="http://hadoop.apache.org/core/docs/current/api/index.html">http://hadoop.apache.org/core/docs/current/api/index.html</a>.
+  </p>
+
+  <p>A direct link to the <tt>FileSystem</tt> interface is:
+  <a href="http://hadoop.apache.org/core/docs/current/api/org/apache/hadoop/fs/FileSystem.html">http://hadoop.apache.org/core/docs/current/api/org/apache/hadoop/fs/FileSystem.html</a>.</p>
+
+  <p>Another example HDFS application
+  is available <a href="http://wiki.apache.org/hadoop/HadoopDfsReadWriteExample">on
+  the Hadoop wiki</a>. This implements a file copy operation.</p>
+
+  <a name="perms"></a>
+  <h3>HDFS Permissions and Security</h3>
+
+  <p>Starting with Hadoop 0.16.1, HDFS has included a rudimentary
+  file permissions system. This <a href="http://hadoop.apache.org/core/docs/current/hdfs_permissions_guide.html">
+   permission system</a> is based on the POSIX model, but <b>does not</b>
+
+   provide strong security for HDFS files. The HDFS permissions system is
+   designed to prevent accidental corruption of data or casual misuse
+   of information within a group of users who share access to a cluster.
+   It is not a strong security model that guarantees denial of access
+   to unauthorized parties.</p>
+
+  <p>HDFS security is based on the POSIX model of users and groups.
+  Each file or directory has 3 permissions (read, write and execute)
+  associated with it at three different granularities: the file's
+  owner, users in the same group as the owner, and all other users
+  in the system. As the HDFS does not provide the full POSIX spectrum
+  of activity, some combinations of bits will be meaningless. For
+  example, no file can be executed; the +x bits cannot be set on
+  files (only directories). Nor can an existing file be
+  written to, although the +w bits may still be set.</p>
+
+  <p>Security permissions and ownership can be modified using the
+  <tt>bin/hadoop dfs -chmod</tt>, <tt>-chown</tt>, and <tt>-chgrp</tt>
+  operations described earlier in this document; they work in a
+  similar fashion to the POSIX/Linux tools of the same name.</p>
+
+  <p><b>Determining identity</b> - Identity is not authenticated
+  formally with HDFS; it is taken from an extrinsic source. The
+  Hadoop system is programmed to use the user's current login
+  as their Hadoop username (i.e., the equivalent of <tt>whoami</tt>).
+  The user's current working group list (i.e, the output of
+  <tt>groups</tt>) is used as the group list in Hadoop. HDFS
+  itself does not verify that this username is genuine to the
+  actual operator.</p>
+
+  <p><b>Superuser status</b> - The username which was used to
+  start the Hadoop process (i.e., the username who actually ran
+  <tt>bin/start-all.sh</tt> or <tt>bin/start-dfs.sh</tt>) is
+  acknowledged to be the <i>superuser</i> for HDFS. If this
+  user interacts with HDFS, he does so with a special
+  username <tt>superuser</tt>. This user's operations on
+  HDFS never fail, regardless of permission bits set on the
+  particular files he manipulates. If Hadoop is shutdown and
+  restarted under a different username, that username is then
+  bound to the superuser account.</p>
+
+  <p><b>Supergroup</b> - There is also a special group named
+  <tt>supergroup</tt>, whose membership is controlled by the
+  configuration parameter <tt>dfs.permissions.supergroup</tt>.
+  </p>
+
+  <p><b>Disabling permissions</b> - By default, permissions
+  are enabled on HDFS. The permission system can be
+  disabled by setting the configuration option
+  <tt>dfs.permissions</tt> to <tt>false</tt>. The owner,
+  group, and permissions bits associated with each file and
+  directory will still be preserved, but the HDFS process does
+  not enforce them, except when using permissions-related
+  operations such as <tt>-chmod</tt>.</p>
+
+  <a name="tasks"></a>
+  <h3>Additional HDFS Tasks</h3>
+
+  <a name="rebalancing"></a>
+  <h4 class="sectionSubH">Rebalancing Blocks</h4>
+
+  <p>New nodes can be added to a cluster
+  in a straightforward manner. On the new node, the same Hadoop
+  version and configuration (<tt>conf/hadoop-site.xml</tt>) as on
+  the rest of the cluster should be installed. Starting the DataNode
+  daemon on the machine will cause it to contact the NameNode and
+  join the cluster. (The new node should be added to the <tt>slaves</tt>
+
+  file on the master server as well, to inform the master how to invoke
+  script-based commands on the new node.)</p>
+
+  <p>But the new DataNode will have no data on board initially; it is
+  therefore not alleviating space concerns on the existing nodes. New
+  files will be stored on the new DataNode in addition to the existing
+  ones, but for optimum usage, storage should be evenly balanced across
+  all nodes.</p>
+
+  <p>This can be achieved with the automatic balancer tool
+  included with Hadoop. The <a href="http://hadoop.apache.org/core/docs/current/api/org/apache/hadoop/dfs/Balancer.html">Balancer</a>
+  class will intelligently balance blocks across the nodes to achieve
+  an even distribution of blocks within a given threshold, expressed as
+  a percentage. (The default is 10%.) Smaller percentages make nodes
+  more evenly balanced, but may require more time to achieve this state.
+  Perfect balancing (0%) is unlikely to actually be achieved.</p>
+
+  <p>The balancer script can be run by starting
+  <tt>bin/start-balancer.sh</tt> in the Hadoop directory. The script can be
+  provided a balancing threshold percentage with the <tt>-threshold</tt>
+
+  parameter; e.g., <tt>bin/start-balancer.sh -threshold 5</tt>. The
+  balancer will automatically terminate when it achieves its goal, or
+  when an error occurs, or it cannot find more candidate blocks to move
+  to achieve better balance. The balancer can always be terminated
+  safely by the administrator by running <tt>bin/stop-balancer.sh</tt>.
+  </p>
+
+  <p>The balancing script can be run either when nobody else is using
+  the cluster (e.g., overnight), but can also be run in an
+  "online" fashion while many other jobs are on-going. To
+  prevent the rebalancing process from consuming large amounts of
+  bandwidth and significantly degrading the performance of other
+  processes on the cluster, the <tt>dfs.balance.bandwidthPerSec</tt>
+  configuration parameter can be used to limit the number of bytes/sec
+  each node may devote to rebalancing its data store.</p>
+
+  <a name="copying"></a>
+  <h4 class="sectionSubH">Copying Large Sets of Files</h4>
+
+  <p>When migrating a large
+  number of files from one location to another (either from one HDFS
+  cluster to another, from S3 into HDFS or vice versa, etc), the task should
+  be divided between multiple nodes to allow them all to share in the
+  bandwidth required for the process. Hadoop includes a tool called
+  <b>distcp</b> for this purpose.</p>
+
+  <p>By invoking <tt>bin/hadoop distcp <i>src</i> <i>dest</i></tt>,
+  Hadoop will start a MapReduce task to distribute the burden of copying
+  a large number of files from <i>src</i> to <i>dest</i>. These two
+  parameters may specify a full URL for the the path to copy.
+  e.g., <tt>"hdfs://SomeNameNode:9000/foo/bar/"</tt> and
+  <tt>"hdfs://OtherNameNode:2000/baz/quux/"</tt> will
+  copy the children of <tt>/foo/bar</tt> on one cluster to
+  the directory tree rooted at <tt>/baz/quux</tt> on the other.
+  The paths are assumed to be directories, and are copied recursively.
+  S3 URLs can be specified with <tt>s3://<i>bucket-name</i>/<i>key</i></tt>.
+
+  <a name="decommission"></a>
+
+  </p><h4 class="sectionSubH">Decommissioning Nodes</h4>
+
+  <p>In addition to allowing nodes to be added to the cluster on the fly,
+  nodes can also be removed from a cluster while it is running, without
+  data loss. But if nodes are simply shut down "hard,"
+  data loss may occur as they may hold the sole copy of one or more
+  file blocks.</p>
+
+  <p>
+  Nodes must be retired on a schedule that allows HDFS to ensure that
+  no blocks are entirely replicated within the to-be-retired set of
+  DataNodes.</p>
+
+  <p>HDFS provides a decommissioning feature which ensures that this
+  process is performed safely. To use it, follow the steps below:</p>
+
+  <p><b>Step 1: Cluster configuration</b>. If it is assumed that nodes
+  may be retired in your cluster, then before it is started, an
+  <i>excludes file</i> must be configured. Add a key named
+  <tt>dfs.hosts.exclude</tt> to your <tt>conf/hadoop-site.xml</tt> file.
+  The value associated with this key provides the full path to
+  a file on the NameNode's local file system
+  which contains a list of machines which are not permitted to connect
+  to HDFS.</p>
+
+  <p><b>Step 2: Determine hosts to decommission</b>. Each machine to be
+  decommissioned should be added to the file identified by
+  <tt>dfs.hosts.exclude</tt>, one per line. This will prevent
+  them from connecting to the NameNode.</p>
+
+  <p><b>Step 3: Force configuration reload</b>. Run the command
+  <tt>bin/hadoop dfsadmin -refreshNodes</tt>. This will force the
+  NameNode to reread its configuration, including the newly-updated
+  excludes file. It will decommission the nodes over a period of time,
+  allowing time for each node's blocks to be replicated onto machines
+  which are scheduled to remain active. </p>
+
+  <p><b>Step 4: Shutdown nodes</b>. After the decommission process has
+  completed, the decommissioned hardware can be safely shutdown for
+  maintenance, etc. The <tt>bin/hadoop dfsadmin -report</tt> command
+  will describe which nodes are connected to the cluster.</p>
+
+  <p><b>Step 5: Edit excludes file again</b>. Once the machines have
+  been decommissioned, they can be removed from the excludes file.
+  Running <tt>bin/hadoop dfsadmin -refreshNodes</tt> again will
+  read the excludes file back into the NameNode, allowing the
+  DataNodes to rejoin the cluster after maintenance has been completed,
+  or additional capacity is needed in the cluster again, etc.</p>
+
+  <a name="fsck"></a>
+  <h4 class="sectionSubH">Verifying File System Health</h4>
+
+  <p>After decommissioning nodes, restarting a cluster, or periodically
+  during its lifetime, you may want to ensure that the file system is
+  healthy--that files are not corrupted or under-replicated, and that
+  blocks are not missing.</p>
+
+  <p>Hadoop provides an <b>fsck</b> command to do exactly this. It
+  can be launched at the command line like so:
+  </p>
+
+
+  <div class="code"><pre class="codeblue">  bin/hadoop fsck [<i>path</i>] [<i>options</i>]</pre></div>
+
+  <p>If run with no arguments, it will print usage information and exit.
+  If run with the argument <tt>/</tt>, it will check the health of the entire
+  file system and print a report. If provided with a path to a particular
+  directory or file, it will only check files under that path. If an
+  option argument is given but no path, it will start
+  from the file system root (<tt>/</tt>). The
+  <i>options</i> may include two different types of options:</p>
+
+  <p><b>Action</b> options specify what action should be taken when
+  corrupted files are found. This can be <tt>-move</tt>, which moves
+  corrupt files to <tt>/lost+found</tt>, or <tt>-delete</tt>, which
+  deletes corrupted files.</p>
+
+  <p><b>Information</b> options specify how verbose the tool
+  should be in its report. The <tt>-files</tt> option will list all
+  files it checks as it encounters them. This information can be further
+  expanded by adding the <tt>-blocks</tt> option, which prints the list of
+  blocks for each file. Adding <tt>-locations</tt> to these two options
+  will then print the addresses of the DataNodes holding these blocks.
+  Still more information can be retrieved by adding <tt>-racks</tt>
+  to the end of this list, which then prints the rack topology information
+  for each location. (See the next subsection for more information on
+  configuring network rack awareness.) Note that the later options
+  do not imply the former; you must use them in conjunction with one
+  another. Also, note that the Hadoop program uses <tt>-files</tt> in
+  a "common argument parser" shared by the different commands
+  such as <tt>dfsadmin</tt>, <tt>fsck</tt>, <tt>dfs</tt>, etc. This
+  means that if you omit a path argument to fsck, it will not receive
+  the <tt>-files</tt> option that you intend. You can separate common
+  options from fsck-specific options by using <tt>--</tt> as an
+  argument, like so:</p>
+
+  <div class="code"><pre class="codeblue">  bin/hadoop fsck -- -files -blocks</pre></div>
+
+  <p>The <tt>--</tt> is not required if you provide a path to start
+  the check from, or if you specify another argument first such as
+  <tt>-move</tt>.</p>
+
+  <p>By default, fsck will not operate on files still open for write
+  by another client. A list of such files can be produced with the
+  <tt>-openforwrite</tt> option.</p>
+
+
+  <a name="rack"></a>
+  <h3>Rack Awareness</h3>
+
+  <p>For small clusters in which all servers are connected by a single
+  switch, there are only two levels of locality: "on-machine"
+  and "off-machine." When loading data from a DataNode's
+  local drive into HDFS, the NameNode will schedule one copy to go into
+  the local DataNode, and will pick two other machines at random from
+  the cluster.</p>
+
+  <p>For larger Hadoop installations which span multiple racks, it
+  is important to ensure that replicas of data exist on multiple
+  racks. This way, the loss of a switch does not render portions of
+  the data unavailable due to all replicas being underneath it.</p>
+
+  <p>HDFS can be made rack-aware by the use of a script which
+  allows the master node to map the network topology of the cluster.
+  While alternate configuration strategies can be used, the default
+  implementation allows you to provide an executable script which
+  returns the "rack address" of each of a list of IP
+  addresses.
+  </p>
+
+  <p>The <i>network topology script</i> receives as arguments one
+  or more IP addresses of nodes in the cluster. It returns on
+  stdout a list of rack names, one for each input. The input and
+  output order must be consistent.</p>
+
+  <p>To set the rack mapping script, specify the key
+  <tt>topology.script.file.name</tt> in <tt>conf/hadoop-site.xml</tt>.
+  This provides a command to run to return a rack id; it must be an
+  executable script or program. By default, Hadoop will attempt to
+  send a set of IP addresses to the file as several separate command
+  line arguments. You can control the maximum acceptable number of
+  arguments with the <tt>topology.script.number.args</tt> key.
+  </p>
+
+  <p>Rack ids in Hadoop are hierarchical and look like path names.
+  By default, every node has a rack id of <tt>/default-rack</tt>.
+  You can set rack ids for nodes to any arbitrary path, e.g.,
+  <tt>/foo/bar-rack</tt>. Path elements further to the left
+  are higher up the tree. Thus a reasonable structure for a
+  large installation may be
+  <tt>/<i>top-switch-name</i>/<i>rack-name</i></tt>.
+  </p>
+
+  <p>
+  Hadoop rack ids are not currently expressive enough to handle
+  an unusual routing topology such as a 3-d torus; they assume that
+  each node is connected to a single switch which in turn has a
+  single upstream switch. This is not usually a problem,
+  however. Actual packet routing will be
+  directed using the topology discovered by or set in switches and routers.
+  The Hadoop rack ids will be used to find "near" and
+  "far" nodes for replica placement (and in 0.17,
+  MapReduce task placement).</p>
+
+  <p>The following example script performs rack identification based
+  on IP addresses given a hierarchical IP addressing scheme enforced
+  by the network administrator. This may work directly for simple
+  installations; more complex network configurations may require a
+  file- or table-based lookup process. Care should be taken in
+  that case to keep the table up-to-date as nodes are physically
+  relocated, etc. This script requires that the maximum number of
+  arguments be set to 1.</p>
+
+  <div class="code"><pre class="codeblue">#!/bin/bash
+# Set rack id based on IP address.
+# Assumes network administrator has complete control
+# over IP addresses assigned to nodes and they are
+# in the 10.x.y.z address space. Assumes that
+# IP addresses are distributed hierarchically. e.g.,
+# 10.1.y.z is one data center segment and 10.2.y.z is another;
+# 10.1.1.z is one rack, 10.1.2.z is another rack in
+# the same segment, etc.)
+#
+# This is invoked with an IP address as its only argument
+
+# get IP address from the input
+ipaddr=$0
+
+# select "x.y" and convert it to "x/y"
+segments=`echo $ipaddr | cut --delimiter=. --fields=2-3 --output-delimiter=/`
+echo /${segments}</pre></div>
+
+  <a name="web"></a>
+  <h3>HDFS Web Interface</h3>
+
+  <p>HDFS exposes a web server which is capable of performing
+  basic status monitoring and file browsing operations. By default
+  this is exposed on port 50070 on the NameNode. Accessing
+  http://namenode:50070/ with a web browser will return a page
+  containing overview information about the health, capacity,
+  and usage of the cluster (similar to the information returned
+  by <tt>bin/hadoop dfsadmin -report</tt>).</p>
+
+  <p>The address and port where the web interface listens can
+  be changed by setting <tt>dfs.http.address</tt> in
+  <tt>conf/hadoop-site.xml</tt>. It must be of the form
+  <i>address</i>:<i>port</i>. To accept requests on all addresses,
+  use <tt>0.0.0.0</tt>.</p>
+
+  <p>From this interface, you can browse HDFS itself with a basic
+  file-browser interface. Each DataNode exposes its file browser
+  interface on port 50075. You can override this by setting the
+  <tt>dfs.datanode.http.address</tt> configuration key to a
+  setting other than <tt>0.0.0.0:50075</tt>. Log files generated
+  by the Hadoop daemons can be accessed through this interface,
+  which is useful for distributed debugging and troubleshooting.</p>
+
+  <a name="refs"></a>
+  <h3>References</h3>
+
+  <div class="reference"><a name="ref_gfs"></a>
+    Ghemawat, S. Gobioff, H. and Leung, S.-T. <a href="http://labs.google.com/papers/gfs-sosp2003.pdf">The
+    Google File System</a>. Proceedings of the 19th ACM Symposium on
+    Operating Systems Principles. pp 29--43. Bolton Landing, NY, USA.
+    2003. © 2003, ACM.
+  </div>
+
+  <div class="reference"><a name="ref_hdfs_design"></a>
+  Borthakur, Dhruba. <a href="http://hadoop.apache.org/core/docs/current/hdfs_design.html">The
+  Hadoop Distributed File System: Architecture and Design</a>. © 2007,
+  The Apache Software Foundation.
+  </div>
+
+  <div class="reference">
+    <a href="http://hadoop.apache.org/core/docs/current/hdfs_user_guide.html">Hadoop DFS User Guide</a>. © 2007,
+    The Apache Software Foundation.
+  </div>
+
+  <div class="reference">
+    <a href="http://hadoop.apache.org/core/docs/current/hdfs_permissions_guide.html">HDFS: Permissions User and Administrator Guide</a>. © 2007,
+  The Apache Software Foundation.
+  </div>
+
+  <div class="reference">
+    <a href="http://hadoop.apache.org/core/docs/current/api/">HDFS API Javadoc</a> © 2008, The Apache Software Foundation.
+  </div>
+
+  <div class="reference">
+    <a href="http://hadoop.apache.org/core/version_control.html">HDFS source code</a>
+  </div>
+
+  <div style="text-align: center;">
+    <p>
+    <a href="module1.html">Previous module</a>&nbsp;|&nbsp;
+    <a href="index.html">Table of contents</a>&nbsp;|&nbsp;
+    <a href="module3.html">Next module</a>
+    </p>
+  </div>
+                        </div>
+                        </div>
+                        <div class="yui-b" id="ydnRack">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div id="clearfooter" style="padding-top: 40px;">
+<!-- used to make room for the #footer -->
+</div>
+
+
+</body></html>

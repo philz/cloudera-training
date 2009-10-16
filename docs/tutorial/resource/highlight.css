@@ -1,0 +1,251 @@
+/* Give syntax-highlighting textareas some height for unsupported browsers */
+
+textarea.JScript, textarea.HTML, textarea.XML {height:10em;}
+
+/* Main style for the table */
+
+.dp-highlighter {
+	width: 99.8%;
+	overflow: auto;
+	line-height: 100% !important;
+	margin:0 0 0 0;
+	font-family: Courier;
+	font-weight: normal;
+	border: 1px solid #fff;
+}
+
+.dp-highlighter table {
+	width:99% !important;
+	margin: 2px 0px 0px 0px !important;
+	border-collapse: collapse;
+	border-bottom: 0px solid #eee;
+	background-color: #fff;
+}
+
+div.dp-highlighter {
+	background:url('http://l.yimg.com/a/i/ydn/right-col-box-bg.gif') repeat-x;
+	background-attachment: scroll;
+	background-position: top left;
+	
+}
+
+
+div.codeHolder {
+	border: 1px solid #d9d9d9;
+	margin-bottom: 1em;
+}
+
+.dp-highlighter tbody.hide { display: none; }
+.dp-highlighter tbody.show { display: table-row-group; _display: block; }
+
+.dp-highlighter td 
+{
+	font-family: Courier;
+	font-size: 11px;
+}
+
+/* Styles for the tools */
+
+.dp-highlighter .tools-corner {
+	background-color: #eee;
+	font-size: 9px;
+}
+
+.dp-highlighter .tools {
+	background-color: #eee;
+	padding: 3px 8px 3px 10px;
+	border-bottom: 1px solid gray;
+	font: 9px Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: silver;
+}
+
+.dp-highlighter .tools-corner {
+	background-color: #eee;
+}
+
+.dp-highlighter .tools a {
+	font-size: 9px;
+	color: gray;
+	text-decoration: none;
+	margin-right: 1em;
+}
+
+.dp-highlighter .tools a:hover {
+	color: red;
+	text-decoration: underline;
+}
+
+/* No Gutter and no line number */
+.dp-highlighter.nogutter ol
+{
+	list-style-type: none;
+	list-style-position: inside;
+	margin: 3px 10px 3px 10px;
+	font-size: 12px;
+}
+
+
+/* Gutter with line number */
+
+.dp-highlighter .gutter {
+	padding-right: 5px; 
+	padding-left: 10px; 
+	width: 5px;
+	background-color: #eee; 
+	border-right: 1px solid gray; 
+	color: gray;
+	text-align: right;
+	vertical-align: top;
+}
+
+/* Single line style */
+
+.dp-highlighter .line1, .line2 {
+	padding-left: 10px;
+	/*border-bottom: 1px solid #F7F7F7;*/
+	white-space:nowrap;
+}
+
+.dp-highlighter .line2 {
+	/*background-color: #F7F7F7;*/
+}
+
+/* About dialog styles */
+
+.dp-about {
+	background-color: #fff;
+	margin: 0px;
+}
+
+.dp-about table {
+	width: 100%;
+	height: 100%;
+	font-size: 11px;
+	font-family: Tahoma, Verdana, Arial, sans-serif !important;
+}
+
+.dp-about td {
+	padding: 10px;
+	vertical-align: top;
+}
+
+.dp-about .copy {
+	border-bottom: 1px solid #ACA899;
+	height: 95%;
+}
+
+.dp-about .title {
+	color: red;
+	font-weight: bold;
+}
+
+.dp-about .para {
+	margin-bottom: 4px;
+}
+
+.dp-about .footer {
+	background-color: #ECEADB;
+	border-top: 1px solid #fff;
+	text-align: right;
+}
+
+.dp-about .close {
+	font-size: 11px;
+	font-family: Tahoma, Verdana, Arial, sans-serif !important;
+	background-color: #ECEADB;
+	width: 60px;
+	height: 22px;
+}
+
+/* Language specific styles */
+
+.dp-c {}
+.dp-c .comment { color: green; }
+.dp-c .string { color: blue; }
+.dp-c .preprocessor { color: gray; }
+.dp-c .keyword { color: blue; }
+.dp-c .vars { color: #d00; }
+
+.dp-vb {}
+.dp-vb .comment { color: green; }
+.dp-vb .string { color: blue; }
+.dp-vb .preprocessor { color: gray; }
+.dp-vb .keyword { color: blue; }
+
+.dp-sql {}
+.dp-sql .comment { color: green; }
+.dp-sql .string { color: red; }
+.dp-sql .keyword { color: blue; }
+.dp-sql .func { color: #ff1493; }
+.dp-sql .op { color: #808080; }
+
+.dp-xml {}
+.dp-xml .cdata { color: #ff1493; }
+.dp-xml .comments { color: green; }
+.dp-xml .tag { color: blue; }
+.dp-xml .tag-name { color: black; font-weight: bold; }
+.dp-xml .attribute { color: red; }
+.dp-xml .attribute-value { color: blue; }
+
+.dp-css .keyword { color: red; }
+.dp-css .value { color: #ff1493; }
+.dp-css .comment { color: green; }
+.dp-css .string { color: blue; }
+.dp-css .preprocessor { color: gray; }
+.dp-css .keyword { color: blue; }
+.dp-css .vars { color: #d00; }
+.dp-css .colors { font-weight: bold; }
+
+.dp-py {}
+.dp-py .comment { color: green; }
+.dp-py .string { color: red; }
+.dp-py .docstring { color: green; }
+.dp-py .keyword { color: blue; font-weight: bold;}
+.dp-py .builtins { color: #ff1493; }
+.dp-py .magicmethods { color: #808080; }
+.dp-py .exceptions { color: brown; }
+.dp-py .types { color: brown; font-style: italic; }
+.dp-py .commonlibs { color: #8A2BE2; font-style: italic; }
+
+.dp-rb {}
+.dp-rb .comment { color: #c00; }
+.dp-rb .string  { color: #f0c; }
+.dp-rb .symbol  { color: #02b902; }
+.dp-rb .keyword { color: #069; }
+.dp-rb .variable { color: #6cf; }
+
+.dp-j {}
+.dp-j .comment { color: rgb(63,127,95); }
+.dp-j .string { color: rgb(42,0,255); }
+.dp-j .keyword { color: rgb(127,0,85); font-weight: bold }
+.dp-j .annotation { color: #646464; }
+.dp-j .number { color: #C00000; }
+
+.dp-cpp {}
+.dp-cpp .comment { color: #e00; }
+.dp-cpp .string { color: red; }
+.dp-cpp .preprocessor { color: #CD00CD; font-weight: bold; }
+.dp-cpp .keyword { color: #5697D9; font-weight: bold; }
+.dp-cpp .datatypes { color: #2E8B57; font-weight: bold; }
+
+.dp-as2 {}
+.dp-as2 .other {color:#000000; font-weight:normal; font-style:normal; font-family:mono; font-size:12px;}
+.dp-as2 .keyword {color:#0000FF;}
+.dp-as2 .void {color:#0000FF;}
+.dp-as2 .return {color:#0000FF;}
+.dp-as2 .public {color:#008040;}
+.dp-as2 .private {color:#0000A0;}
+.dp-as2 .string {color:#008040;}
+.dp-as2 .character {color:#008040;}
+.dp-as2 .number {color:#008040;}
+.dp-as2 .core {color:#0000FF;}
+.dp-as2 .core_constants {color:#0000FF;}
+.dp-as2 .comments_single {color:#800080;}
+.dp-as2 .todo_single {color:#2A00FF; font-weight:bold;}
+.dp-as2 .comments_multi {color:#800080;}
+.dp-as2 .todo_multi {color:#2A00FF; font-weight:bold;}
+.dp-as2 .javadoc {color:#800080;}
+.dp-as2 .javadoc .javadoc_keyword {color:#7F9FBF; font-style:italic;}
+.dp-as2 .javadoc .javadoc_link {color:#3F3FBF;}
+.dp-as2 .javadoc .javadoc_html_tag {color:#7F7F9F;}
+.dp-as2 .javadoc .javadoc_todo {color:#2A00FF; font-weight:bold;}

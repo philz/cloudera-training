@@ -1,0 +1,975 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="description" content="Module 7: Managing a Hadoop Cluster">
+<title>Hadoop Tutorial</title>
+
+<link rel="stylesheet" type="text/css" href="resource/combo.css">
+<script src="resource/fpc.js" type="text/javascript" defer="defer"></script></head><body style="margin: 0pt;"><iframe style="border-width: 0pt; position: absolute; visibility: visible; width: 10em; height: 10em; top: -134px; left: -134px;" title="Text Resize Monitor" id="_yuiResizeMonitor"></iframe>
+<div id="clearfooter" style="padding-top: 20px;">
+<!-- used to make room for the #footer -->
+</div>
+<div id="bodycontainer">
+
+<!--[if IE 6]>
+
+<style type="text/css" media="screen">
+#topAreaR p{margin:0;padding:0;}
+
+#headeraL{float:left;color:#9f9f9f;font-size:85%;}
+#searchFld{height:1.46em;border:1px solid #cecece;}
+#searchFld{margin:0;}
+#sub{position:relative;left:2px;}
+
+#headeraL{height:4em;}
+
+#subHIntCont{position:relative;top:0em;}
+
+#ydnNav{float:left;padding:0;top:1em;}
+.yuimenubaritemlabel{padding:0;}
+
+#headerSubSandbag {top:5.9em;}
+
+h4.fullHorange{width:98%;margin:0;}
+#recBlPst{width:18em;}
+#recBlPst3{width:17em;}
+#upcomingEventsBoxCont{width:17.7em;float:right;padding:0;}
+#upcomingEventsBox{float:right;margin:0}
+#upcomingEventsBox .blogRackTitle{margin-left:.3em;width:15em}
+#upcomingEventsBox .blogRackDate{margin-left:.67em;}
+
+#topFeaturedTabs ul li strong strong{background-color:#9dc1d6;}
+#topFeaturedTabs ul li strong strong strong{background-color:#9dc1d6;}
+#topFeaturedTabs ul li a:hover strong strong{background-color:#6fa4c3;}
+#topFeaturedTabs ul li a:hover strong strong strong{background-color:#6fa4c3;}
+
+.prefTabs{color:#aaa;float:left;position:relative;margin:.5em .8em 0em 2em;font-weight:bold;}
+#featureBox1, #featureBox2, #featureBox3, #featureBox4{border:1px solid #d9d9d9;}
+.innerSubMenuArea{border:1px solid #d9d9d9;}
+
+#breadcrumbs{position:relative;top:1.8em;}
+
+#getAppBox{border:1px solid #D9D9D9;}
+
+.recentPat{margin:0;margin-left:.3em;}
+#recentPatternsContainer {clear:both;float:left;}
+
+html body #doc4.yui-t7 #bd .yui-g .yui-gc div.first, .yui-gc div.first, .yui-gd .yui-g, .yui-gd .yui-u{width:67%;}
+html body #doc4.yui-t7 #bd .yui-g .yui-gb .yui-u, .yui-gb .yui-g, .yui-gb .yui-gb, .yui-gb .yui-gc, .yui-gb .yui-gd, .yui-gb .yui-ge, .yui-gb .yui-gf, .yui-gb .yui-u, .yui-gc .yui-u, .yui-gc .yui-g, .yui-gd .yui-u{width:29%;}
+html body #doc4.yui-t7 #bd .yui-g .yui-gb .yui-u, .yui-gb .yui-g, .yui-gb .yui-gb, .yui-gb .yui-gc, .yui-gb .yui-gd, .yui-gb .yui-ge, .yui-gb .yui-gf, .yui-gb .yui-u, .yui-gc .yui-u, .yui-gc .yui-g, .yui-gd .yui-u{margin-left:.5%;}
+
+</style>
+
+<![endif]-->
+<!--[if IE 7]>
+
+<style type="text/css" media="screen">
+#subHIntCont{position:relative;top:0;}
+#ydnNav{float:left;padding:.1em 0;position:relative;left:0;}
+#ydnNav .yuimenu .colGroup { margin-right: 1.5em;  }
+#breadcrumbs{position:relative;top:1.8em;}
+</style>
+
+<![endif]-->
+
+<div id="mainCMaxCont">
+    <div id="mainCContainer">
+        <div id="mainCIntCont">
+            <div id="internalContainer">
+                <div id="doc4" class="yui-t6">
+                    <div id="bd">
+                        <div id="yui-main">
+                        <div class="yui-b">
+<h2>Module 7: Managing a Hadoop Cluster</h2>
+
+<div style="text-align: center;">
+<p> <a href="module6.html">Previous module</a> &nbsp;|&nbsp; <a href="index.html">Table of contents</a> &nbsp;|&nbsp; <a href="pigtutorial.html">Next module</a> </p>
+
+</div>
+
+<a name="intro"></a>
+<h3>Introduction</h3>
+ 
+<p>Hadoop can be deployed on a variety of scales. The
+requirements at each of these will be different. Hadoop has a large
+number of tunable parameters that can be used to influence its
+operation. Furthermore, there are a number of other technologies which
+can be deployed with Hadoop for additional capabilities. This module
+describes how to configure clusters to meet varying needs in terms of
+size, processing power, and reliability and availability.</p>
+
+<a name="goals"></a>
+<h3>Goals for this Module:</h3>
+ 
+<ul>
+
+   
+  <li class="bullist">Understand differences in requirements for
+different sizes of Hadoop clusters</li>
+   
+  <li class="bullist">Learn how to configure Hadoop for a variety of
+deployment scopes</li>
+   
+</ul>
+  
+<a name="outline"></a>
+<h3>Outline</h3>
+ 
+<ol>
+   
+  <li><a href="#intro">Introduction</a></li>
+  <li><a href="#goals">Goals for this Module</a></li>
+  <li><a href="#outline">Outline</a></li>
+
+  <li><a href="#basic">Basic Setup</a></li>
+  <ol>
+    <li><a href="#java">Java Requirements</a></li>
+    <li><a href="#os">Operating System</a></li>
+    <li><a href="#download">Downloading and Installing Hadoop</a></li>
+  </ol>
+  <li><a href="#dirs">Important Directories</a></li>
+
+  <li><a href="#machines">Selecting Machines</a></li>
+  <li><a href="#configs">Cluster Configurations</a></li>
+  <ol>
+    <li><a href="#config-small">Small Clusters: 2-10 Nodes</a></li>
+    <li><a href="#config-medium">Medium Clusters: 10-40 Nodes</a></li>
+    <li><a href="#config-large">Large Clusters: Multiple Racks</a></li>
+
+  </ol>
+  <li><a href="#monitoring">Performance Monitoring</a></li>
+  <ol>
+    <li><a href="#ganglia">Ganglia</a></li>
+    <li><a href="#nagios">Nagios</a></li>
+  </ol>
+  <li><a href="#tips">Additional Tips</a></li>
+
+  <li><a href="#refs">References &amp; Resources</a></li>
+</ol>
+
+<a name="basic"></a>
+<h3>Basic Setup</h3>
+ 
+<p>This section discusses the general platform
+requirements for Hadoop.</p>
+  
+<a name="java"></a>
+<h4 class="sectionSubH">Java Requirements</h4>
+ 
+<p>Hadoop is a Java-based system. Recent versions of
+Hadoop require Sun Java 1.6. </p>
+ 
+<p>Compiling Java programs to run on Hadoop can be done
+with any number of commonly-used Java compilers. Sun's compiler is
+fine, as is ecj, the Eclipse Compiler for Java. A bug in gcj, the GNU
+Compiler for Java, causes incompatibility between generated classes and
+Hadoop; it should not be used.</p>
+
+<a name="os"></a>
+<h4 class="sectionSubH">Operating System</h4>
+ 
+
+<p>As Hadoop is written in Java, it is mostly portable
+between different operating systems. Developers can and do run Hadoop
+under Windows. The various scripts used to manage Hadoop clusters are
+written in a UNIX shell scripting language that assumes <tt>sh</tt>-
+or <tt>bash</tt>-like behavior. Thus running Hadoop under Windows
+requires cygwin to be installed. The Hadoop documentation stresses that
+a Windows/cygwin installation is for development only. The vast
+majority of server deployments today are on Linux. (Other POSIX-style
+operating systems such as BSD may also work. Some Hadoop users have
+reported successfully running the system on Solaris.) The instructions
+on this page assume a command syntax and system design similar to
+Linux, but can be readily adapted to other systems. </p>
+
+<a name="download"></a>
+<h4 class="sectionSubH">Downloading and Installing Hadoop</h4>
+ 
+<p>Hadoop is available for download from the project
+homepage at <a href="http://hadoop.apache.org/core/releases.html">http://hadoop.apache.org/core/releases.html</a>.
+Here you will find several versions of Hadoop available.</p>
+
+<p>The versioning strategy used is <i>major</i>.<i>minor</i>.<i>revision</i>.
+Increments to the major version number represent large differences in
+operation or interface and possibly significant incompatible changes.
+At the time of this writing (September 2008), there have been no major
+upgrades; all Hadoop versions have their major version set to 0. The
+minor version represents a large set of feature improvements and
+enhancements. Hadoop instances with different minor versions may use
+different versions of the HDFS file formats and protocols, requiring a
+DFS upgrade to migrate from one to the next. Revisions are used to
+provide bug fixes. Within a minor version, the most recent revision
+contains the most stable patches. </p>
+<p>Within the releases page, two or three versions of Hadoop will be
+readily available, corresponding to the highest revision number in the
+most recent two or three minor version increments. The <i>stable</i>
+version is the highest revision number in the second most recent minor
+version. Production clusters should use this version. The most recent
+minor version may include improved performance or new features, but may
+also introduce regressions that will be fixed in ensuing revisions.</p>
+<p>At the time of this writing, 0.18.0 is the most recent version, with
+0.17.2 being the "stable" release. These example instructions assume
+that version 0.18.0 is being used; the directions will not change
+significantly for any other version, except by substituting the new
+version number where appropriate.</p>
+<p><b>To install Hadoop</b>, first download and install prerequisite
+software. This includes Java 6 or higher. Distributed operation
+requires ssh and sshd. Windows users must install and configure cygwin
+as well. Then download a Hadoop version using a web browser, wget, or
+curl, and then unzip the package:</p>
+
+<div class="code">
+	
+<pre class="codeblue">gunzip hadoop-0.18.0.tar.gz
+tar vxf hadoop-0.18.0.tar
+</pre>
+
+</div>
+<p>Within the <tt>hadoop-0.18.0/</tt> directory which results, there
+will be several subdirectories. The most interesting of these are <tt>bin/</tt>,
+where scripts to run the cluster are located, and <tt>conf/</tt> where
+the cluster's configuration is stored. </p>
+<p>Enter the <tt>conf/</tt> directory and modify <tt>hadoop-env.sh</tt>.
+The <tt>JAVA_HOME</tt> variable must be set to the base directory of
+your Java installation. It is recommended that you install Java in the
+same location on all machines in the cluster, so this file can be
+replicated to each machine without modification.</p>
+
+<p>The <tt>hadoop-site.xml</tt> file must also be modified to contain
+a number of configuration settings. The sections below address the
+settings which should be included here.</p>
+<p>If you are interested in setting up a development installation,
+running Hadoop on a single machine, the Hadoop documentation includes <a href="http://hadoop.apache.org/core/docs/current/quickstart.html">quickstart</a>
+instructions which will configure Hadoop for standalone or
+"pseudo-distributed" operation. </p>
+<p><b>Standalone</b> installations run all of Hadoop and your
+application inside a single Java process. The distributed file system
+is not used; file are read from and written to the local file system.
+Such a setup can be helpful for debugging Hadoop applications.</p>
+<p><b>Pseudo-distributed</b> operation refers to the use of several
+separate processes representing the different daemons (NameNode,
+DataNode, JobTracker, TaskTracker) and a separate task process to
+perform a Hadoop job, but with all processes running on a single
+machine. A pseudo-distributed instance will have a functioning
+NameNode/DataNode managing a "DFS" of sorts. Files in HDFS are in a
+separate namespace from the local file system, and are stored as block
+objects in a Hadoop-managed directory. However, it is not truly
+distributed, as no processing or data storage is performed on remote
+notes. A pseudo-distributed instance can be extended into a fully
+distributed cluster by adding more machines to function as
+Task/DataNodes, but more configuration settings are usually required to
+deploy a Hadoop cluster for multiple users. </p>
+
+<p>The rest of this document deals with configuring Hadoop clusters of
+multiple nodes, intended for use by one or more developers.</p>
+<p>After the <tt>conf/hadoop-site.xml</tt> is configured according to
+one of the models in the <a href="http://hadoop.apache.org/core/docs/current/quickstart.html">quickstart</a>,
+the sections below, or your own settings, two more files must be
+written. </p>
+<p>The <b>conf/masters</b> file contains the hostname of the
+SecondaryNameNode. This should be changed from "localhost" to the
+fully-qualified domain name of the node to run the SecondaryNameNode
+service. It does not need to contain the hostname of the
+JobTracker/NameNode machine; that service is instantiated on whichever
+node is used to run <tt>bin/start-all.sh</tt>, regardless of the <tt>masters</tt>
+
+file. The <b>conf/slaves</b> file should contain the hostname of every
+machine in the cluster which should start TaskTracker and DataNode
+daemons. One hostname should be written per line in each of these
+files, e.g.:</p>
+<div class="code"><pre class="codeblue">slave01<br>slave02<br>slave03<br>...</pre>
+</div>
+<p>The master node does not usually also function as a slave node,
+except in installations across only 1 or 2 machines.</p>
+<p>If the nodes on your cluster do not support passwordless ssh, you
+should configure this now:</p>
+
+<pre class="codeblue">$ ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa
+$ cat ~/.ssh/id_dsa.pub &gt;&gt; ~/.ssh/authorized_keys
+</pre>
+
+<p>This will enable passwordless ssh login to the local machine. (You
+can verify that this works by executing <tt>ssh localhost</tt>.) The <tt>~/.ssh/id_dsa.pub</tt>
+and <tt>authorized_keys</tt> files should be replicated on all
+machines in the cluster.</p>
+<p>At this point, the configuration must be replicated across all nodes
+in the cluster. Small clusters may use rsync or copy the configuration
+directory to each node. Larger clusters should use a configuration
+management system such as bcfg2, smartfrog, or puppet. NFS should be
+avoided as much as is possible, as it is a scalability bottleneck.
+DataNodes should never share block storage or other high-bandwidth
+responsibilities over NFS, and should avoid sharing configuration
+information over NFS if possible.</p>
+
+<p>Various directories should be created on each node. The NameNode
+requires the NameNode metadata directory:</p>
+<div class="code"><pre class="codeblue">$ mkdir -p /home/hadoop/dfs/name</pre>
+</div>
+<p>And every node needs the Hadoop tmp directory and DataNode directory
+created. Rather than logging in to each node and performing the steps
+multiple times manually, the file <tt>bin/slaves.sh</tt> allows a
+command to be executed on all nodes in the slaves file. For example, we
+can create these directories by executing the following commands on the
+NameNode:</p>
+<div class="code"><pre class="codeblue">$ mkdir -p /tmp/hadoop  # make the NameNode's tmp dir<br>$ export HADOOP_CONF_DIR=${HADOOP_HOME}/conf<br>$ export HADOOP_SLAVES=${HADOOP_CONF_DIR}/slaves<br>$ ${HADOOP_HOME}/bin/slaves.sh "mkdir -p /tmp/hadoop"<br>$ ${HADOOP_HOME}/bin/slaves.sh "mkdir -p /home/hadoop/dfs/data"</pre>
+
+</div>
+<p>The environment variables <tt>$HADOOP_CONF_DIR</tt> and <tt>$HADOOP_SLAVES</tt>
+are used by the <tt>bin/slaves.sh</tt> script to find the slave
+machines list. The provided command is then executed over ssh. If you
+need particular ssh options, the contents of the <tt>$HADOOP_SSH_OPTS</tt>
+variable are passed to ssh as arguments.</p>
+<p>We then format HDFS by executing the following command on the
+NameNode:</p>
+
+<div class="code"><pre class="codeblue">$ bin/hadoop namenode -format</pre>
+</div>
+<p>And finally, start the cluster:</p>
+<div class="code"><pre class="codeblue">$ bin/start-all.sh</pre>
+</div>
+<p>Now it is time to load in data and start processing it with Hadoop!
+Good luck!</p>
+<p>The remainder of this document discusses various trade-offs in
+cluster configurations for different sizes, and reviews the settings
+which may be placed in the <tt>hadoop-site.xml</tt> file.</p>
+
+<a name="dirs"></a>
+<h3>Important Directories</h3>
+ 
+<p>One of the basic tasks involved in setting up a
+Hadoop cluster is determining where the several various Hadoop-related
+directories will be located. Where they go is up to you; in some cases,
+the default locations are inadvisable and should be changed. This
+section identifies these directories.</p>
+ 
+<table>
+  <tbody>
+    <tr>
+      <th>Directory</th>
+
+      <th>Description</th>
+      <th>Default location</th>
+      <th>Suggested location</th>
+    </tr>
+    <tr>
+      <td>HADOOP_LOG_DIR</td>
+      <td>Output location for log files from daemons</td>
+
+      <td>${HADOOP_HOME}/logs</td>
+      <td>/var/log/hadoop</td>
+    </tr>
+    <tr>
+      <td>hadoop.tmp.dir</td>
+      <td>A base for other temporary directories</td>
+      <td>/tmp/hadoop-${user.name}</td>
+
+      <td>/tmp/hadoop</td>
+    </tr>
+    <tr>
+      <td>dfs.name.dir</td>
+      <td>Where the NameNode metadata should be stored</td>
+      <td>${hadoop.tmp.dir}/dfs/name</td>
+      <td>/home/hadoop/dfs/name</td>
+
+    </tr>
+    <tr>
+      <td>dfs.data.dir</td>
+      <td>Where DataNodes store their blocks</td>
+      <td>${hadoop.tmp.dir}/dfs/data</td>
+      <td>/home/hadoop/dfs/data</td>
+    </tr>
+
+    <tr>
+      <td>mapred.system.dir</td>
+      <td>The in-HDFS path to shared MapReduce system files</td>
+      <td>${hadoop.tmp.dir}/mapred/system</td>
+      <td>/hadoop/mapred/system</td>
+    </tr>
+  </tbody>
+
+</table>
+ 
+<p>This table is not exhaustive; several other
+directories are listed in <tt>conf/hadoop-defaults.xml</tt>. The
+remaining directories, however, are initialized by default to reside
+under <tt>hadoop.tmp.dir</tt>, and are unlikely to be a concern.</p>
+ 
+<p>It is <b>critically important</b> in a real cluster
+that <tt>dfs.name.dir</tt> and <tt>dfs.data.dir</tt> be moved out
+from <tt>hadoop.tmp.dir</tt>. A real cluster should never consider
+these directories temporary, as they are where all persistent HDFS data
+resides. Production clusters should have two paths listed for <tt>dfs.name.dir</tt>
+
+which are on two different physical file systems, to ensure that
+cluster metadata is preserved in the event of hardware failure.</p>
+ 
+<p>A multi-user configuration should also definitely
+adjust <tt>mapred.system.dir</tt>. Hadoop's default installation is
+designed to work for standalone operation, which does not use HDFS.
+Thus it conflates HDFS and local file system paths. When enabling HDFS,
+however, MapReduce will store shared information about jobs in <tt>mapred.system.dir</tt>
+on the DFS. If this path includes the current username (as the default <tt>hadoop.tmp.dir</tt>
+does), this will prevent proper operation. The current username on the
+submitting node will be the username who actually submits the job,
+e.g., "alex." All other nodes will have the current username set to the
+username used to launch Hadoop itself (e.g., "hadoop"). If these do not
+match, the TaskTrackers will be unable to find the job information and
+run the MapReduce job.</p>
+ 
+<p>For this reason, it is also advisable to remove <tt>${user.name}</tt>
+
+from the general <tt>hadoop.tmp.dir</tt>. </p>
+ 
+<p>While most of the directories listed above (all the
+ones with names in "foo.bar.baz" form) can be relocated via the <tt>conf/hadoop-site.xml</tt>
+file, the <tt>HADOOP_LOG_DIR</tt> directory is specified in <tt>conf/hadoop-env.sh</tt>
+as an environment variable. Relocating this directory requires editing
+this script. </p>
+
+<a name="machines"></a>
+<h3>Selecting Machines</h3>
+ 
+<p>Before diving into the details of configuring
+nodes, we include a brief word on choosing hardware for a cluster.
+While the processing demands of different organizations will dictate a
+different machine configuration for optimum efficiency, there are are
+commonalities associated with most Hadoop-based tasks.</p>
+ 
+<p>Hadoop is designed to take advantage of whatever
+hardware is available. Modest "beige box" PCs can be used to run small
+Hadoop setups for experimentation and debugging. Providing greater
+computational resources will, to a point, result in increased
+performance by your Hadoop cluster. Many existing Hadoop deployments
+include Xeon processors in the 1.8-2.0GHz range. Hadoop jobs written in
+Java can consume between 1 and 2 GB of RAM per core. If you use
+HadoopStreaming to write your jobs in a scripting language such as
+Python, more memory may be advisable. Due to the I/O-bound nature of
+Hadoop, adding higher-clocked CPUs may not be the most efficient use of
+resources, unless the intent is to run HadoopStreaming. Big data
+clusters, of course, can use as many large and fast hard drives as are
+available. However, too many disks in a single machine will result in
+many disks not being used in parallel. It is better to have three
+machines with 4 hard disks each than one machine with 12 drives. The
+former configuration will be able to write to more drives in parallel
+and will provide greater throughput. Finally, gigabit Ethernet
+connections between machines will greatly improve performance over a
+cluster connected via a slower network interface.</p>
+ 
+<p> It should be noted that the lower limit on
+minimum requirements for running Hadoop is well below the
+specifications for modern desktop or server class machines. However,
+multiple pages on the Hadoop wiki suggest similar specifications to
+those posted here for high-performance cluster design. (See <a href="http://wiki.apache.org/hadoop/HardwareBenchmarks">[1]</a>,&nbsp;
+
+<a href="http://wiki.apache.org/hadoop/MachineScaling">[2]</a>.) </p>
+
+<a name="configs"></a>
+<h3>Cluster Configurations</h3>
+ 
+<p>This section provides cluster configuration advice
+and specific settings for clusters of varying sizes. These sizes were
+picked to demonstrate basic categories of clusters; your own
+installation may be a hybrid of different aspects of these profiles.
+Here we suggest various properties which should be included in the <tt>conf/hadoop-site.xml</tt>
+file to most effectively use a cluster of a given size, as well as
+other system configuration elements. The next section describes how to
+finish the installation after implementing the configurations described
+here. You should read through each of these configurations in order, as
+configuration suggestions for larger deployments are based on the
+preceding ones. </p>
+  
+<a name="config-small"></a>
+<h4 class="sectionSubH">Small Clusters: 2-10 Nodes</h4>
+ 
+<p>Setting up a small cluster for development
+purposes is a very straightforward task. When using two nodes, one node
+will act as both NameNode/JobTracker and a DataNode/TaskTracker; the
+other node is only a DataNode/TaskTracker. Clusters of three or more
+machines typically use a dedicated NameNode/JobTracker, and all other
+nodes are workers.</p>
+ 
+<p>A relatively minimalist configuration in <tt>conf/hadoop-site.xml</tt>
+will suffice for this installation:</p>
+ 
+<div class="code"><pre class="codeblue">&lt;configuration&gt;<br>  &lt;property&gt;<br>    &lt;name&gt;mapred.job.tracker&lt;/name&gt;<br>    &lt;value&gt;head.server.node.com:9001&lt;/value&gt;<br>  &lt;/property&gt;<br>  &lt;property&gt;<br>    &lt;name&gt;fs.default.name&lt;/name&gt;<br>    &lt;value&gt;hdfs://head.server.node.com:9000&lt;/value&gt;<br>  &lt;/property&gt;<br>  &lt;property&gt;<br>    &lt;name&gt;dfs.data.dir&lt;/name&gt;<br>    &lt;value&gt;/home/hadoop/dfs/data&lt;/value&gt;<br>    &lt;final&gt;true&lt;/final&gt;<br>  &lt;/property&gt;<br>  &lt;property&gt;<br>    &lt;name&gt;dfs.name.dir&lt;/name&gt;<br>    &lt;value&gt;/home/hadoop/dfs/name&lt;/value&gt;<br>    &lt;final&gt;true&lt;/final&gt;<br>  &lt;/property&gt;<br>  &lt;property&gt;<br>    &lt;name&gt;hadoop.tmp.dir&lt;/name&gt;<br>    &lt;value&gt;/tmp/hadoop&lt;/value&gt;<br>    &lt;final&gt;true&lt;/final&gt;<br>  &lt;/property&gt;<br>  &lt;property&gt;<br>    &lt;name&gt;mapred.system.dir&lt;/name&gt;<br>    &lt;value&gt;/hadoop/mapred/system&lt;/value&gt;<br>    &lt;final&gt;true&lt;/final&gt;<br>  &lt;/property&gt;<br>  &lt;property&gt;<br>    &lt;name&gt;dfs.replication&lt;/name&gt;<br>    &lt;value&gt;2&lt;/value&gt;<br>  &lt;/property&gt;<br>&lt;/configuration&gt;</pre>
+
+</div>
+ 
+<p>Clusters closer to the 8-10 node range may
+want to set <tt>dfs.replication</tt> to 3. Values higher than 3 are
+usually not necessary. Individual files which are heavily utilized by a
+large number of nodes may have their particular replication factor
+manually adjusted upward independent of the cluster default.</p>
+  
+<a name="config-medium"></a>
+<h4 class="sectionSubH">Medium Clusters: 10-40 Nodes</h4>
+ 
+<p>This category is for clusters that occupy
+the majority of a single rack. Additional considerations for high
+availability and reliability come into play at this level.</p>
+
+ 
+<p>The single point of failure in a Hadoop
+cluster is the NameNode. While the loss of any other machine
+(intermittently or permanently) does not result in data loss, NameNode
+loss results in cluster unavailability. The permanent loss of NameNode
+data would render the cluster's HDFS inoperable.</p>
+ 
+<p>Therefore, another step should be taken in
+this configuration to back up the NameNode metadata. One machine in the
+cluster should be designated as the NameNode's backup. This machine
+does not run the normal Hadoop daemons (i.e., the DataNode and
+TaskTracker). Instead, it exposes a directory via NFS which is only
+mounted on the NameNode (e.g., <tt>/mnt/namenode-backup/</tt>). The
+cluster's <tt>hadoop-site.xml</tt> file should then instruct the
+NameNode to write to this directory as well: </p>
+ 
+<div class="code"><pre class="codeblue">  &lt;property&gt;<br>    &lt;name&gt;dfs.name.dir&lt;/name&gt;<br>    &lt;value&gt;/home/hadoop/dfs/name,/mnt/namenode-backup&lt;/value&gt;<br>    &lt;final&gt;true&lt;/final&gt;<br>  &lt;/property&gt;</pre>
+
+</div>
+ 
+<p>The NameNode will write its metadata to <i>each</i>
+directory in the comma-separated list of <tt>dfs.name.dir</tt>. If <tt>/mnt/namenode-backup</tt>
+is NFS-mounted from the backup machine, this will ensure that a
+redundant copy of HDFS metadata is available. The backup node should
+serve <tt>/mnt/namenode-backup</tt> from <tt>/home/hadoop/dfs/name</tt>
+
+on its own drive. This way, if the NameNode hardware completely dies,
+the backup machine can be brought up as the NameNode with no
+reconfiguration of the backup machine's software. To switch the
+NameNode and backup nodes, the backup machine should have its IP
+address changed to the original NameNode's IP address, and the server
+daemons should be started on that machine. The IP address must be
+changed to allow the DataNodes to recognize it as the "original"
+NameNode for HDFS. (Individual DataNodes will cache the DNS entry
+associated with the NameNode, so just changing the hostname is
+insufficient; the name reassignment must be performed at the IP address
+level.)</p>
+ 
+<p>The backup machine still has Hadoop
+installed and configured on it in the same way as every other node in
+the cluster, but it is not listed in the <tt>slaves</tt> file, so
+normal daemons are not started there.</p>
+ 
+<p>One function that the backup machine can be
+used for is to serve as the <i>SecondaryNameNode</i>. Note that this
+is not a failover NameNode process. The SecondaryNameNode process
+connects to the NameNode and takes periodic snapshots of its metadata
+(though not in real time). The NameNode metadata consists of a snapshot
+of the file system called the <tt>fsimage</tt> and a series of deltas
+to this snapshot called the <tt>editlog</tt>. With these two files,
+the current state of the system can be determined exactly. The
+SecondaryNameNode merges the <tt>fsimage</tt> and <tt>editlog</tt>
+
+into a new <tt>fsimage</tt> file that is a more compact representation
+of the file system state. Because this process can be memory intensive,
+running it on the backup machine (instead of on the NameNode itself)
+can be advantageous.</p>
+ 
+<p>To configure the SecondaryNameNode daemon to
+run on the backup machine instead of on the master machine, edit the <tt>conf/masters</tt>
+file so that it contains the name of the backup machine. The <tt>bin/start-dfs.sh</tt>
+and <tt>bin/start-mapred.sh</tt> (and by extension, <tt>bin/start-all.sh</tt>)
+scripts will actually always start the master daemons (NameNode and
+JobTracker) on the local machine. The <tt>slaves</tt> file is used for
+starting DataNodes and TaskTrackers. The <tt>masters</tt> file is used
+for starting the SecondaryNameNode. This filename is used despite the
+fact that the master node may not be listed in the file itself.</p>
+
+ 
+<p>A cluster of this size may also require
+nodes to be periodically decommissioned. As noted in <a href="module2.html">Module 2</a>, several machines cannot be turned
+off simultaneously, or data loss may occur. Nodes must be
+decommissioned on a schedule that permits replication of blocks being
+decommissioned. To prepare for this eventuality in advance, an <i>excludes</i>
+file should be added to the <tt>conf/hadoop-site.xml</tt>: </p>
+<div class="code"><pre class="codeblue">  &lt;property&gt;<br>    &lt;name&gt;dfs.hosts.exclude&lt;/name&gt;<br>    &lt;value&gt;/home/hadoop/excludes&lt;/value&gt;<br>    &lt;final&gt;true&lt;/final&gt;<br>  &lt;/property&gt;<br>  &lt;property&gt;<br>    &lt;name&gt;mapred.hosts.exclude&lt;/name&gt;<br>    &lt;value&gt;/home/hadoop/excludes&lt;/value&gt;<br>    &lt;final&gt;true&lt;/final&gt;<br>  &lt;/property&gt;</pre>
+
+</div>
+<p>This property should provide the full path to the excludes file (the
+actual location of the file is up to you). You should then create an
+empty file with this name:</p>
+<div class="code"><pre class="codeblue">$ touch /home/hadoop/excludes</pre>
+</div>
+<p>While the <tt>dfs.hosts.exclude</tt> property allows the definition
+of a list of machines which are explicitly barred from connecting to
+the NameNode (and similarly, <tt>mapred.hosts.exclude</tt> for the
+JobTracker), a large cluster may want to explicitly manage a list of
+machines which are approved to connect to a given JobTracker or
+NameNode.</p>
+<p>The <tt>dfs.hosts</tt> and <tt>mapred.hosts</tt> properties allow
+an administrator to supply a file containing an approved list of
+hostnames. If a machine is not in this list, it will be denied access
+to the cluster. This can be used to enforce policies regarding which
+teams of developers have access to which MapReduce sub-clusters. These
+are configured in exactly the same way as the excludes file.</p>
+
+<p>Of course, at this scale and above, 3 replicas of each block are
+advisable; the <tt>hadoop-site.xml</tt> file should contain:</p>
+<div class="code"><pre class="codeblue">  &lt;property&gt;<br>    &lt;name&gt;dfs.replication&lt;/name&gt;<br>    &lt;value&gt;3&lt;/value&gt;<br>  &lt;/property&gt;</pre>
+
+</div>
+<p>By default, HDFS does not preserve any free space on the DataNodes;
+the DataNode service will continue to accept blocks until all free
+space on the disk is exhausted, which may cause problems. The following
+setting will require each DataNode to reserve at least 1 GB of space on
+the drive free before it writes more blocks, which helps preserve
+system stability:</p>
+<div class="code"><pre class="codeblue">  &lt;property&gt;<br>    &lt;name&gt;dfs.datanode.du.reserved&lt;/name&gt;<br>    &lt;value&gt;1073741824&lt;/value&gt;<br>    &lt;final&gt;true&lt;/final&gt;<br>  &lt;/property&gt;</pre>
+
+</div>
+<p>Another parameter to watch is the heap size associated with each
+task. Hadoop caps the heap of each task process at 200 MB, which is too
+small for most data processing tasks. This cap is set as a parameter
+passed to the child Java process. It is common to override this with a
+higher cap by specifying: </p>
+<div class="code"><pre class="codeblue">  &lt;property&gt;<br>    &lt;name&gt;mapred.child.java.opts&lt;/name&gt;<br>    &lt;value&gt;-Xmx512m&lt;/value&gt;<br>  &lt;/property&gt;</pre>
+
+</div>
+<p>This will provide each child task with 512 MB of heap. It is not
+unreasonable in some cases to specify <tt>-Xmx1024m</tt> instead. In
+the interest of providing only what is actually required, it may be
+better to leave this set to 512 MB by default, and allowing
+applications to manually configure for a full GB of RAM/task themselves.</p>
+<h4>Using multiple drives per machine</h4>
+<p>While small clusters often have only one hard drive per machine,
+more high-performance configurations may include two or more disks per
+node. Slight configuration changes are required to make Hadoop take
+advantage of additional disks. </p>
+<p>DataNodes can be configured to write blocks out to multiple disks
+via the <tt>dfs.data.dir</tt> property. It can take on a
+comma-separated list of directories. Each block is written to one of
+these directories. E.g., assuming that there are four disks, mounted on
+<tt>/d1</tt>, <tt>/d2</tt>, <tt>/d3</tt>, and <tt>/d4</tt>, the
+following (or something like it) should be in the configuration for
+each DataNode:</p>
+
+<div class="code"><pre class="codeblue">  &lt;property&gt;<br>    &lt;name&gt;dfs.data.dir&lt;/name&gt;<br>    &lt;value&gt;/d1/dfs/data,/d2/dfs/data,/d3/dfs/data,/d4/dfs/data&lt;/value&gt;<br>    &lt;final&gt;true&lt;/final&gt;<br>  &lt;/property&gt;</pre>
+
+</div>
+<p>MapReduce performance can also be improved by distributing the
+temporary data generated by MapReduce tasks across multiple disks on
+each machine:</p>
+<div class="code"><pre class="codeblue">  &lt;property&gt;<br>    &lt;name&gt;mapred.local.dir&lt;/name&gt;<br>    &lt;value&gt;/d1/mapred/local,/d2/mapred/local,/d3/mapred/local,/d4/mapred/local&lt;/value&gt;<br>    &lt;final&gt;true&lt;/final&gt;<br>  &lt;/property&gt;</pre>
+
+</div>
+<p>Finally, if there are multiple drives available in the NameNode,
+they can be used to provide additional redundant copies of the NameNode
+metadata in the event of the failure of one drive. Unlike the above two
+properties, where one drive out of many is selected to write a piece of
+data, the NameNode writes to <i>each</i> comma-separated path in <tt>dfs.name.dir</tt>.
+If too many drives are listed here it may adversely affect the
+performance of the NameNode, as the probability of blocking on one or
+more I/O operations increases with the number of devices involved, but
+it is imperative that the sole copy of the metadata does not reside on
+a single drive. </p>
+
+<a name="config-large"> </a>
+<h4 class="sectionSubH">Large Clusters: Multiple Racks</h4>
+ 
+<p>Configuring multiple racks of machines for
+Hadoop requires further advance planning. The possibility of rack
+failure now exists, and operational racks should be able to continue
+even if entire other racks are disabled. Naive setups may result in
+large cross-rack data transfers which adversely affect performance.
+Furthermore, in a large cluster, the amount of metadata under the care
+of the NameNode increases. This section proposes configuring several
+properties to help Hadoop operate at very large scale, but the numbers
+used in this section are just guidelines. There is no single magic
+number which works for all deployments, and individual tuning will be
+necessary. These will, however, provide a starting point and alert you
+to settings which will be important. </p>
+ 
+
+<p>The NameNode is responsible for managing
+metadata associated with each block in the HDFS. As the amount of
+information in the rack scales into the 10's or 100's of TB, this can
+grow to be quite sizable. The NameNode machine needs to keep the
+blockmap in RAM to work efficiently. Therefore, at large scale, this
+machine will require more RAM than other machines in the cluster. The
+amount of metadata can also be dropped almost in half by doubling the
+block size:</p>
+ 
+<div class="code"><pre class="codeblue">  &lt;property&gt;<br>    &lt;name&gt;dfs.block.size&lt;/name&gt;<br>    &lt;value&gt;134217728&lt;/value&gt;<br>  &lt;/property&gt;</pre>
+
+</div>
+ 
+<p>This changes the block size from 64MB (the
+default) to 128MB, which decreases pressure on the NameNode's memory.
+On the other hand, this potentially decreases the amount of parallelism
+that can be achieved, as the number of blocks per file decreases. This
+means fewer hosts may have sections of a file to offer to MapReduce
+tasks without contending for disk access. The larger the individual
+files involved (or the more files involved in the average MapReduce
+job), the less of an issue this is. </p>
+ 
+<p>In the medium configuration, the NameNode
+wrote HDFS metadata through to another machine on the rack via NFS. It
+also used that same machine to checkpoint the NameNode metadata and
+compact it in the SecondaryNameNode process. Using this same setup will
+result in the cluster being dependent on a single rack's continued
+operation. The NFS-mounted write-through backup should be placed in a
+different rack from the NameNode, to ensure that the metadata for the
+file system survives the failure of an individual rack. For the same
+reason, the SecondaryNameNode should be instantiated on a separate rack
+as well. </p>
+ 
+<p>With multiple racks of servers, RPC timeouts
+may become more frequent. The NameNode takes a continual census of
+DataNodes and their health via heartbeat messages sent every few
+seconds. A similar timeout mechanism exists on the MapReduce side with
+the JobTracker. With many racks of machines, they may force one another
+to timeout because the master node is not handling them fast enough.
+The following options increase the number of threads on the master
+machine dedicated to handling RPC's from slave nodes:</p>
+ 
+<div class="code"><pre class="codeblue">  &lt;property&gt;<br>    &lt;name&gt;dfs.namenode.handler.count&lt;/name&gt;<br>    &lt;value&gt;40&lt;/value&gt;<br>  &lt;/property&gt;<br>  &lt;property&gt;<br>    &lt;name&gt;mapred.job.tracker.handler.count&lt;/name&gt;<br>    &lt;value&gt;40&lt;/value&gt;<br>  &lt;/property&gt;</pre>
+
+</div>
+ 
+<p>These settings were used in clusters of
+several hundred nodes. They should be scaled up accordingly with larger
+deployments.</p>
+ 
+<p>The following settings provide additional
+starting points for optimization. These are based on the reported
+configurations of actual clusters from 250 to 2000 nodes.</p>
+ 
+<table>
+  <tbody>
+    <tr>
+      <th>Property</th>
+
+      <th>Range</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>io.file.buffer.size</td>
+      <td>32768-131072</td>
+      <td>Read/write buffer size used in SequenceFiles (should be in
+multiples of the hardware page size)</td>
+
+    </tr>
+    <tr>
+      <td>io.sort.factor</td>
+      <td>50-200</td>
+      <td>Number of streams to merge concurrently when sorting files
+during shuffling</td>
+    </tr>
+    <tr>
+
+      <td>io.sort.mb</td>
+      <td>50-200</td>
+      <td>Amount of memory to use while sorting data</td>
+    </tr>
+    <tr>
+      <td>mapred.reduce.parallel.copies</td>
+      <td>20-50</td>
+
+      <td>Number of concurrent connections a reducer should use when
+fetching its input from mappers</td>
+    </tr>
+    <tr>
+      <td>tasktracker.http.threads</td>
+      <td>40-50</td>
+      <td>Number of threads each TaskTracker uses to provide
+intermediate map output to reducers</td>
+    </tr>
+
+    <tr>
+      <td>mapred.tasktracker.map.tasks.maximum</td>
+      <td>1/2 * (cores/node) to 2 * (cores/node)</td>
+      <td>Number of map tasks to deploy on each machine.</td>
+    </tr>
+    <tr>
+      <td>mapred.tasktracker.reduce.tasks.maximum</td>
+
+      <td>1/2 * (cores/node) to 2 * (cores/node)</td>
+      <td>Number of reduce tasks to deploy on each machine.</td>
+    </tr>
+  </tbody>
+</table>
+ 
+<h4>Rack awareness</h4>
+ 
+
+<p>In a multi-rack configuration, it is
+important to ensure that replicas of blocks are placed on multiple
+racks to minimize the possibility of data loss. Thus, a rack-aware
+placement policy should be used. A basic rack awareness script is
+provided in <a href="module2.html#rack">Module 2</a>. The
+guidelines there suggest how to set up a basic rack awareness policy;
+due to the heterogeneity of network topologies, a definitive
+general-purpose solution cannot be provided here. </p>
+<p>This tutorial targets Hadoop version 0.18.0. While most of the
+interfaces described will work on other, older versions of Hadoop,
+rack-awareness underwent a major overhaul in version 0.17. Thus, the
+following does not apply to version 0.16 and before.</p>
+<p>One major consequence of the upgrade is that while rack-aware block
+replica placement has existed in Hadoop for some time, rack-aware <i>task</i>
+placement has only been added in version 0.17. If Hadoop MapReduce
+cannot place a task on the same node as the block of data which the
+task is scheduled to process, then it picks an arbitrary different node
+on which to schedule the task. Starting with 0.17.0, tasks will be
+placed (when possible) on the same rack as at least one replica of an
+input data block for a job, which should further minimize the amount of
+inter-rack data transfers required to perform a job.</p>
+<p>Hadoop includes an interface called <i>DNSToSwitchMapping</i> which
+allows arbitrary Java code to be used to map servers onto a rack
+topology. The configuration key <tt>topology.node.switch.mapping.impl</tt>
+
+can be used to specify a class which meets this interface. More
+straightforward than writing a Java class for this purpose, however, is
+to use the default mapper, which executes a user-specified script (or
+other command) on each node of the cluster, which returns the rack id
+for that node. These rack ids are then aggregated and sent back to the
+NameNode.</p>
+<p>Note that the rack mapping script used by this system is
+incompatible with the 0.16 method of using <tt>dfs.network.script</tt>.
+Whereas <tt>dfs.network.script</tt> runs on each DataNode, a new
+script specified by <tt>topology.script.file.name</tt> is run by the
+master node only. To set the rack mapping script, specify the key <tt>topology.script.file.name</tt>
+in <tt>conf/hadoop-site.xml</tt>. </p>
+
+<h4>Cluster contention</h4>
+<p>If you are configuring a large number of machines, it is likely that
+you have a large number of users who wish to submit jobs to execute on
+it. Hadoop's job scheduling algorithm is based on a simple FIFO
+scheduler. Using this in a large deployment without external controls
+or policies agreed upon by all users can lead to lots of contention for
+the JobTracker, causing short jobs to be delayed by other long-running
+tasks and frustrating users.</p>
+<p>An advanced technique to combat this problem is to configure a
+single HDFS cluster which spans all available machines, and configure
+several separate MapReduce clusters with their own JobTrackers and
+pools of TaskTrackers. All MapReduce clusters are configured to use the
+same DFS and the same NameNode; but separate groups of machines have a
+different machine acting as JobTracker (i.e., subclusters have
+different settings for <tt>mapred.job.tracker</tt>). Breaking machines
+up into several smaller clusters, each of which contains 20-40
+TaskTrackers, provides users with lower contention for the system.
+Users may be assigned to different clusters by policy, or they can use
+the JobTracker status web pages (a web page exposed on port 50030 of
+each JobTracker) to determine which is underutilized.</p>
+<p>Multiple strategies exist for this assignment process. It is
+considered best practice to stripe the TaskTrackers associated with
+each JobTracker across all racks. This maximizes the availability of
+each cluster (as they are all resistant to individual rack failure),
+and works with the HDFS replica placement policy to ensure that each
+MapReduce cluster can find rack-local replicas of all files used in any
+MapReduce jobs.</p>
+
+<a name="monitoring"></a>
+<h3>Performance Monitoring</h3>
+ 
+<p>Multiple tools exist to monitor large clusters
+for performance and troubleshooting. This section briefly highlights
+two such tools.</p>
+
+<a name="ganglia"></a>
+<h4 class="sectionSubH">Ganglia</h4>
+ 
+<p><a href="http://ganglia.info/">Ganglia</a> is a performance
+monitoring framework for distributed systems. Ganglia provides a
+distributed service which collects metrics on individual machines and
+forwards them to an aggregator which can report back to an
+administrator on the global state of a cluster.</p>
+<p>Ganglia is designed to be integrated into other applications to
+collect statistics about their operation. Hadoop includes a performance
+monitoring framework which can use Ganglia as its backend. Instructions
+are available <a href="http://wiki.apache.org/hadoop/GangliaMetrics">on
+the Hadoop wiki</a> as to how to enable Ganglia metrics in Hadoop.
+Instructions are also included below.</p>
+<p>After installing and configuring Ganglia on your cluster, to direct
+Hadoop to output its metric reports to Ganglia, create a file named <tt>hadoop-metrics.properties</tt>
+
+in the <tt>$HADOOP_HOME/conf</tt> directory. The file should have the
+following contents: </p>
+<div class="code"><pre class="codeblue">dfs.class=org.apache.hadoop.metrics.ganglia.GangliaContext<br>dfs.period=10<br>dfs.servers=localhost:8649<br><br>mapred.class=org.apache.hadoop.metrics.ganglia.GangliaContext<br>mapred.period=10<br>mapred.servers=localhost:8649</pre>
+</div>
+<p>This assumes that <tt>gmond</tt> is running on each machine in the
+cluster. Instructions on the Hadoop wiki note that (in the experience
+of the wiki article author) this may result in all nodes reporting
+their results as "localhost" instead of with their individual
+hostnames. If this problem affects your cluster, an alternate
+configuration is proposed, in which all Hadoop instances speak directly
+with <tt>gmetad</tt>:</p>
+
+<div class="code"><pre class="codeblue">dfs.class=org.apache.hadoop.metrics.ganglia.GangliaContext<br>dfs.period=10<br>dfs.servers=@GMETAD@:8650<br><br>mapred.class=org.apache.hadoop.metrics.ganglia.GangliaContext<br>mapred.period=10<br>mapred.servers=@GMETAD@:8650</pre>
+</div>
+<p>Where <tt>@GMETAD@</tt> is the hostname of the server on which the <tt>gmetad</tt>
+service is running. If deploying Ganglia and Hadoop on a very large
+number of machines, the impact of this configuration (vs. the standard
+Ganglia configuration where individual services talk to <tt>gmond</tt>
+
+on <tt>localhost</tt>) should be evaluated. </p>
+
+<a name="nagios"></a>
+<h4 class="sectionSubH">Nagios</h4>
+ 
+<p>While Ganglia will monitor Hadoop-specific metrics,
+general information about the health of the cluster should be monitored
+with an additional tool.</p>
+
+<p><a href="http://www.nagios.org/">Nagios</a> is a machine and service
+monitoring system designed for large clusters. Nagios will provide
+useful diagnostic information for tuning your cluster, including
+network, disk, and CPU utilization across machines.</p>
+
+<a name="tips"></a>
+<h3>Additional Tips</h3>
+ 
+<p>The following are a few additional pieces of small
+advice:</p>
+ 
+<ul>
+   
+  <li class="bullist">Create a separate user named "hadoop" to run your
+instances; this will separate the Hadoop processes from any users on
+the system. Do not run Hadoop as root.</li>
+
+   
+  <li class="bullist">If Hadoop is installed in <tt>/home/hadoop/hadoop-0.18.0</tt>,
+link <tt>/home/hadoop/hadoop</tt> to <tt>/home/hadoop/hadoop-0.18.0</tt>.
+When upgrading to a newer version in the future, the link can be moved
+to make this process easier on other scripts that depend on the <tt>hadoop/bin</tt>
+directory.</li>
+   
+
+</ul>
+
+<a name="refs"></a>
+<h3>References &amp; Resources</h3>
+ 
+<div class="reference"> <a href="http://hadoop.apache.org/core/releases.html">Hadoop Downloads</a>
+</div>
+<div class="reference"> <a href="http://hadoop.apache.org/core/docs/current/quickstart.html">Hadoop
+Quickstart</a> - Single-machine configuration instructions </div>
+
+<div class="reference"> <a href="http://hadoop.apache.org/core/docs/current/cluster_setup.html">Hadoop
+Cluster Setup</a> - Official Hadoop configuration instructions </div>
+<div class="reference">Michael Noll's Hadoop configuration tutorials
+for <a href="http://www.michael-noll.com/wiki/Running_Hadoop_On_Ubuntu_Linux_%28Single-Node_Cluster%29">single</a>
+and <a href="http://www.michael-noll.com/wiki/Running_Hadoop_On_Ubuntu_Linux_%28Multi-Node_Cluster%29">multiple</a>
+node configurations. </div>
+
+<div style="text-align: center;">
+<p> <a href="module6.html">Previous module</a> &nbsp;|&nbsp; <a href="index.html">Table of contents</a> &nbsp;|&nbsp; <a href="pigtutorial.html">Next module</a> </p>
+</div>
+                        </div>
+                        </div>
+                        <div class="yui-b" id="ydnRack">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div id="clearfooter" style="padding-top: 40px;">
+<!-- used to make room for the #footer -->
+</div>
+</body></html>

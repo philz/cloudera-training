@@ -1,0 +1,1341 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="description" content="Module 5: Advanced MapReduce Features">
+<title>Hadoop Tutorial</title>
+
+<link rel="stylesheet" type="text/css" href="resource/combo.css">
+<script src="resource/fpc.js" type="text/javascript" defer="defer"></script></head><body style="margin: 0pt;"><iframe style="border-width: 0pt; position: absolute; visibility: visible; width: 10em; height: 10em; top: -134px; left: -134px;" title="Text Resize Monitor" id="_yuiResizeMonitor"></iframe>
+<div id="clearfooter" style="padding-top: 20px;">
+<!-- used to make room for the #footer -->
+</div>
+<div id="bodycontainer">
+
+<!--[if IE 6]>
+
+<style type="text/css" media="screen">
+#topAreaR p{margin:0;padding:0;}
+
+#headeraL{float:left;color:#9f9f9f;font-size:85%;}
+#searchFld{height:1.46em;border:1px solid #cecece;}
+#searchFld{margin:0;}
+#sub{position:relative;left:2px;}
+
+#headeraL{height:4em;}
+
+#subHIntCont{position:relative;top:0em;}
+
+#ydnNav{float:left;padding:0;top:1em;}
+.yuimenubaritemlabel{padding:0;}
+
+#headerSubSandbag {top:5.9em;}
+
+h4.fullHorange{width:98%;margin:0;}
+#recBlPst{width:18em;}
+#recBlPst3{width:17em;}
+#upcomingEventsBoxCont{width:17.7em;float:right;padding:0;}
+#upcomingEventsBox{float:right;margin:0}
+#upcomingEventsBox .blogRackTitle{margin-left:.3em;width:15em}
+#upcomingEventsBox .blogRackDate{margin-left:.67em;}
+
+#topFeaturedTabs ul li strong strong{background-color:#9dc1d6;}
+#topFeaturedTabs ul li strong strong strong{background-color:#9dc1d6;}
+#topFeaturedTabs ul li a:hover strong strong{background-color:#6fa4c3;}
+#topFeaturedTabs ul li a:hover strong strong strong{background-color:#6fa4c3;}
+
+.prefTabs{color:#aaa;float:left;position:relative;margin:.5em .8em 0em 2em;font-weight:bold;}
+#featureBox1, #featureBox2, #featureBox3, #featureBox4{border:1px solid #d9d9d9;}
+.innerSubMenuArea{border:1px solid #d9d9d9;}
+
+#breadcrumbs{position:relative;top:1.8em;}
+
+#getAppBox{border:1px solid #D9D9D9;}
+
+.recentPat{margin:0;margin-left:.3em;}
+#recentPatternsContainer {clear:both;float:left;}
+
+html body #doc4.yui-t7 #bd .yui-g .yui-gc div.first, .yui-gc div.first, .yui-gd .yui-g, .yui-gd .yui-u{width:67%;}
+html body #doc4.yui-t7 #bd .yui-g .yui-gb .yui-u, .yui-gb .yui-g, .yui-gb .yui-gb, .yui-gb .yui-gc, .yui-gb .yui-gd, .yui-gb .yui-ge, .yui-gb .yui-gf, .yui-gb .yui-u, .yui-gc .yui-u, .yui-gc .yui-g, .yui-gd .yui-u{width:29%;}
+html body #doc4.yui-t7 #bd .yui-g .yui-gb .yui-u, .yui-gb .yui-g, .yui-gb .yui-gb, .yui-gb .yui-gc, .yui-gb .yui-gd, .yui-gb .yui-ge, .yui-gb .yui-gf, .yui-gb .yui-u, .yui-gc .yui-u, .yui-gc .yui-g, .yui-gd .yui-u{margin-left:.5%;}
+
+</style>
+
+<![endif]-->
+<!--[if IE 7]>
+
+<style type="text/css" media="screen">
+#subHIntCont{position:relative;top:0;}
+#ydnNav{float:left;padding:.1em 0;position:relative;left:0;}
+#ydnNav .yuimenu .colGroup { margin-right: 1.5em;  }
+#breadcrumbs{position:relative;top:1.8em;}
+</style>
+
+<![endif]-->
+
+
+<div id="mainCMaxCont">
+    <div id="mainCContainer">
+        <div id="mainCIntCont">
+            <div id="internalContainer">
+                <div id="doc4" class="yui-t6">
+                    <div id="bd">
+                        <div id="yui-main">
+                        <div class="yui-b">
+
+<h2>Module 5: Advanced MapReduce Features</h2>
+
+  <div style="text-align: center;">
+    <p>
+
+    <a href="module4.html">Previous module</a>
+    &nbsp;|&nbsp;
+    <a href="index.html">Table of contents</a>
+    &nbsp;|&nbsp;
+    <a href="module6.html">Next module</a>
+    </p>
+
+  </div>
+
+  <a name="intro"></a>
+  <h3>Introduction</h3>
+
+  <p>In <a href="module4.html">Module 4</a> you learned the basics
+  of programming with Hadoop MapReduce. That module explains how
+  data moves through a general MapReduce architecture, and what
+  particular methods and classes facilitate the use of the
+  Hadoop for processing. In this module we will look more closely
+  at how to override Hadoop's functionality in various ways.
+  These techniques allow you to customize Hadoop for
+  application-specific purposes.</p>
+
+  <a name="goals"></a>
+
+  <h3>Goals for this Module:</h3>
+
+  <ul>
+    <li class="bullist">Understand advanced Hadoop features</li>
+    <li class="bullist">Be able to use Hadoop on Amazon EC2 and S3</li>
+  </ul>
+
+  <a name="outline"></a>
+
+  <h3>Outline</h3>
+
+  <ol>
+    <li><a href="#intro">Introduction</a></li>
+    <li><a href="#goals">Goals for this Module</a></li>
+    <li><a href="#outline">Outline</a></li>
+    <li><a href="#types">Custom Data Types</a></li>
+
+    <ol>
+      <li><a href="#writable">Writable Types</a></li>
+      <li><a href="#keytypes">Custom Key Types</a></li>
+      <li><a href="#using-types">Using Custom Types</a></li>
+      <li><a href="#writable-comparator">Faster Comparison Operations</a></li>
+      <li><a href="#writable-notes">Final Writable Notes</a></li>
+
+    </ol>
+    <li><a href="#inputformat">Input Formats</a></li>
+    <ol>
+      <li><a href="#fileformat">Custom File Formats</a></li>
+      <li><a href="#altsources">Alternate Data Sources</a></li>
+    </ol>
+    <li><a href="#outputformat">Output Formats</a></li>
+
+    <li><a href="#partitioning">Partitioning Data</a></li>
+    <li><a href="#metrics">Reporting Custom Metrics</a></li>
+    <li><a href="#auxdata">Distributing Auxiliary Job Data</a></li>
+    <li><a href="#debugscripts">Distributing Debug Scripts</a></li>
+    <li><a href="#aws">Using Amazon Web Services</a></li>
+    <li><a href="#refs">References</a></li>
+
+  </ol>
+
+  <a name="types"></a>
+  <h3>Custom Data Types</h3>
+
+  <p>Hadoop MapReduce uses typed data at all times when it interacts
+  with user-provided Mappers and Reducers: data read from files into
+  Mappers, emitted by mappers to reducers, and emitted by reducers
+  into output files is all stored in Java objects.</p>
+
+  <a name="writable"></a>
+  <h4 class="sectionSubH"><i>Writable</i> Types</h4>
+
+  <p>Objects which can be marshaled to or from files and across
+  the network must obey a particular interface, called <i>Writable</i>,
+  which allows Hadoop
+  to read and write the data in a serialized form for transmission.
+  Hadoop provides several stock classes which implement <i>Writable</i>:
+  Text (which stores String data), IntWritable, LongWritable,
+  FloatWritable, BooleanWritable,
+  and several others. The entire list is in the <tt>org.apache.hadoop.io</tt>
+  package of the Hadoop source (see the <a href="http://hadoop.apache.org/core/docs/current/api/index.html">API
+  reference</a>).</p>
+
+  <p>In addition to these types, you are free to define your own classes
+  which implement <i>Writable</i>. You can organize a structure of virtually
+  any layout to fit your data and be transmitted by Hadoop. As a motivating
+  example, consider a mapper which emits key-value pairs where the key
+  is the name of an object, and the value is its coordinates in some
+  3-dimensional space. The key is some string-based data, and the value is a
+  structure of the form:</p>
+
+  <div class="code"><pre class="codeblue">struct point3d {
+  float x;
+  float y;
+  float z;
+}</pre></div>
+
+  <p>The key can be represented as a <tt>Text</tt> object, but what about
+  the value? How do we build a Point3D class which Hadoop can transmit?
+  The answer is to implement the <i>Writable</i> interface, which requires
+  two methods:</p>
+
+  <div class="code"><pre class="codeblue">
+public interface Writable {
+  void readFields(DataInput in);
+  void write(DataOutput out);
+}</pre></div>
+
+  <p>The first of these methods initializes all of the fields of the object
+  based on data contained in the binary stream <i>in</i>. The latter writes
+  all the information needed to reconstruct the object to the binary
+  stream <i>out</i>. The <tt>DataInput</tt> and <tt>DataOutput</tt> classes
+  (part of <tt>java.io</tt>) contain methods to serialize most basic types
+  of data; the important contract between your <tt>readFields()</tt> and
+  <tt>write()</tt> methods is that they read and write the data from and
+  to the binary stream in the same order. The following code implements
+  a Point3D class usable by Hadoop:</p>
+
+  <div class="code"><pre class="codeblue">public class Point3D implements Writable {
+  public float x;
+  public float y;
+  public float z;
+
+  public Point3D(float x, float y, float z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+
+  public Point3D() {
+    this(0.0f, 0.0f, 0.0f);
+  }
+
+  public void write(DataOutput out) throws IOException {
+    out.writeFloat(x);
+    out.writeFloat(y);
+    out.writeFloat(z);
+  }
+
+  public void readFields(DataInput in) throws IOException {
+    x = in.readFloat();
+    y = in.readFloat();
+    z = in.readFloat();
+  }
+
+  public String toString() {
+    return Float.toString(x) + ", "
+        + Float.toString(y) + ", "
+        + Float.toString(z);
+  }
+}</pre></div>
+  <p><i>Listing 5.1: A Point class which implements Writable</i></p>
+
+  <a name="keytypes"></a>
+  <h4 class="sectionSubH">Custom Key Types</h4>
+
+  <p>As written, the <tt>Point3D</tt> type will work as a value type
+  like we require for the mapper problem described above. But what if
+  we want to emit <tt>Point3D</tt> objects as keys too? In Hadoop
+  MapReduce, if (key, value) pairs sent to a single reduce task
+  include multiple keys, the reducer will process the keys in sorted
+  order. So key types must implement a stricter interface,
+  <i>WritableComparable</i>. In addition to being <i>Writable</i> so
+  they can be transmitted over the network, they also obey Java's
+  <i>Comparable</i> interface. The following code listing extends
+  <tt>Point3D</tt> to meet this interface:</p>
+
+  <div class="code"><pre class="codeblue">public class Point3D implements WritableComparable {
+  public float x;
+  public float y;
+  public float z;
+
+  public Point3D(float x, float y, float z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+
+  public Point3D() {
+    this(0.0f, 0.0f, 0.0f);
+  }
+
+  public void write(DataOutput out) throws IOException {
+    out.writeFloat(x);
+    out.writeFloat(y);
+    out.writeFloat(z);
+  }
+
+  public void readFields(DataInput in) throws IOException {
+    x = in.readFloat();
+    y = in.readFloat();
+    z = in.readFloat();
+  }
+
+  public String toString() {
+    return Float.toString(x) + ", "
+        + Float.toString(y) + ", "
+        + Float.toString(z);
+  }
+
+  /** return the Euclidean distance from (0, 0, 0) */
+  public float distanceFromOrigin() {
+    return (float)Math.sqrt(x*x + y*y + z*z);
+  }
+
+  public int compareTo(Point3D other) {
+    float myDistance = distanceFromOrigin();
+    float otherDistance = other.distanceFromOrigin();
+
+    return Float.compare(myDistance, otherDistance);
+  }
+
+  public boolean equals(Object o) {
+    if (!(other instanceof Point3D)) {
+      return false;
+    }
+
+    Point3D other = (Point3D)o;
+    return this.x == other.x &amp;&amp; this.y == other.y
+        &amp;&amp; this.z == other.z;
+  }
+
+  public int hashCode() {
+    return Float.floatToIntBits(x)
+         ^ Float.floatToIntBits(y)
+         ^ Float.floatToIntBits(z);
+  }
+}</pre></div>
+  <p><i>Listing 5.2: A WritableComparable version of Point3D</i></p>
+
+  <p>It is important for key types to implement <tt>hashCode()</tt>
+
+  as well; the section on <i>Partitioners</i> later in this module
+  explains why. The methods <tt>hashCode()</tt> and <tt>equals()</tt>
+  have been provided in this version of the class as well.</p>
+
+  <a name="using-types"></a>
+
+  <h4 class="sectionSubH">Using Custom Types</h4>
+
+  <p>Now that you have created a custom data type, Hadoop must be
+  told to use it. You can control the output key or value data
+  type for a job by using the <tt>setOutputKeyClass()</tt> and
+  <tt>setOutputValueClass()</tt> methods of the <tt>JobConf</tt>
+  object that defines your job. By default, this will set the
+  types expected as output from both the map and reduce phases.
+  If your Mapper emits different types than the Reducer, you
+  can set the types emitted by the mapper with the <tt>JobConf</tt>'s
+  <tt>setMapOutputKeyClass()</tt> and <tt>setMapOutputValueClass()</tt>
+
+  methods. These implicitly set the input types expected by the Reducer.
+  The types delivered as input to the Mapper are
+  governed by the <i>InputFormat</i> used; see the next section
+  of this module for more details.</p>
+
+
+  <a name="writable-comparator"></a>
+  <h4 class="sectionSubH">Faster Comparison Operations</h4>
+
+  <p>The default sorting process for keys
+  will read instances of the key type in from a stream, parsing
+  the byte stream with the <tt>readFields()</tt> method of the key
+  class, and then call the <tt>compareTo()</tt> method of the key
+  class on the two objects. For faster performance, it may be possible
+  to decide on an ordering between two keys just by looking at the
+  byte streams and without parsing all of the data contained therein.
+  For example, consider comparing strings of text. If characters are
+  read in sequentially, then a decision can be made on their ordering
+  as soon as a character position is found where the two strings differ.
+  Even if all of the bytes for the object must be read in, the object
+  itself does not necessarily need to be instantiated around those
+  bytes.
+  To support this higher-speed sorting mechanism, you can extend the
+  <tt>WritableComparator</tt> class with a comparator specific to your
+  own data type. In particular, the method which should be overridden
+  is 
+</p><pre class="codeblue">public int compare(byte[] b1, int s1, int l1, byte[] b2, int s2, int l2)
+</pre>
+
+
+  <p>The default implementation is in the class
+  <tt>org.apache.hadoop.io.WritableComparator</tt>. The relevant
+  method has been reproduced here:</p>
+
+  <div class="code"><pre class="codeblue">  public int compare(byte[] b1, int s1, int l1, byte[] b2, int s2, int l2) {
+    try {
+      buffer.reset(b1, s1, l1);                   // parse key1
+      key1.readFields(buffer);
+
+      buffer.reset(b2, s2, l2);                   // parse key2
+      key2.readFields(buffer);
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+    return compare(key1, key2);                   // compare them
+  }</pre></div>
+
+  <p>Its operation is exactly as described above; it performs the
+  straightforward comparison of the two objects after they have been
+  individually deserialized from their separate byte streams (the
+  <tt>b</tt> variables), which each have their own start offset (<tt>s</tt>)
+  and length (<tt>l</tt>) attributes.
+  Both objects must be fully constructed
+  and deserialized before comparison can occur. The <tt>Text</tt>
+
+  class, on the other hand, allows incremental comparison via its
+  own implementation of this method. The code from
+  <tt>org.apache.hadoop.io.Text</tt> is shown here:</p>
+
+  <div class="code"><pre class="codeblue">   /** A WritableComparator optimized for Text keys. */
+  public static class Comparator extends WritableComparator {
+    public Comparator() {
+      super(Text.class);
+    }
+
+    public int compare(byte[] b1, int s1, int l1,
+                       byte[] b2, int s2, int l2) {
+      int n1 = WritableUtils.decodeVIntSize(b1[s1]);
+      int n2 = WritableUtils.decodeVIntSize(b2[s2]);
+      return compareBytes(b1, s1+n1, l1-n1, b2, s2+n2, l2-n2);
+    }
+  }</pre></div>
+
+
+  <p>The <tt>Text</tt> object is serialized by first writing its length
+  field to the byte stream, followed by the UTF-encoded string. The
+  method <tt>decodeVIntSize</tt> determines the length of the integer
+  describing the length of the byte stream. The comparator then skips
+  these bytes, directly comparing the UTF-encoded bytes of the actual
+  string-portion of the stream in the <tt>compareBytes()</tt> method.
+  As soon as it finds a character in which the two streams differ,
+  it returns a result without examining the rest of the strings.
+  </p>
+
+  <p>Note that you do not need to manually specify this comparator's
+  use in your Hadoop programs. Hadoop automatically uses this special
+  comparator implementation for <tt>Text</tt> data due to the following
+  code being added to <tt>Text</tt>'s static initialization:</p>
+  <div class="code"><pre class="codeblue">  static {
+    // register this comparator
+    WritableComparator.define(Text.class, new Comparator());
+  }</pre></div>
+
+  <a name="writable-notes"></a>
+
+  <h4 class="sectionSubH">Final <i>Writable</i> Notes</h4>
+
+  <p>Defining custom writable types allows you to intelligently
+  use Hadoop to manipulate higher-level data structures, without
+  needing to use <tt>toString()</tt> to convert all your data types
+  to text for sending over the network. If you will be using a type
+  in a lot of MapReduce jobs, or you must process a very large
+  volume of them (as is usually the case in Hadoop), defining
+  your own data type classes will provide a significant performance
+  benefit.</p>
+
+  <p><b>Exercise:</b> Assume that we have a mapper which emits
+  line segments as keys and values. A line segment is defined by its
+  endpoints. For our purposes, line segments can be ordered by their
+  lengths. Implement a <tt>LineSegment</tt> class which implements
+  <i>WritableComparable</i>. Hint: make use of Point3D objects.</p><p>
+
+  <a name="inputformat"></a>
+  </p><h3>Input Formats</h3>
+
+  <p>The <i>InputFormat</i> defines how to read data from a file into the
+  Mapper instances. Hadoop comes with several implementations of
+  <i>InputFormat</i>; some work with text files and describe different ways
+  in which the text files can be interpreted. Others, like
+  <tt>SequenceFileInputFormat</tt>, are purpose-built for reading particular
+  binary file formats.  These types are described in more detail in
+  <a href="module4.html">Module 4</a>.</p>
+
+  <p>More powerfully, you can define your own <i>InputFormat</i>
+  implementations to format the input to your programs however you
+  want. For example, the default <tt>TextInputFormat</tt> reads
+  lines of text files. The key it emits for each record is the
+  byte offset of the line read (as a <tt>LongWritable</tt>), and
+  the value is the contents of
+  the line up to the terminating <tt>'\n'</tt> character (as a
+  <tt>Text</tt> object). If you have
+  multi-line records each separated by a <tt>$</tt> character, you
+  could write your own <i>InputFormat</i> that parses files into
+  records split on this character instead.</p>
+
+  <p>Another important job of the <i>InputFormat</i> is to divide
+  the input data sources (e.g., input files) into fragments
+  that make up the inputs to individual map tasks. These fragments
+  are called "splits" and are encapsulated in instances of the
+  <i>InputSplit</i> interface. Most files, for example, are split up
+  on the boundaries of the underlying blocks in HDFS, and are
+  represented by instances of the <tt>FileInputSplit</tt> class.
+  Other files may be unsplittable, depending on application-specific
+  data. Dividing up other data sources (e.g., tables from
+  a database) into splits would be performed in a different,
+  application-specific fashion. When dividing the data into input splits,
+  it is important that this process be quick and cheap. The data itself
+  should not need to be accessed to perform this process (as it is all
+  done by a single machine at the start of the MapReduce job).</p>
+
+  <p>
+  The <tt>TextInputFormat</tt> divides files into splits strictly by
+  byte offsets. It then reads individual lines of the files from the
+  split in as record inputs to the Mapper. The <i>RecordReader</i>
+  associated with <tt>TextInputFormat</tt> must be robust enough to
+  handle the fact that the splits do not necessarily correspond neatly
+  to line-ending boundaries. In fact, the <i>RecordReader</i> will
+  read past the theoretical end of a split to the end of a line in
+  one record. The reader associated with the next split in the file
+  will scan for the first full line in the split to begin processing
+  that fragment. All <i>RecordReader</i> implementations must use
+  some similar logic to ensure that they do not miss records that
+  span <i>InputSplit</i> boundaries.</p>
+
+
+  <a name="fileformat"></a>
+  <h4 class="sectionSubH">Custom File Formats</h4>
+
+  <p>In this section we will describe how to develop a custom
+  <i>InputFormat</i> that reads files of a particular format.</p>
+
+  <p>Rather than implement <i>InputFormat</i> directly, it is
+  usually best to subclass the <tt>FileInputFormat</tt>. This
+  abstract class provides much of the basic handling necessary
+  to manipulate files. If we want to parse the file in a particular
+  way, then we must override the <tt>getRecordReader()</tt>
+
+  method, which returns an instance of <i>RecordReader</i>: an
+  object that can read from the input source. To motivate
+  this discussion with concrete code, we will develop an
+  <i>InputFormat</i> and <i>RecordReader</i> implementation which
+  can read lists of objects and positions from files. We assume
+  that we are reading text files where each line contains the
+  name of an object and then its coordinates as a set of three
+  comma-separated floating-point values. For instance, some
+  sample data may look like the following:</p>
+
+  <div class="code"><pre class="codeblue">ball, 3.5, 12.7, 9.0
+car, 15, 23.76, 42.23
+device, 0.0, 12.4, -67.1</pre></div>
+
+  <p>We must read individual lines of the file, separate the key
+  (<tt>Text</tt>)
+  from the three floats, and then read those into a <tt>Point3D</tt>
+  object as we developed earlier.</p>
+
+  <p>The <tt>ObjectPositionInputFormat</tt> class itself is
+  very straightforward. Since it will be reading from files, all
+  we need to do is define a factory method for <i>RecordReader</i>
+
+  implementations:</p>
+
+  <div class="code"><pre class="codeblue">public class ObjectPositionInputFormat extends
+    FileInputFormat&lt;Text, Point3D&gt; {
+
+  public RecordReader&lt;Text, Point3D&gt; getRecordReader(
+      InputSplit input, JobConf job, Reporter reporter)
+      throws IOException {
+
+    reporter.setStatus(input.toString());
+    return new ObjPosRecordReader(job, (FileSplit)input);
+  }
+}</pre></div>
+  <p><i>Listing 5.3: InputFormat for object-position files</i></p>
+
+
+  <p>Note that we define the types of the keys and values emitted
+  by the <i>InputFormat</i> in its definition; these must match
+  the types read in as input by the Mapper in its class definition.</p>
+
+  <p>The <i>RecordReader</i> implementation is where the actual
+  file information is read and parsed. We will implement this by
+  making use of the <tt>LineRecordReader</tt> class; this is the
+  <i>RecordReader</i> implementation used by <tt>TextInputFormat</tt>
+
+  to read individual lines from files and return them unparsed. We
+  will wrap the <tt>LineRecordReader</tt> with our own implementation
+  which converts the values to the expected types. By using
+  <tt>LineRecordReader</tt>, we do not need to worry about what
+  happens if a record spans an <i>InputSplit</i> boundary, since this
+  underlying record reader already has logic to take care of this fact.</p>
+
+  <div class="code"><pre class="codeblue">class ObjPosRecordReader implements RecordReader&lt;Text, Point3D&gt; {
+
+  private LineRecordReader lineReader;
+  private LongWritable lineKey;
+  private Text lineValue;
+
+  public ObjPosRecordReader(JobConf job, FileSplit split) throws IOException {
+    lineReader = new LineRecordReader(job, split);
+
+    lineKey = lineReader.createKey();
+    lineValue = lineReader.createValue();
+  }
+
+  public boolean next(Text key, Point3D value) throws IOException {
+    // get the next line
+    if (!lineReader.next(lineKey, lineValue)) {
+      return false;
+    }
+
+    // parse the lineValue which is in the format:
+    // objName, x, y, z
+    String [] pieces = lineValue.toString().split(",");
+    if (pieces.length != 4) {
+      throw new IOException("Invalid record received");
+    }
+
+    // try to parse floating point components of value
+    float fx, fy, fz;
+    try {
+      fx = Float.parseFloat(pieces[1].trim());
+      fy = Float.parseFloat(pieces[2].trim());
+      fz = Float.parseFloat(pieces[3].trim());
+    } catch (NumberFormatException nfe) {
+      throw new IOException("Error parsing floating point value in record");
+    }
+
+    // now that we know we'll succeed, overwrite the output objects
+
+    key.set(pieces[0].trim()); // objName is the output key.
+
+    value.x = fx;
+    value.y = fy;
+    value.z = fz;
+
+    return true;
+  }
+
+  public Text createKey() {
+    return new Text("");
+  }
+
+  public Point3D createValue() {
+    return new Point3D();
+  }
+
+  public long getPos() throws IOException {
+    return lineReader.getPos();
+  }
+
+  public void close() throws IOException {
+    lineReader.close();
+  }
+
+  public float getProgress() throws IOException {
+    return lineReader.getProgress();
+  }
+}</pre></div>
+
+  <p><i>Listing 5.4: RecordReader for object-position files</i></p>
+
+  <p>You can control the <i>InputFormat</i> used by your MapReduce job
+  with the <tt>JobConf.setInputFormat()</tt> method.</p>
+
+  <p><b>Exercise:</b> Write an <i>InputFormat</i> and <i>RecordReader</i>
+
+  that read strings of text separated by <tt>'$'</tt> characters instead
+  of newlines.</p>
+
+  <a name="altsources"></a>
+  <h4 class="sectionSubH">Alternate Data Sources</h4>
+
+  <p>An <i>InputFormat</i> describes both how to present the data to
+  the Mapper and where the data originates from. Most implementations
+  descend from <tt>FileInputFormat</tt>, which reads from files on
+  the local machine or HDFS. If your data does not come from a source
+  like this, you can write an <i>InputFormat</i> implementation that
+  reads from an alternate source. For example, HBase (a distributed
+  database system) provides a <tt>TableInputFormat</tt> that reads
+  records from a database table. You could imagine a system where
+  data is streamed to each machine over the network on a particular
+  port; the <i>InputFormat</i> reads data from the port and parses
+  it into individual records for mapping.</p>
+
+  <a name="outputformat"></a>
+  <h3>Output Formats</h3>
+
+  <p>The <i>InputFormat</i> and <i>RecordReader</i> interfaces define
+  how data is read into a MapReduce program. By analogy, the
+  <i>OutputFormat</i> and <i>RecordWriter</i> interfaces dictate
+  how to write the results of a job back to the underlying permanent
+  storage. Several useful <i>OutputFormat</i> implementations are
+  described in <a href="module4.html">Module 4</a>. The default
+  format (<tt>TextOutputFormat</tt>) will write (key, value)
+  pairs as strings to individual
+  lines of an output file (using the <tt>toString()</tt> methods
+  of the keys and values). The <tt>SequenceFileOutputFormat</tt>
+
+  will keep the data in binary, so it can be later read quickly by the
+  <tt>SequenceFileInputFormat</tt>. These classes make
+  use of the <tt>write()</tt>
+  and <tt>readFields()</tt> methods of the specific <i>Writable</i>
+  classes used by your MapReduce pass.</p>
+
+  <p>
+  You can define your own
+  <i>OutputFormat</i> implementation that will write data to an
+  underlying medium in the format that you control. If you want to
+  write to output files on the local system or in HDFS, you should
+  extend the <tt>FileOutputFormat</tt> abstract class.
+  When you want to use a different output format, you can control
+  this with the <tt>JobConf.setOutputFormat()</tt> method.</p>
+
+  <p>Why might we want to define our own <i>OutputFormat</i>? A custom
+  <i>OutputFormat</i> allows you to exactly control what data is
+  put into a file, and how it is laid out. Suppose another process
+  you use has a custom input file format. Your MapReduce job is supposed
+  to generate inputs compatible with this program. You may develop an
+  <i>OutputFormat</i> implementation which will produce the correct
+  type of file to work with this subsequent process in your tool
+  chain. As an example of how to write an <i>OutputFormat</i>, we
+  will walk through the implementation of a simple XML-based format
+  developed for this tutorial, <tt>XmlOutputFormat</tt>. Given a
+  set of (key, value) pairs from the Reducer, (e.g., <i>(k1, v1)</i>,
+  <i>(k2, v2)</i>, etc...) this will generate a file laid out like
+  so:</p>
+
+  <div class="code"><pre class="codeblue">&lt;results&gt;
+  &lt;<i>k1</i>&gt;<i>v1</i>&lt;/<i>k1</i>&gt;
+  &lt;<i>k2</i>&gt;<i>v2</i>&lt;/<i>k2</i>&gt;
+
+  ...
+&lt;/results&gt;</pre></div>
+
+  <p>The code to generate these files is presented below:</p>
+  <div class="code"><pre class="codeblue">import java.io.DataOutputStream;
+import java.io.IOException;
+
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.FileOutputFormat;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.RecordWriter;
+import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.util.Progressable;
+
+public class XmlOutputFormat&lt;K, V&gt; extends FileOutputFormat {
+
+  protected static class XmlRecordWriter&lt;K, V&gt; implements RecordWriter&lt;K, V&gt; {
+    private static final String utf8 = "UTF-8";
+
+    private DataOutputStream out;
+
+    public XmlRecordWriter(DataOutputStream out) throws IOException {
+      this.out = out;
+      out.writeBytes("&lt;results&gt;\n");
+    }
+
+    /**
+     * Write the object to the byte stream, handling Text as a special case.
+     *
+     * @param o
+     *          the object to print
+     * @throws IOException
+     *           if the write throws, we pass it on
+     */
+    private void writeObject(Object o) throws IOException {
+      if (o instanceof Text) {
+        Text to = (Text) o;
+        out.write(to.getBytes(), 0, to.getLength());
+      } else {
+        out.write(o.toString().getBytes(utf8));
+      }
+    }
+
+    private void writeKey(Object o, boolean closing) throws IOException {
+      out.writeBytes("&lt;");
+      if (closing) {
+        out.writeBytes("/");
+      }
+      writeObject(o);
+      out.writeBytes("&gt;");
+      if (closing) {
+        out.writeBytes("\n");
+      }
+    }
+
+    public synchronized void write(K key, V value) throws IOException {
+
+      boolean nullKey = key == null || key instanceof NullWritable;
+      boolean nullValue = value == null || value instanceof NullWritable;
+
+      if (nullKey &amp;&amp; nullValue) {
+        return;
+      }
+
+      Object keyObj = key;
+
+      if (nullKey) {
+        keyObj = "value";
+      }
+
+      writeKey(keyObj, false);
+
+      if (!nullValue) {
+        writeObject(value);
+      }
+
+      writeKey(keyObj, true);
+    }
+
+    public synchronized void close(Reporter reporter) throws IOException {
+      try {
+        out.writeBytes("&lt;/results&gt;\n");
+      } finally {
+        // even if writeBytes() fails, make sure we close the stream
+        out.close();
+      }
+    }
+  }
+
+  public RecordWriter&lt;K, V&gt; getRecordWriter(FileSystem ignored, JobConf job,
+      String name, Progressable progress) throws IOException {
+    Path file = FileOutputFormat.getTaskOutputPath(job, name);
+    FileSystem fs = file.getFileSystem(job);
+    FSDataOutputStream fileOut = fs.create(file, progress);
+    return new XmlRecordWriter&lt;K, V&gt;(fileOut);
+  }
+}</pre></div>
+
+  <p>The <tt>FileOutputFormat</tt> which <tt>XmlOutputFormat</tt>
+  subclasses will handle most of the heavy lifting. The only method
+  directly implemented in <tt>XmlOutputFormat</tt> is
+  <tt>getRecordWriter()</tt>, which is a factory method for the
+  <i>RecordWriter</i> object which will actually write the file.
+  The inner class <tt>XmlRecordWriter</tt> is the implementation which
+  generates files in the format shown above. The <i>RecordWriter</i>
+
+  is initialized with an output stream connected to a file in the
+  output file system. At the same time, the XML prologue is written
+  into the output file. The particular output file system and filename
+  associated with this output stream
+  are determined based on the current job configuration. The
+  <tt>XmlRecordWriter</tt>'s <tt>write()</tt> method is then called each
+  time a (key, value) pair is provided to the <i>OutputCollector</i>
+  by the Reducer. When the Reducer finishes, the <tt>close()</tt>
+  method of the <tt>XmlRecordWriter</tt> will write the XML epilogue
+  and close the underlying stream.</p>
+
+  <a name="partitioning"></a>
+  <h3>Partitioning Data</h3>
+
+  <p>"Partitioning" is the process of determining which
+  reducer instance will receive which intermediate keys and values.
+  Each mapper must determine for all of its output (key, value)
+  pairs which reducer will receive them. It is necessary that for any
+  key, regardless of which mapper instance generated it, the
+  destination partition is the same. If the key <tt>"cat"</tt>
+  is generated in two separate (key, value) pairs, they must both
+  be reduced together. It is also important for performance reasons
+  that the mappers be able to partition data independently -- they
+  should never need to exchange information with one another to
+  determine the partition for a particular key.
+  </p>
+
+  <p>Hadoop uses an interface called <i>Partitioner</i> to determine
+  which partition a (key, value) pair will go to. A single
+  partition refers to all (key, value) pairs which will be sent to
+  a single reduce task. Hadoop MapReduce determines when the job
+  starts how many partitions it will divide the data into.
+  If twenty reduce tasks are to be run (controlled by the
+  <tt>JobConf.setNumReduceTasks()</tt>) method), then twenty
+  partitions must be filled.
+  </p>
+
+  <p>The <i>Partitioner</i> defines one method which must be filled:</p>
+  <div class="code"><pre class="codeblue">
+public interface Partitioner&lt;K, V&gt; extends JobConfigurable {
+  int getPartition(K key, V value, int numPartitions);
+}</pre></div>
+
+  <p>The <tt>getPartition()</tt> method receives a key and a value
+  and the number of partitions to split the data across; a number
+  in the range [0, numPartitions) must be returned by this method,
+  indicating which partition to send the key and value to. For
+  any two keys <tt>k1</tt> and <tt>k2</tt>, <tt>k1.equals(k2)</tt>
+
+  implies <tt>getPartition(k1, *, n) == getPartition(k2, *, n)</tt>.
+  </p>
+
+  <p>The default <i>Partitioner</i> implementation is called
+  <tt>HashPartitioner</tt>. It uses the <tt>hashCode()</tt> method
+  of the key objects modulo the number of partitions total
+  to determine which partition to send a given (key, value) pair
+  to.</p>
+
+  <p>For most randomly-distributed data, this should result in
+  all partitions being of roughly equal size. If the data in your
+  data set is skewed in some way, however, this might not produce
+  good results. For example, if you know that the key <tt>0</tt>
+  will appear much more frequently than any other key, then
+  you may want to send all the 0-keyed data to one partition, and
+  distribute the other keys over all other partitions by their
+  <tt>hashCode()</tt>. Also, if the <tt>hashCode()</tt> method
+  for your data type does not provide uniformly-distributed
+  values over its range, then data may not be sent to reducers
+  evenly. Poor partitioning of data means that some reducers will
+  have more data input than others, which usually means they'll
+  have more work to do than the other reducers. Thus the entire
+  job will wait for one reducer to finish its extra-large share
+  of the load, when it might have been possible to spread that
+  across many different reducers.</p>
+
+  <p>
+  If you are dissatisfied with the performance of <tt>HashPartitioner</tt>,
+  you are free to write your own <i>Partitioner</i> implementation.
+  It can be general-purpose, or tailored to the specific data
+  types or values that you expect to use in your application. After
+  implementing the <i>Partitioner</i> interface, use the
+  <tt>JobConf.setPartitionerClass()</tt> method to tell Hadoop
+  to use it for your job.</p>
+
+  <a name="metrics"></a>
+  <h3>Reporting Custom Metrics</h3>
+
+  <p>The Hadoop system records a set of metric counters for each
+  job that it runs. For example, the number of input records
+  mapped, the number of bytes it reads from or writes to HDFS, etc.
+  To profile your applications, you may wish to record other values
+  as well. For example, if the records sent into your mappers
+  fall into two categories (call them "A" and "B"),
+  you may wish to count the total number of A-records seen vs.
+  the total number of B-records.</p>
+
+  <p>The <i>Reporter</i> object passed in to your Mapper and
+  Reducer classes can be used to update counters. The same
+  set of counter variables can be contributed to by all Mapper
+  and Reducer instances across your cluster. The values are
+  aggregated by the master node of the cluster, so they are
+  "thread-safe" in this manner.
+  </p>
+
+  <p>Counters are incremented through the <tt>Reporter.incrCounter()</tt>
+  method. The names of the counters are defined as Java <tt>enum</tt>'s.
+  The following example demonstrates how to count the number of
+  "A" vs. "B" records seen by the mapper:</p>
+
+  <div class="code"><pre class="codeblue">public class MyMapper extends MapReduceBase implements
+    Mapper&lt;Text, Text, Text, Text&gt; {
+
+  static enum RecordCounters { TYPE_A, TYPE_B, TYPE_UNKNOWN };
+
+  // actual definitions elided
+  public boolean isTypeARecord(Text input) { ... }
+  public boolean isTypeBRecord(Text input) { ... }
+
+  public void map(Text key, Text val, OutputCollector&lt;Text, Text&gt; output,
+      Reporter reporter) throws IOException {
+
+    if (isTypeARecord(key)) {
+      reporter.incrCounter(RecordCounters.TYPE_A, 1);
+    } else if (isTypeBRecord(key)) {
+      reporter.incrCounter(RecordCounters.TYPE_B, 1);
+    } else {
+      reporter.incrCounter(RecordCounters.TYPE_UNKNOWN, 1);
+    }
+
+    // actually process the record here, call
+    // output.collect( .. ), etc.
+  }
+}</pre></div>
+
+
+  <p>If you launch your job with <tt>JobClient.runJob()</tt>,
+  the diagnostic information printed to stdout when the job completes
+  will contain the values of all the counters. Both <tt>runJob()</tt>
+
+  and <tt>submitJob()</tt> will return a <tt>RunningJob</tt> object
+  that refers to the job in question. The <tt>RunningJob.getCounters()</tt>
+  method will return a <tt>Counters</tt> object that contains the
+  values of all the counters so that you can query them programmatically.
+  The <tt>Counters.getCounter(Enum key)</tt> method returns the
+  value of a particular counter.</p>
+
+  <a name="auxdata"></a>
+  <h3>Distributing Auxiliary Job Data</h3>
+
+  <p>The bulk of the data that you process in a MapReduce job will
+  probably be stored in large files spread across the HDFS. You can
+  reliably store petabytes of information in HDFS and individual jobs
+  can process several terabytes at a time. The HDFS access model, however,
+  assumes that the data from a file should be read into a single mapper.
+  The individual files stored in HDFS are very large and can possibly
+  be broken into different chunks for processing in parallel.</p>
+
+  <p>Sometimes it is necessary for every Mapper to read a single
+  file; for example, a distributed spell-check application would require
+  every Mapper to read in a copy of the dictionary before processing
+  documents. The dictionary will be small (only a few megabytes), but needs
+  to be widely available so that all nodes can reach it.</p>
+
+  <p>Hadoop provides a mechanism specifically for this purpose,
+  called the <b>distributed cache</b>. The distributed cache can contain
+  small data files needed for initialization or libraries of code
+  that may need to be accessed on all nodes in the cluster.</p>
+
+  <p>To use the distributed cache to disseminate files, create an
+  instance of the <tt>DistributedCache</tt> class when setting up
+  your job. Use the <tt>DistributedCache.addCacheFile()</tt> method
+  to add names of files which should be sent to all nodes on the system.
+  The file names are specified as <tt>URI</tt> objects; unless
+  qualified otherwise, they assume that the file is present on the
+  HDFS in the path indicated. You can copy local files to HDFS with
+  the <tt>FileSystem.copyFromLocalFile()</tt> method.</p>
+
+  <p>When you want to retrieve files from the distributed cache
+  (e.g., when the mapper is in its <tt>configure()</tt> step and
+  wants to load config data like the dictionary mentioned above),
+  use the <tt>DistributedCache.getLocalCacheFiles()</tt> method
+  to retrieve the list of paths local to the current node for the
+  cached files. These are copies of all cached files, placed
+  in the <b>local</b> file system of each worker machine. (They
+  will be in a subdirectory of <tt>mapred.local.dir</tt>.)
+  Each of the paths returned by <tt>getLocalCacheFiles()</tt>
+  can be accessed via regular Java file I/O mechanisms,
+  such as <tt>java.io.FileInputStream</tt>.</p>
+
+  <p>As a cautionary note: If you use the local JobRunner in
+  Hadoop (i.e., what happens if you call <tt>JobClient.runJob()</tt>
+  in a program with no or an empty <tt>hadoop-conf.xml</tt> accessible),
+  then no local data directory is created; the
+  <tt>getLocalCacheFiles()</tt> call will return an empty set of
+  results. Unit test code should take this into account.</p>
+
+  <p>Suppose that we were writing an inverted index builder. We
+  do not want to include very common words such "the,"
+
+  "a," "and," etc. These so-called <i>stop words</i>
+  might all be listed in a file. All the mappers should read the
+  stop word list when they are initialized, and then filter the
+  index they generate against this list. We can disseminate a list
+  of stop words to all the Mappers with the following code.
+  The first listing will put the stop-words file into the distributed
+  cache:</p>
+
+  <div class="code"><pre class="codeblue">  public static final String LOCAL_STOPWORD_LIST =
+      "/home/aaron/stop_words.txt";
+
+  public static final String HDFS_STOPWORD_LIST = "/data/stop_words.txt";
+
+  void cacheStopWordList(JobConf conf) throws IOException {
+    FileSystem fs = FileSystem.get(conf);
+    Path hdfsPath = new Path(HDFS_STOPWORD_LIST);
+
+    // upload the file to hdfs. Overwrite any existing copy.
+    fs.copyFromLocalFile(false, true, new Path(LOCAL_STOPWORD_LIST),
+        hdfsPath);
+
+    DistributedCache.addCacheFile(hdfsPath.toUri(), conf);
+  }
+  </pre></div>
+
+  <p>This code copies the local <tt>stop_words.txt</tt> file into
+  HDFS, and then tells the distributed cache to send the HDFS copy
+  to all nodes in the system. The next listing actually uses the
+  file in the mapper:</p>
+
+  <div class="code"><pre class="codeblue">class IndexMapperExample implements Mapper {
+  void configure(JobConf conf) {
+    try {
+      String stopwordCacheName = new Path(HDFS_STOPWORD_LIST).getName();
+      Path [] cacheFiles = DistributedCache.getLocalCacheFiles(conf);
+      if (null != cacheFiles &amp;&amp; cacheFiles.length &gt; 0) {
+        for (Path cachePath : cacheFiles) {
+          if (cachePath.getName().equals(stopwordCacheName)) {
+            loadStopWords(cachePath);
+            break;
+          }
+        }
+      }
+    } catch (IOException ioe) {
+      System.err.println("IOException reading from distributed cache");
+      System.err.println(ioe.toString());
+    }
+  }
+
+  void loadStopWords(Path cachePath) throws IOException {
+    // note use of regular java.io methods here - this is a local file now
+    BufferedReader wordReader = new BufferedReader(
+        new FileReader(cachePath.toString()));
+    try {
+      String line;
+      this.stopWords = new HashSet&lt;String&gt;();
+      while ((line = wordReader.readLine()) != null) {
+        this.stopWords.add(line);
+      }
+    } finally {
+      wordReader.close();
+    }
+  }
+
+  /* actual map() method, etc go here */
+}</pre></div>
+
+  <p>The code above belongs in the <i>Mapper</i> instance associated
+  with the index generation process. We retrieve the list of files
+  cached in the distributed cache. We then compare the basename of
+  each file (using <tt>Path.getName()</tt>) with the one we expect
+  for our stop word list. Once we find this file, we read the words,
+  one per line, into a <i>Set</i> instance that we will consult during
+  the mapping process.</p>
+
+  <p>The distributed cache has additional uses too. For instance,
+  you can use the <tt>DistributedCache.addArchiveToClassPath()</tt>
+
+  method to send a <tt>.jar</tt> file to all the nodes. It will be
+  inserted into the classpath as well, so that classes in the
+  archive can be accessed by all the nodes.</p>
+
+  <a name="debugscripts"></a>
+  <h3>Distributing Debug Scripts</h3>
+
+  <p>Hadoop will generate a large number of log files for a job,
+  distributed across all the nodes that participated in the job's
+  execution. Often times only a subset of these logs will be of interest
+  when debugging failing tasks.
+  MapReduce can help with this by running a user-provided script when
+  either a map or reduce task fails. These scripts are provided the
+  names of files containing the stdout and stderr from the task, as well
+  as the task's Hadoop log and job.xml file (i.e., its complete JobConf in
+  serialized form).</p>
+
+  <p>These scripts will be run on whichever node encounters failing tasks.
+  You can use these scripts to perform automation to allow you to more
+  easily inspect only the failing tasks: e.g., email the stdout/stderr
+  to an administrator email address; upload the failed task's log files
+  to a common NFS-mounted "debug dump" directory, preserve
+  local state modifications made by map tasks, etc.</p>
+
+  <p>Separate scripts can be provided for map and reduce task failure.
+  They each receive as arguments, in order, the names of files containing
+  the task's stdout, stderr, syslog, and jobconf. Because they are run
+  on all the task nodes, and not on the client machine where the job
+  was submitted, these scripts must be sent to the nodes through the
+  distributed cache listed above.</p>
+
+  <p>The following method will enable failed task scripts on a
+  MapReduce job being prepared. It assumes that you have given it
+  the names of two scripts (e.g., bash scripts) which do your debug
+  actions with the log filenames provided (e.g., copy them to a shared
+  NFS mount). In this script these are <tt>/home/aaron/src/map-fail</tt>
+  and <tt>reduce-fail</tt>.</p>
+
+  <div class="code"><pre class="codeblue">  private static final String FAILED_MAP_SCRIPT_NAME = "map-fail";
+  private static final String FAILED_REDUCE_SCRIPT_NAME = "reduce-fail";
+
+  private static final String HDFS_SCRIPT_DIR = "/debug";
+
+  private static final String HDFS_FAILED_MAP_SCRIPT =
+    HDFS_SCRIPT_DIR + "/" + FAILED_MAP_SCRIPT_NAME;
+  private static final String HDFS_FAILED_REDUCE_SCRIPT =
+    HDFS_SCRIPT_DIR + "/" + FAILED_REDUCE_SCRIPT_NAME;
+  private static final String LOCAL_FAILED_MAP_SCRIPT  =
+    "/home/aaron/src/" + FAILED_MAP_SCRIPT_NAME;
+  private static final String LOCAL_FAILED_REDUCE_SCRIPT =
+    "/home/aaron/src/" + FAILED_REDUCE_SCRIPT_NAME;
+
+  public static void setupFailedTaskScript(JobConf conf) throws IOException {
+
+    // create a directory on HDFS where we'll upload the fail scripts
+    FileSystem fs = FileSystem.get(conf);
+    Path debugDir = new Path(HDFS_SCRIPT_DIR);
+
+    // who knows what's already in this directory; let's just clear it.
+    if (fs.exists(debugDir)) {
+      fs.delete(debugDir, true);
+    }
+
+    // ...and then make sure it exists again
+    fs.mkdirs(debugDir);
+
+    // upload the local scripts into HDFS
+    fs.copyFromLocalFile(new Path(LOCAL_FAILED_MAP_SCRIPT),
+        new Path(HDFS_FAILED_MAP_SCRIPT));
+    fs.copyFromLocalFile(new Path(LOCAL_FAILED_REDUCE_SCRIPT),
+        new Path(HDFS_FAILED_REDUCE_SCRIPT));
+
+    conf.setMapDebugScript("./" + FAILED_MAP_SCRIPT_NAME);
+    conf.setReduceDebugScript("./" + FAILED_REDUCE_SCRIPT_NAME);
+    DistributedCache.createSymlink(conf);
+
+    URI fsUri = fs.getUri();
+
+    String mapUriStr = fsUri.toString() + HDFS_FAILED_MAP_SCRIPT
+        + "#" + FAILED_MAP_SCRIPT_NAME;
+    URI mapUri = null;
+    try {
+      mapUri = new URI(mapUriStr);
+    } catch (URISyntaxException use) {
+      throw new IOException(use);
+    }
+
+    DistributedCache.addCacheFile(mapUri, conf);
+
+    String reduceUriStr = fsUri.toString() + HDFS_FAILED_REDUCE_SCRIPT
+        + "#" + FAILED_REDUCE_SCRIPT_NAME;
+    URI reduceUri = null;
+    try {
+      reduceUri = new URI(reduceUriStr);
+    } catch (URISyntaxException use) {
+      throw new IOException(use);
+    }
+
+    DistributedCache.addCacheFile(reduceUri, conf);
+  }</pre></div>
+
+  <p>How does this all work?
+  The scripts are, presumably, initially hosted on the client machine
+  that is submitting the job. The client is responsible for injecting them
+  into HDFS and enabling them in the distributed cache. It first creates
+  the <tt>HDFS_SCRIPT_DIR</tt> and then uploads the local script files
+  into this directory.</p>
+
+  <p>It must then set the commands for the TaskTracker to execute to
+  run the scripts. This is accomplished by the lines:
+  </p>
+
+  <div class="code"><pre class="codeblue">    conf.setMapDebugScript("./" + FAILED_MAP_SCRIPT_NAME);
+    conf.setReduceDebugScript("./" + FAILED_REDUCE_SCRIPT_NAME);
+    DistributedCache.createSymlink(conf);</pre></div>
+
+  <p>The distributed cache copies the files to the <tt>mapred.local.dir</tt>
+  on each task node. The TaskTracker will then execute the scripts if
+  necessary. But the TaskTracker does not run with its working directory
+  set to <tt>mapred.local.dir</tt>. Fortunately, the distributed cache
+  can be told to create symlinks in the working directory for files in
+  the distributed cache. The third line of the snippit above enables
+  this functionality. Now <tt>./<i>FAILED_MAP_SCRIPT_NAME</i></tt> will
+  point to the copy of <tt>FAILED_MAP_SCRIPT_NAME</tt> in the
+  local cache directory, and the script can be run.</p>
+
+  <p>But before that can happen, we must add the files themselves to
+  the distributed cache. (As of now they are only in HDFS.) Ordinarily,
+  we could just call <tt>DistributedCache.addCacheFile(new
+  Path("<i>hdfs_path_to_some_file</i>").toUri())</tt> on
+  a filename and that would be sufficient. But since we need to create
+  symlinks, we must provide the distributed cache with information as
+  to how the symlink should be created--what filename it should take
+  in the working directory. This is provided as the URI "anchor"
+  part following the "#" in the URI. A subtlety of Hadoop's
+  <tt>Path</tt> class is that if you put a '#' in the path string,
+  it will URL-encode it and treat it as part of the filename. Therefore,
+  we use some extra code to construct our URIs manually to ensure that
+  the '#' remains unescaped.
+  </p>
+
+
+  <a name="aws"></a>
+  <h3>Using Amazon Web Services</h3>
+
+  <p>Hadoop's power comes from its ability to perform work on
+  a large number of machines simultaneously. What if you want to
+  experiment with Hadoop, but do not have many machines? While operations
+  on a two or four-node cluster are functionally equivalent to those
+  on a 40 or 100-node cluster, processing larger volumes of data
+  will require a larger number of nodes.</p>
+
+  <p><a href="http://www.amazon.com/">Amazon</a> provides machines
+  for rent on demand through their <a href="http://www.amazon.com/EC2-AWS-Service-Pricing/b/ref=sc_fe_l_2?ie=UTF8&amp;node=201590011&amp;no=3435361">Elastic
+  Compute Cloud</a> (a.k.a. EC2) service. EC2 is part of a broader
+  set of services collectively called the Amazon Web Services, or AWS.
+  EC2 allows you request
+  a set of nodes ("instances" in their parlance) for as
+  long as you need them. You pay by the instance*hour, plus costs
+  for bandwidth. You can use EC2 instances to run a Hadoop cluster.
+  Hadoop comes with a set of scripts which will provision EC2
+  instances.</p>
+
+  <p>The first step in this process is visit the EC2 web site (link
+  above) and click "Sign Up For This Web Service". You will
+  need to create an account and provide billing information. Then
+  follow the instructions in the <a href="http://docs.amazonwebservices.com/AWSEC2/2008-02-01/GettingStartedGuide/">Getting
+  started guide</a> to set up your account and configure your system
+  to run the AWS tools.</p>
+
+  <p>Once you have done so, follow the instructions in the
+  <a href="http://wiki.apache.org/hadoop/AmazonEC2">Hadoop wiki</a> specific
+  to running Hadoop on Amazon EC2. While more details are available in the
+  above document, the shortest steps to provisioning a cluster are:
+  </p>
+
+  <ul>
+    <li class="bullist">Edit <tt>src/contrib/ec2/bin/hadoop-ec2-env.sh</tt> to contain
+    your Amazon account information and parameters about the desired
+    cluster size.</li>
+    <li class="bullist">Execute <tt>src/contrib/ec2/bin/hadoop-ec2 launch-cluster</tt>.
+  </li></ul>
+
+
+  <p>After the cluster has been started, you can log in to the
+  head node over ssh with the <tt>bin/hadoop-ec2 login</tt> script,
+  and perform your MapReduce computation. When you are done,
+  log out and type <tt>bin/hadoop-ec2 terminate-cluster</tt> to
+  release the EC2 instances. The contents of the virtual hard
+  drives on the instances will disappear, so be sure to copy off any
+  important data with <tt>scp</tt> or another tool first!</p>
+
+  <p>A very thorough introduction to configuring Hadoop on EC2 and
+  running a test job is provided in <a href="http://developer.amazonwebservices.com/connect/entry.jspa?externalID=873&amp;categoryID=112">this
+  article</a> in the Amazon Web Services Developer Connection site.</p>
+
+  <a name="refs"></a>
+  <h3>References</h3>
+
+  <p><a href="http://hadoop.apache.org/core/docs/current/api/index.html">API
+  Reference</a> - Current Hadoop documentation
+  </p><p><a href="http://docs.amazonwebservices.com/AWSEC2/2008-02-01/GettingStartedGuide/">Amazon
+  Web Services EC2 Getting Started Guide</a> - Amazon, Inc.
+  </p><p><a href="http://wiki.apache.org/hadoop/AmazonEC2">Hadoop on Amazon EC2</a>
+
+   - Official Hadoop wiki page</p>
+  <p><a href="http://developer.amazonwebservices.com/connect/entry.jspa?externalID=873&amp;categoryID=112">Running
+  Hadoop MapReduce on Amazon EC2 and Amazon S3</a> - Tom White, Amazon Web
+  Services Developer Connection, July 2007</p>
+
+  <div style="text-align: center;">
+    <p>
+    <a href="module4.html">Previous module</a>
+    &nbsp;|&nbsp;
+
+    <a href="index.html">Table of contents</a>
+    &nbsp;|&nbsp;
+    <a href="module6.html">Next module</a>
+    </p>
+  </div>
+                        </div>
+                        </div>
+                        <div class="yui-b" id="ydnRack">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div id="clearfooter" style="padding-top: 40px;">
+<!-- used to make room for the #footer -->
+</div>
+
+</body></html>

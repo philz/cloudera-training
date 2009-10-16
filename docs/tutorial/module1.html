@@ -1,0 +1,479 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en"><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="description" content="Module 1: Tutorial Introduction">
+<title>Hadoop Tutorial</title>
+
+<link rel="stylesheet" type="text/css" href="resource/combo.css">
+<script src="resource/fpc.js" type="text/javascript" defer="defer"></script></head><body style="margin: 0pt;"><iframe style="border-width: 0pt; position: absolute; visibility: visible; width: 10em; height: 10em; top: -134px; left: -134px;" title="Text Resize Monitor" id="_yuiResizeMonitor"></iframe>
+<div id="clearfooter" style="padding-top: 20px;">
+<!-- used to make room for the #footer -->
+</div>
+<div id="bodycontainer">
+
+<!--[if IE 6]>
+
+<style type="text/css" media="screen">
+#topAreaR p{margin:0;padding:0;}
+
+#headeraL{float:left;color:#9f9f9f;font-size:85%;}
+#searchFld{height:1.46em;border:1px solid #cecece;}
+#searchFld{margin:0;}
+#sub{position:relative;left:2px;}
+
+#headeraL{height:4em;}
+
+#subHIntCont{position:relative;top:0em;}
+
+#ydnNav{float:left;padding:0;top:1em;}
+.yuimenubaritemlabel{padding:0;}
+
+#headerSubSandbag {top:5.9em;}
+
+h4.fullHorange{width:98%;margin:0;}
+#recBlPst{width:18em;}
+#recBlPst3{width:17em;}
+#upcomingEventsBoxCont{width:17.7em;float:right;padding:0;}
+#upcomingEventsBox{float:right;margin:0}
+#upcomingEventsBox .blogRackTitle{margin-left:.3em;width:15em}
+#upcomingEventsBox .blogRackDate{margin-left:.67em;}
+
+#topFeaturedTabs ul li strong strong{background-color:#9dc1d6;}
+#topFeaturedTabs ul li strong strong strong{background-color:#9dc1d6;}
+#topFeaturedTabs ul li a:hover strong strong{background-color:#6fa4c3;}
+#topFeaturedTabs ul li a:hover strong strong strong{background-color:#6fa4c3;}
+
+.prefTabs{color:#aaa;float:left;position:relative;margin:.5em .8em 0em 2em;font-weight:bold;}
+#featureBox1, #featureBox2, #featureBox3, #featureBox4{border:1px solid #d9d9d9;}
+.innerSubMenuArea{border:1px solid #d9d9d9;}
+
+#breadcrumbs{position:relative;top:1.8em;}
+
+#getAppBox{border:1px solid #D9D9D9;}
+
+.recentPat{margin:0;margin-left:.3em;}
+#recentPatternsContainer {clear:both;float:left;}
+
+html body #doc4.yui-t7 #bd .yui-g .yui-gc div.first, .yui-gc div.first, .yui-gd .yui-g, .yui-gd .yui-u{width:67%;}
+html body #doc4.yui-t7 #bd .yui-g .yui-gb .yui-u, .yui-gb .yui-g, .yui-gb .yui-gb, .yui-gb .yui-gc, .yui-gb .yui-gd, .yui-gb .yui-ge, .yui-gb .yui-gf, .yui-gb .yui-u, .yui-gc .yui-u, .yui-gc .yui-g, .yui-gd .yui-u{width:29%;}
+html body #doc4.yui-t7 #bd .yui-g .yui-gb .yui-u, .yui-gb .yui-g, .yui-gb .yui-gb, .yui-gb .yui-gc, .yui-gb .yui-gd, .yui-gb .yui-ge, .yui-gb .yui-gf, .yui-gb .yui-u, .yui-gc .yui-u, .yui-gc .yui-g, .yui-gd .yui-u{margin-left:.5%;}
+
+</style>
+
+<![endif]-->
+<!--[if IE 7]>
+
+<style type="text/css" media="screen">
+#subHIntCont{position:relative;top:0;}
+#ydnNav{float:left;padding:.1em 0;position:relative;left:0;}
+#ydnNav .yuimenu .colGroup { margin-right: 1.5em;  }
+#breadcrumbs{position:relative;top:1.8em;}
+</style>
+
+<![endif]-->
+
+
+<div id="mainCMaxCont">
+    <div id="mainCContainer">
+        <div id="mainCIntCont">
+            <div id="internalContainer">
+                <div id="doc4" class="yui-t6">
+                    <div id="bd">
+                        <div id="yui-main">
+                        <div class="yui-b">
+<h2>Module 1: Tutorial Introduction</h2>
+
+<div style="text-align: center;">
+<p>Previous module &nbsp;|&nbsp; <a href="index.html">Table of
+contents</a> &nbsp;|&nbsp; <a href="module2.html">Next module</a></p>
+</div>
+
+<a name="intro"></a>
+<h3>Introduction</h3>
+<p>Welcome to the Hadoop tutorial! This series
+of tutorial documents will walk you through many aspects of the Apache
+Hadoop system. You will be shown how to set up simple and advanced
+cluster configurations, use the distributed file system, and develop
+complex Hadoop MapReduce applications. Other related systems are also
+reviewed.</p>
+
+<a name="goals"></a>
+<h3>Goals for this Module:</h3>
+<ul>
+	<li class="bullist">Understand the scope of problems applicable to Hadoop</li>
+	<li class="bullist">Understand how Hadoop addresses these problems differently from other distributed systems.</li>
+</ul>
+
+<a name="outline"> </a>
+<h3>Outline</h3>
+
+<ol>
+	<li><a href="#intro">Introduction</a></li>
+	<li><a href="#goals">Goals for this Module</a></li>
+	<li><a href="#outline">Outline</a></li>
+	<li><a href="#scope">Problem Scope</a></li>
+		<ol>
+			<li><a href="#challenges">Challenges at Large Scale</a></li>
+		    <li><a href="#moore">Moore's Law</a></li>
+		</ol>
+	<li><a href="#hadoop">The Hadoop Approach</a></li>
+	<ol>
+		<li><a href="#comparison">Comparison to Existing Techniques</a></li>
+		<li><a href="#data">Data Distribution</a></li>
+		<li><a href="#mapreduce">MapReduce: Isolated Processes</a></li>
+		<li><a href="#scalability">Flat Scalability</a></li>
+	</ol>
+	<li><a href="#rest">The Rest of the Tutorial</a></li>
+</ol>
+
+<a name="scope"> </a>
+<h3>Problem Scope</h3>
+<p>Hadoop is a large-scale distributed batch processing
+infrastructure. While it can be used on a single machine, its true
+power lies in its ability to scale to hundreds or thousands of
+computers, each with several processor cores. Hadoop is also designed
+to efficiently distribute large amounts of work across a set of
+machines.</p>
+<p><b>How large an amount of work?</b> Orders of
+magnitude larger than many existing systems work with. Hundreds of
+gigabytes of data constitute the <i>low end</i> of Hadoop-scale.
+Actually Hadoop is built to process "web-scale" data on the order of
+hundreds of gigabytes to terabytes or petabytes. At this scale, it is
+likely that the input data set will not even fit on a single computer's
+hard drive, much less in memory. So Hadoop includes a distributed file
+system which breaks up input data and sends fractions of the original
+data to several machines in your cluster to hold. This results in the
+problem being processed in parallel using all of the machines in the
+cluster and computes output results as efficiently as possible.</p>
+
+<a name="challenges"> </a>
+<h4 class="sectionSubH">Challenges at Large Scale</h4>
+<p>Performing large-scale computation is
+difficult. To work with this volume of data requires distributing parts
+of the problem to multiple machines to handle in parallel. Whenever
+multiple machines are used in cooperation with one another, the
+probability of failures rises. In a single-machine environment, failure
+is not something that program designers explicitly worry about very
+often: if the machine has crashed, then there is no way for the program
+to recover anyway.</p>
+
+<p>In a distributed environment, however, partial
+failures are an expected and common occurrence. Networks can experience
+partial or total failure if switches and routers break down. Data may
+not arrive at a particular point in time due to unexpected network
+congestion. Individual compute nodes may overheat, crash, experience
+hard drive failures, or run out of memory or disk space. Data may be
+corrupted, or maliciously or improperly transmitted. Multiple
+implementations or versions of client software may speak slightly
+different protocols from one another. Clocks may become desynchronized,
+lock files may not be released, parties involved in distributed atomic
+transactions may lose their network connections part-way through, etc.
+In each of these cases, the rest of the distributed system should be
+able to recover from the component failure or transient error condition
+and continue to make progress. Of course, actually providing such
+resilience is a major software engineering challenge.</p>
+
+<p>Different distributed systems specifically
+address certain modes of failure, while worrying less about others.
+Hadoop provides no security model, nor safeguards against maliciously
+inserted data. For example, it cannot detect a man-in-the-middle attack
+between nodes. On the other hand, it is designed to handle hardware
+failure and data congestion issues very robustly. Other distributed
+systems make different trade-offs, as they intend to be used for
+problems with other requirements (e.g., high security).</p>
+
+<p>In addition to worrying about these sorts of
+bugs and challenges, there is also the fact that the compute hardware
+has finite resources available to it. The major resources include:</p>
+
+<ul>
+  <li class="bullist">Processor time</li>
+  <li class="bullist">Memory</li>
+  <li class="bullist">Hard drive space</li>
+  <li class="bullist">Network bandwidth</li>
+</ul>
+ 
+
+<p>Individual machines typically only have a few
+gigabytes of memory. If the input data set is several terabytes, then
+this would require a thousand or more machines to hold it in RAM -- and
+even then, no single machine would be able to process or address all of
+the data.</p>
+ 
+<p>Hard drives are much larger; a single machine
+can now hold multiple terabytes of information on its hard drives. But
+intermediate data sets generated while performing a large-scale
+computation can easily fill up several times more space than what the
+original input data set had occupied. During this process, some of the
+hard drives employed by the system may become full, and the distributed
+system may need to route this data to other nodes which can store the
+overflow.</p>
+ 
+<p>Finally, bandwidth is a scarce resource even on
+an internal network. While a set of nodes directly connected by a
+gigabit Ethernet may generally experience high throughput between them,
+if all of the machines were transmitting multi-gigabyte data sets, they
+can easily saturate the switch's bandwidth capacity. Additionally if
+the machines are spread across multiple racks, the bandwidth available
+for the data transfer would be much less. Furthermore RPC requests and
+other data transfer requests using this channel may be delayed or
+dropped.</p>
+ 
+<p>To be successful, a large-scale distributed
+system must be able to manage the above mentioned resources
+efficiently. Furthermore, it must allocate some of these resources
+toward maintaining the system as a whole, while devoting as much time
+as possible to the actual core computation.</p>
+ 
+<p>Synchronization between multiple machines
+remains the biggest challenge in distributed system design. If nodes in
+a distributed system can explicitly communicate with one another, then
+application designers must be cognizant of risks associated with such
+communication patterns. It becomes very easy to generate more remote
+procedure calls (RPCs) than the system can satisfy! Performing
+multi-party data exchanges is also prone to deadlock or race
+conditions. Finally, the ability to continue computation in the face of
+failures becomes more challenging. For example, if 100 nodes are
+present in a system and one of them crashes, the other 99 nodes should
+be able to continue the computation, ideally with only a small penalty
+proportionate to the loss of 1% of the computing power. Of course, this
+will require re-computing any work lost on the unavailable node.
+Furthermore, if a complex communication network is overlaid on the
+distributed infrastructure, then determining how best to restart the
+lost computation and propagating this information about the change in
+network topology may be non trivial to implement.</p>
+
+<a name="moore"> </a>
+<h4 class="sectionSubH">Moore's Law</h4>
+
+<p>So why use a distributed system at all? They seem
+like more trouble than they're worth. And with the fast pace of
+computer hardware design, it seems inevitable that single-chip hardware
+will be able to "grow up" to handle the larger volumes of data. After
+all, Moore's Law (named after Gordon Moore, the founder of Intel)
+states that <b>the number of transistors that can be placed in a
+processor will double approximately every two years, for half the cost.</b>
+But trends in chip design are changing to face new realities. While we
+can still double the number of transistors per unit area at this pace,
+this does not necessarily result in faster single-threaded performance.
+New processors such as Intel Core 2 and Itanium 2 architectures now
+focus on embedding <b>many smaller CPUs</b> or "cores" onto the same
+physical device. This allows multiple threads to process twice as much
+data in parallel, but at the same speed at which they operated
+previously.</p>
+ 
+
+<p>Even if hundreds or thousands of CPU cores are
+placed on a single machine, it would not be possible to deliver input
+data to these cores fast enough for processing. Individual hard drives
+can only sustain read speeds between 60-100 MB/second. These speeds
+have been increasing over time, but not at the same breakneck pace as
+processors. Optimistically assuming the upper limit of 100 MB/second,
+and assuming four independent I/O channels are available to the
+machine, that provides 400 MB of data every second. A 4 terabyte data
+set would thus take over 10,000 seconds to read--about three hours just
+to load the data! With 100 separate machines each with two I/O channels
+on the job, this drops to three minutes.</p>
+
+<a name="hadoop"> </a>
+<h3>The Hadoop Approach</h3>
+ 
+<p>Hadoop is designed to efficiently process large
+volumes of information by connecting many commodity computers together
+to work in parallel. The theoretical 1000-CPU machine described earlier
+would cost a very large amount of money, far more than 1,000 single-CPU
+or 250 quad-core machines. Hadoop will tie these smaller and more
+reasonably priced machines together into a single cost-effective
+compute cluster.</p>
+
+<a name="comparison"> </a>
+<h4 class="sectionSubH">Comparison to Existing Techniques</h4>
+
+<p>Performing computation on large volumes of data
+has been done before, usually in a distributed setting. What makes
+Hadoop unique is its <b>simplified programming model</b> which allows
+the user to quickly write and test distributed systems, and its <b>efficient,
+automatic distribution of data and work across machines</b> and in turn
+utilizing the underlying parallelism of the CPU cores.</p>
+ 
+<p>Grid scheduling of computers can be done with
+existing systems such as Condor. But Condor does not automatically
+distribute data: a separate SAN must be managed in addition to the
+compute cluster. Furthermore, collaboration between multiple compute
+nodes must be managed with a communication system such as MPI. This
+programming model is challenging to work with and can lead to the
+introduction of subtle errors.</p>
+
+<a name="data"> </a>
+<h4 class="sectionSubH">Data Distribution</h4>
+
+ 
+<p>In a Hadoop cluster, data is distributed to all the
+nodes of the cluster as it is being loaded in. The Hadoop Distributed
+File System (HDFS) will split large data files into chunks which are
+managed by different nodes in the cluster. In addition to this each
+chunk is replicated across several machines, so that a single machine
+failure does not result in any data being unavailable. An active
+monitoring system then re-replicates the data in response to system
+failures which can result in partial storage. Even though the file
+chunks are replicated and distributed across several machines, they
+form a single namespace, so their contents are universally accessible.</p>
+ 
+<p>Data is conceptually <b>record-oriented</b> in the
+Hadoop programming framework. Individual input files are broken into
+lines or into other formats specific to the application logic. Each
+process running on a node in the cluster then processes a subset of
+these records. The Hadoop framework then schedules these processes in
+proximity to the location of data/records using knowledge from the
+distributed file system. Since files are spread across the distributed
+file system as chunks, each compute process running on a node operates
+on a subset of the data. Which data operated on by a node is chosen
+based on its locality to the node: most data is read from the local
+disk straight into the CPU, alleviating strain on network bandwidth and
+preventing unnecessary network transfers. This strategy of <b>moving
+computation to the data</b>, instead of moving the data to the
+computation allows Hadoop to achieve high data locality which in turn
+results in high performance. </p>
+ 
+<div style="text-align: center;"> <img src="resource/3529146359_3eb5d3e15b_o.png" alt="load-into-dfs"> 
+
+<p><i>Figure 1.1: Data is distributed across nodes at
+load time.</i></p>
+ </div>
+
+ <a name="#mapreduce"> </a>
+<h4 class="sectionSubH">MapReduce: Isolated Processes</h4>
+ 
+<p>Hadoop limits the amount of communication which
+can be performed by the processes, as each individual record is
+processed by a task in isolation from one another. While this sounds
+like a major limitation at first, it makes the whole framework much
+more reliable. Hadoop will not run just any program and distribute it
+across a cluster. Programs must be written to conform to a particular
+programming model, named "MapReduce."</p>
+ 
+<p>In MapReduce, records are processed in
+isolation by tasks called <i>Mappers</i>. The output from the Mappers
+is then brought together into a second set of tasks called <i>Reducers</i>,
+where results from different mappers can be merged together.</p>
+
+ 
+<div style="text-align: center;"> <img src="resource/3529959486_8f36fb28c5_o.png" alt="mapreduce-process"> 
+<p><i>Figure 1.2: Mapping and reducing tasks run
+on nodes where individual records of data are already present.</i></p>
+ </div>
+ 
+<p>Separate nodes in a Hadoop cluster still
+communicate with one another. However, in contrast to more conventional
+distributed systems where application developers explicitly marshal
+byte streams from node to node over sockets or through MPI buffers,
+communication in Hadoop is performed <i>implicitly</i>. Pieces of data
+can be tagged with key names which inform Hadoop how to send related
+bits of information to a common destination node. Hadoop internally
+manages all of the data transfer and cluster topology issues.</p>
+ 
+
+<p>By restricting the communication between nodes,
+Hadoop makes the distributed system much more reliable. Individual node
+failures can be worked around by restarting tasks on other machines.
+Since user-level tasks do not communicate explicitly with one another,
+no messages need to be exchanged by user programs, nor do nodes need to
+roll back to pre-arranged checkpoints to partially restart the
+computation. The other workers continue to operate as though nothing
+went wrong, leaving the challenging aspects of partially restarting the
+program to the underlying Hadoop layer.</p>
+
+<a name="scalability"></a>
+<h4 class="sectionSubH">Flat Scalability</h4>
+ 
+<p>One of the major benefits of using Hadoop in
+contrast to other distributed systems is its flat scalability curve.
+Executing Hadoop on a limited amount of data on a small number of nodes
+may not demonstrate particularly stellar performance as the overhead
+involved in starting Hadoop programs is relatively high. Other
+parallel/distributed programming paradigms such as MPI (Message Passing
+Interface) may perform much better on two, four, or perhaps a dozen
+machines. Though the effort of coordinating work among a small number
+of machines may be better-performed by such systems, the price paid in
+performance and engineering effort (when adding more hardware as a
+result of increasing data volumes) increases non-linearly.</p>
+ 
+<p> A program written in distributed frameworks
+other than Hadoop may require large amounts of refactoring when scaling
+from ten to one hundred or one thousand machines. This may involve
+having the program be rewritten several times; fundamental elements of
+its design may also put an upper bound on the scale to which the
+application can grow.</p>
+ 
+
+<p>Hadoop, however, is specifically designed to
+have a very flat scalability curve. After a Hadoop program is written
+and functioning on ten nodes, very little--if any--work is required for
+that same program to run on a much larger amount of hardware. Orders of
+magnitude of growth can be managed with little re-work required for
+your applications. The underlying Hadoop platform will manage the data
+and hardware resources and provide dependable performance growth
+proportionate to the number of machines available.</p>
+
+ <a name="rest"> </a>
+<h3>The Rest of the Tutorial</h3>
+ 
+<p>This module of the tutorial has highlighted the major
+benefits of using a system such as Hadoop. The rest of the tutorial is
+designed to show you how to effectively use it.</p>
+ 
+<ul>
+   
+
+  <li class="bullist">In <a href="module2.html">Module 2</a>,
+you'll learn how the Hadoop Distributed File System (HDFS) stores vast
+quantities of information, how to configure HDFS, and how to use it to
+store and retrieve your data.</li>
+  <li class="bullist"><a href="module3.html">Module 3</a> shows you how to get started
+setting up a Hadoop environment to experiment with. </li>
+  <li class="bullist"><a href="module4.html">Module 4</a> explains the Hadoop MapReduce
+programming model itself, and how to write some MapReduce programs.</li>
+  <li class="bullist"><a href="module5.html">Module 5</a> goes into further detail
+about the specifics of Hadoop MapReduce, and how to use advanced
+features for more powerful control over a program's execution.</li>
+
+  <li class="bullist"><a href="module6.html">Module 6</a> describes some other
+components of the Hadoop ecosystem which can add further capabilities
+to your distributed system.</li>
+  <li class="bullist"><a href="module7.html">Module 7</a> describes how to configure
+Hadoop clusters of different sizes. It describes what particular
+parameters of Hadoop need to be tuned for setting up clusters of
+various sizes. In addition it describes the various performance
+monitoring tools available in Hadoop for monitoring the health of your
+cluster.</li>
+  <li class="bullist">And to expand upon the Pig section described in <a href="module6.html">Module 6</a>, a separate <a href="pigtutorial.html">Pig Tutorial</a> is included in this package
+at the end as Module 8.</li>
+
+</ul>
+<p>Good luck!</p>
+
+<div style="text-align: center;">
+<p> Previous module &nbsp;|&nbsp; <a href="index.html">Table of
+contents</a> &nbsp;|&nbsp; <a href="module2.html">Next module</a> </p>
+</div>
+
+                        </div>
+                        </div>
+                        <div class="yui-b" id="ydnRack">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div id="clearfooter" style="padding-top: 40px;">
+<!-- used to make room for the #footer -->
+</div>
+
+
+</body></html>
+
