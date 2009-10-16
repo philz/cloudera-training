@@ -13,7 +13,7 @@ import org.apache.pig.impl.util.WrappedIOException;
 /**
  * @class StartsWith
  * implements the StartsWith() filter function in Pig
- * StartsWith(haystack, needle) returns true if hackstack.startsWith(needle)
+ * StartsWith(haystack, needle) returns true if haystack.startsWith(needle)
  */
 public class StartsWith extends FilterFunc {
   public Boolean exec(Tuple input) throws IOException {
