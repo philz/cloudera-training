@@ -128,12 +128,14 @@ $ sqoop --connect jdbc:mysql://localhost/training --username training --list-tab
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
 $ sqoop --connect jdbc:mysql://localhost/training --username training --table bible_freq \
-    --hive-import
+    --hive-import --direct --fields-terminated-by '\t' --lines-terminated-by '\n'
 </pre>
 </div></div>
 
 <p>This instructs Sqoop to import the table into HDFS, and then use Hive to create a table
-with the same name in its metastore, and load in the newly-imported data.</p>
+with the same name in its metastore, and load in the newly-imported data. Sqoop
+will use a MySQL-specific "direct" import mode which is designed to read from MySQL
+efficiently. Finally, we specify the delimiters to use between fields and records.</p>
 
 <p>You can verify that this operation worked two ways. First, we can use <tt>hadoop</tt>
 to verify that the files have been loaded into Hive's warehouse directory:</p> 
