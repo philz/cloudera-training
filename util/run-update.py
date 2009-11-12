@@ -5,17 +5,19 @@ usage_string = """
   Usage: update-exercises (args)
 
   Args may include:
-    --workspace       Discard your current Eclipse workspace and rebuild
-                      based on the exercises available in the repository.
-    --reset           Resets the git repository to "factory defaults"
-    -f                Force changes. Don't prompt for --reset. Don't warn
-                      about a username mismatch.
+    --workspace          Discard your current Eclipse workspace and rebuild
+                         based on the exercises available in the repository.
+    --reset              Resets the git repository to "factory defaults"
+    -f                   Force changes. Don't prompt for --reset. Don't warn
+                         about a username mismatch.
+    --ignore-repo-check  Continue even if we're not using the official
+                         Cloudera training repository.
 
   This script updates your git repository to the most recent
-  version of the files. 
+  version of the files.
 
   This should be invoked from the base of the cloudera-training
-  git repository. 
+  git repository.
 """
 
 import os
@@ -50,6 +52,11 @@ WORKSPACE_SRC = "pristine-workspace"
 # When determining whether or not to auto-update the workspace,
 # consult this file in the src and target workspace directories.
 WORKSPACE_VER_FILE = ".cloudera-workspace-version"
+
+# When determining what branch of the repository we should
+# be on, consult this file in the root of the VM.
+BRANCH_FILE = ".update-branch"
+
 
 def check_for_user(force):
   """ To check that we're running in the VM, check that the username is
@@ -136,11 +143,54 @@ def reset_git_repo():
   if ret > 0:
     raise RepoException("Could not check out master branch")
 
+def switch_branch():
+  """ Load the .update-branch file and switch to the branch
+      specified by the user. Return the branch named in this
+      file.
+  """
 
-def update_repo():
+  branch = None
+  try:
+    h = open(BRANCH_FILE)
+    lines = h.readlines()
+    h.close()
+    for line in lines:
+      line = line.strip()
+      if len(line) > 0:
+        branch = line
+        break
+  except IOError:
+    # couldn't open the branch file.
+    # We will just use the legacy branch.
+    print "Warning, could not find " + BRANCH_FILE + "."
+
+  if branch == None:
+    print "Could not get correct branch information; using legacy branch."
+    branch = "legacy"
+
+  # Try to switch to this branch, if it already exists locally.
+  ret = os.system("git checkout " + branch + " > /dev/null")
+  if ret > 0:
+    # It's not. Create a new branch based on the tracking source.
+    ret = os.system("git checkout -b " + branch + " origin/" + branch)
+    if ret > 0:
+      print "Could not move to working branch: " + branch
+      print "I might not be able to grab the most recent copy of the exercises"
+      print "Please check that your ~/git/.update-branch file specifies the"
+      print "correct virtual machine version."
+    else:
+      print "Now going to update to exercises intended for VM version: " \
+          + branch
+  else:
+    print "Using virtual machine exercise version: " + branch
+
+  return branch
+
+
+def update_repo(branch):
   """ Get the latest changes """
   print "Updating repository..."
-  ret = os.system("git pull origin master:master")
+  ret = os.system("git pull origin " + branch + ":" + branch)
   if ret > 0:
     raise RepoException("Could not download updates. Are you connected to the network?")
 
@@ -180,7 +230,6 @@ def workspace_needs_update():
   except:
     # Can't read the version number in the pristine workspace. Weird. Skip this
     # with a warning, and continue.
-    print e
     print """
 WARNING: The pristine workspace directory contains an invalid version id.
 Have you modified any files in the pristine-workspace directory? If so,
@@ -216,10 +265,87 @@ Skipping workspace auto-deployment.
   return deployed_ver < pristine_ver
 
 
+def get_cdh_version(representative_path, prefix, suffix):
+  """ Find the cdh version component of a filename and return it or None.
+      representative_path is a wildcard path to match
+        (e.g., /path/to/hadoop-*-core.jar)
+      prefix is all the characters in the path before the version string
+      suffix is the unique substring that occurs immediately after the version
+  """
+
+  lines = os.popen("ls -1 " + representative_path).readlines()
+  if len(lines) == 0:
+    return None
+  line = lines[0].strip()
+
+  if len(line) > 0:
+    start_offset = len(prefix)
+    end_offset = line.index(suffix)
+    return line[start_offset:end_offset]
+  else:
+    return None
+
+
+def get_installed_hadoop_version():
+  """ Return the version string (e.g., '0.20.1+152') of the installed CDH release """
+  return get_cdh_version("/usr/lib/hadoop/hadoop-*-core.jar", \
+      "/usr/lib/hadoop/hadoop-", "-core.jar")
+
+
+def get_installed_pig_version():
+  """ Return the version string of the installed CDH pig release """
+  return get_cdh_version("/usr/lib/pig/pig-*-core.jar", \
+      "/usr/lib/pig/pig-", "-core.jar")
+
+
+def get_classpath_libs(libdir, maxdepth):
+  """ Return the libraries that hadoop or another project depends on,
+      formatted as classpath entries for an eclipse workspace.
+  """
+
+  lines = os.popen("find " + libdir + " -maxdepth " + str(maxdepth) \
+      + " -name \"*.jar\"").readlines()
+  libs = []
+  for line in lines:
+    libs.append("<classpathentry kind=\"lib\" path=\"" + line.strip() \
+        + "\"/>\\")
+
+  return "\n".join(libs) + "\n"
+
+
 def refresh_workspace():
   """ Copy the pristine workspace over top of the user's current workspace """
   backup_workspace()
   shutil.copytree(WORKSPACE_SRC, WORKSPACE_DIR)
+
+  # Since the workspace dependencies may change based on the installed
+  # Hadoop version, grab all of these dynamically.
+  hadoop_ver = get_installed_hadoop_version()
+  if hadoop_ver != None:
+    # Replace all the version tokens in the workspace files
+    # with this version id.
+    os.system("find " + WORKSPACE_DIR + " -name .classpath -exec " \
+        + "sed -i -e 's/CLOUDERA_HADOOP_VERSION/" + hadoop_ver + "/g' {} \;")
+
+  pig_ver = get_installed_pig_version()
+  if pig_ver != None:
+    # Replace all the version tokens in the workspace files
+    # with this version id.
+    os.system("find " + WORKSPACE_DIR + " -name .classpath -exec " \
+        + "sed -i -e 's/CLOUDERA_PIG_VERSION/" + pig_ver + "/g' {} \;")
+
+  hadoop_libs = get_classpath_libs("/usr/lib/hadoop/lib", 2)
+  if hadoop_libs != None:
+    # Replace a token in the .classpath files with all the lib entries
+    # for the Hadoop dependency jars.
+    os.system("find " + WORKSPACE_DIR + " -name .classpath -exec " \
+        + "sed -i -e 's|CLOUDERA_HADOOP_DEPS|" + hadoop_libs + "|' {} \;")
+
+  # Repeat this for Pig.
+  pig_libs = get_classpath_libs("/usr/lib/pig/lib", 1)
+  if pig_libs != None:
+    os.system("find " + WORKSPACE_DIR + " -name .classpath -exec " \
+        + "sed -i -e 's|CLOUDERA_PIG_DEPS|" + pig_libs + "|' {} \;")
 
 
 def get_permission():
@@ -234,7 +360,8 @@ to files under the ~/git directory. Are you sure? Please type 'yes' to continue.
 def main(argv):
   update_workspace = False # If True, rebuild the eclipse workspace.
   full_reset = False # If True, git reset --hard and git clean
-  force = False
+  force = False # If True, don't check our username, etc.
+  force_repo = False # If True, don't check our origin repo
 
   if len(argv) > 1:
     for arg in argv[1:]:
@@ -247,6 +374,8 @@ def main(argv):
         full_reset = True
       elif arg == "-f":
         force = True
+      elif arg == "--ignore-repo-check":
+        force_repo = True
       else:
         print "Unknown argument. Try --help"
         return 1
@@ -255,7 +384,13 @@ def main(argv):
   check_for_user(force)
 
   # Check that we're in the proper cloudera-training git repo.
-  check_for_repo()
+  try:
+    check_for_repo()
+  except RepoException, re:
+    if force_repo:
+      print "Got repo-location error, but continuing with --ignore-repo-check"
+    else:
+      raise re
 
   # if the user uses --reset, run a git-reset on it.
   if full_reset:
@@ -265,8 +400,12 @@ def main(argv):
     else:
       print "Skipped repository reset."
 
+  # Ensure that we are on the correct branch
+  # based on the branch configuration file.
+  curbranch = switch_branch()
+
   # The actual git-pull update
-  update_repo()
+  update_repo(curbranch)
 
   # If the version file in the workspace has been raised, or
   # the user gives us --workspace, we need to update the workspace too.

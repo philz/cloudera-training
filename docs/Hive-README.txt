@@ -3,7 +3,7 @@
             Information about the Hive lecture and exercise:
 
 
-  The IntroToHive.pdf file contains lecture slides illustrating the proper use
+  The HiveLecture.pdf file contains lecture slides illustrating the proper use
 of Hive. These slides work through an example session and manipulate data
 therein. Since the creation of this lecture (and its video recording), the
 content in the virtual machine has been reorganized.

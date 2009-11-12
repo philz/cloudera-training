@@ -157,8 +157,8 @@ $ hadoop fs -ls /user/hive/warehouse/shake_freq
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
-bard   = LOAD '/user/hive/warehouse/shake_freq' USING PigStorage(',') AS (freq, word);
-kjv    = LOAD '/user/hive/warehouse/bible_freq' USING PigStorage(',') AS (freq, word);
+bard   = LOAD '/user/hive/warehouse/shake_freq' USING PigStorage('\t') AS (freq, word);
+kjv    = LOAD '/user/hive/warehouse/bible_freq' USING PigStorage('\t') AS (freq, word);
 inboth = JOIN bard BY word, kjv BY word;
 STORE inboth INTO 'output';
 </pre>
@@ -174,12 +174,12 @@ they'll be written to a directory in HDFS named <tt>output</tt>, so you'll need 
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
-bard   = LOAD '/user/hive/warehouse/shake_freq' USING PigStorage(',') AS (freq, word);
-kjv    = LOAD '/user/hive/warehouse/bible_freq' USING PigStorage(',') AS (freq, word);
+bard   = LOAD '/user/hive/warehouse/shake_freq' USING PigStorage('\t') AS (freq, word);
+kjv    = LOAD '/user/hive/warehouse/bible_freq' USING PigStorage('\t') AS (freq, word);
 grpd   = COGROUP bard BY word, kjv BY word;
 nobard = FILTER grpd BY COUNT(bard) == 0;
 out    = FOREACH nobard GENERATE FLATTEN(kjv);
-STORE out INTO ‘output’;
+STORE out INTO 'output';
 </pre>
 </div></div>
 
