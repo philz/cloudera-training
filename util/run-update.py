@@ -5,17 +5,19 @@ usage_string = """
   Usage: update-exercises (args)
 
   Args may include:
-    --workspace       Discard your current Eclipse workspace and rebuild
-                      based on the exercises available in the repository.
-    --reset           Resets the git repository to "factory defaults"
-    -f                Force changes. Don't prompt for --reset. Don't warn
-                      about a username mismatch.
+    --workspace          Discard your current Eclipse workspace and rebuild
+                         based on the exercises available in the repository.
+    --reset              Resets the git repository to "factory defaults"
+    -f                   Force changes. Don't prompt for --reset. Don't warn
+                         about a username mismatch.
+    --ignore-repo-check  Continue even if we're not using the official
+                         Cloudera training repository.
 
   This script updates your git repository to the most recent
-  version of the files. 
+  version of the files.
 
   This should be invoked from the base of the cloudera-training
-  git repository. 
+  git repository.
 """
 
 import os
@@ -50,6 +52,11 @@ WORKSPACE_SRC = "pristine-workspace"
 # When determining whether or not to auto-update the workspace,
 # consult this file in the src and target workspace directories.
 WORKSPACE_VER_FILE = ".cloudera-workspace-version"
+
+# When determining what branch of the repository we should
+# be on, consult this file in the root of the VM.
+BRANCH_FILE = ".update-branch"
+
 
 def check_for_user(force):
   """ To check that we're running in the VM, check that the username is
@@ -136,11 +143,54 @@ def reset_git_repo():
   if ret > 0:
     raise RepoException("Could not check out master branch")
 
+def switch_branch():
+  """ Load the .update-branch file and switch to the branch
+      specified by the user. Return the branch named in this
+      file.
+  """
 
-def update_repo():
+  branch = None
+  try:
+    h = open(BRANCH_FILE)
+    lines = h.readlines()
+    h.close()
+    for line in lines:
+      line = line.strip()
+      if len(line) > 0:
+        branch = line
+        break
+  except IOError:
+    # couldn't open the branch file.
+    # We will just use the legacy branch.
+    print "Warning, could not find " + BRANCH_FILE + "."
+
+  if branch == None:
+    print "Could not get correct branch information; using legacy branch."
+    branch = "legacy"
+
+  # Try to switch to this branch, if it already exists locally.
+  ret = os.system("git checkout " + branch + " > /dev/null")
+  if ret > 0:
+    # It's not. Create a new branch based on the tracking source.
+    ret = os.system("git checkout -b " + branch + " origin/" + branch)
+    if ret > 0:
+      print "Could not move to working branch: " + branch
+      print "I might not be able to grab the most recent copy of the exercises"
+      print "Please check that your ~/git/.update-branch file specifies the"
+      print "correct virtual machine version."
+    else:
+      print "Now going to update to exercises intended for VM version: " \
+          + branch
+  else:
+    print "Using virtual machine exercise version: " + branch
+
+  return branch
+
+
+def update_repo(branch):
   """ Get the latest changes """
   print "Updating repository..."
-  ret = os.system("git pull origin master:master")
+  ret = os.system("git pull origin " + branch + ":" + branch)
   if ret > 0:
     raise RepoException("Could not download updates. Are you connected to the network?")
 
@@ -180,7 +230,6 @@ def workspace_needs_update():
   except:
     # Can't read the version number in the pristine workspace. Weird. Skip this
     # with a warning, and continue.
-    print e
     print """
 WARNING: The pristine workspace directory contains an invalid version id.
 Have you modified any files in the pristine-workspace directory? If so,
@@ -234,7 +283,8 @@ to files under the ~/git directory. Are you sure? Please type 'yes' to continue.
 def main(argv):
   update_workspace = False # If True, rebuild the eclipse workspace.
   full_reset = False # If True, git reset --hard and git clean
-  force = False
+  force = False # If True, don't check our username, etc.
+  force_repo = False # If True, don't check our origin repo
 
   if len(argv) > 1:
     for arg in argv[1:]:
@@ -247,6 +297,8 @@ def main(argv):
         full_reset = True
       elif arg == "-f":
         force = True
+      elif arg == "--ignore-repo-check":
+        force_repo = True
       else:
         print "Unknown argument. Try --help"
         return 1
@@ -255,7 +307,13 @@ def main(argv):
   check_for_user(force)
 
   # Check that we're in the proper cloudera-training git repo.
-  check_for_repo()
+  try:
+    check_for_repo()
+  except RepoException, re:
+    if force_repo:
+      print "Got repo-location error, but continuing with --ignore-repo-check"
+    else:
+      raise re
 
   # if the user uses --reset, run a git-reset on it.
   if full_reset:
@@ -265,8 +323,12 @@ def main(argv):
     else:
       print "Skipped repository reset."
 
+  # Ensure that we are on the correct branch
+  # based on the branch configuration file.
+  curbranch = switch_branch()
+
   # The actual git-pull update
-  update_repo()
+  update_repo(curbranch)
 
   # If the version file in the workspace has been raised, or
   # the user gives us --workspace, we need to update the workspace too.

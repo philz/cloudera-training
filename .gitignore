@@ -15,4 +15,6 @@
 *~
 .*.swp
 
+# vm-specific branch tracking file
+/.update-branch
 
