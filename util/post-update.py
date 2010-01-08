@@ -78,11 +78,14 @@ def check_vm_version():
     return verline.split(".")
 
   def print_upgrade_available():
+    print ""
+    print "*******************************************************"
     print "A new version of the Cloudera Training VM is available!"
-    print "You should strongly considering downloading the newest"
+    print "You should strongly consider downloading the newest"
     print "version of the training VM from www.cloudera.com to"
     print "stay current with the most recent edition of Hadoop and"
     print "the training exercises."
+    print "*******************************************************"
     print ""
 
   def compare_versions(current, latest):
