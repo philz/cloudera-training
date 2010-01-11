@@ -146,10 +146,30 @@ def setup_training_db():
   os.system("mysql training < data/mysql-data")
 
 
+def fix_ip_locations():
+  """
+    An older version of the ip_locations table deployed in the vm has an
+    incorrect hdfs port number bound in the metadata. If this is present,
+    recreate the table with the correct metadata.
+  """
+
+  grep_result = os.system(
+      "hive -e 'DESCRIBE EXTENDED ip_locations' 2>/dev/null "
+      + "| grep 'localhost:8020' > /dev/null")
+  if grep_result == 0:
+    # Drop the table and recreate it.
+    print "Fixing a Hive metadata problem..."
+    os.system("hive -e 'DROP TABLE ip_locations' 2>/dev/null")
+    os.system("hive -e 'CREATE TABLE ip_locations("
+        + "a int, b int, c int, cityid int, countryid int)' "
+        + "2>/dev/null")
+
+
 def main(argv):
   config_tracking_branch()
   check_vm_version()
   setup_training_db()
+  fix_ip_locations()
 
 
 

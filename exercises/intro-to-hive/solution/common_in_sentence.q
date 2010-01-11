@@ -6,7 +6,7 @@
 CREATE TABLE sentences(word STRING, sentence STRING) ROW FORMAT DELIMITED
 FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n';
 
-LOAD DATA INPATH 'hdfs://localhost:8020/user/training/input_idx' INTO TABLE sentences;
+LOAD DATA INPATH '/user/training/input_idx' INTO TABLE sentences;
 
 
 # In Henry IV, act II, there is the sentence:
