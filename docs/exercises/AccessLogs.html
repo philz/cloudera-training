@@ -267,10 +267,12 @@ they must be joined against the cityname and countryname tables.</p>
 
 <div class="code panel" style="border-width: 1px;"><div class="codeContent panelContent">
 <pre class="code-java">
-$ sqoop --connect jdbc:mysql:<span class="code-comment">//localhost/ip_to_geo --table countries \
-</span>    --username training --hive-import --warehouse-dir /user/training
-$ sqoop --connect jdbc:mysql:<span class="code-comment">//localhost/ip_to_geo --table cityByCountry \
-</span>    --username training --hive-import --warehouse-dir /user/training
+$ sqoop --connect jdbc:mysql:<span class="code-comment">//localhost/training --table countries \
+</span>    --username training --hive-import --warehouse-dir /user/training \
+    --fields-terminated-by '\t'
+$ sqoop --connect jdbc:mysql:<span class="code-comment">//localhost/training --table cityByCountry \
+</span>    --username training --hive-import --warehouse-dir /user/training \
+    --fields-terminated-by '\t'
 </pre>
 </div></div>
 
