@@ -21,7 +21,8 @@
 
 <p>The exercises for this training workshop will be conducted within a virtual machine running Ubuntu 8.10 (Intrepid Ibex). This virtual machine has been preconfigured as a self-contained "pseudo-distributed" Hadoop cluster. This means that it contains all the daemons required for distributed execution&#45;&#45;just as if it were running on a cluster in a data center&#45;&#45;but is actually operating by itself.</p>
 
-<p>Decompress the cloudera-training-0.3.0.tar.bz2 archive and you should see a directory named <tt>cloudera-training-0.3.0/</tt>. In this directory is a file named <tt>cloudera-training-0.3.0.vmx</tt>. You should be able to double-click the <tt>.vmx</tt> file to launch the virtual machine.</p>
+<p>Decompress the cloudera-training-X.Y.Z.tar.bz2 archive and you should see a directory named <tt>cloudera-training-X.Y.Z/</tt>. In this directory is a file named <tt>cloudera-training-X.Y.Z.vmx</tt>. You should be able to double-click the <tt>.vmx</tt> file to launch the virtual machine.</p>  (The
+"X.Y.Z" will correspond to the version of the virtual machine you downloaded.)
 
 <div class='panelMacro'><table class='noteMacro'><colgroup><col width='24'><col></colgroup><tr><td valign='top'><img src="images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></td><td>This assumes that you have already installed the pre-required software from VMWare. Windows and Linux users should download VMWare Player at <a href="http://www.vmware.com/products/player/">http://www.vmware.com/products/player/</a>. MacOSX users should purchase VMWare Fusion ($50) or download the free 30-day trial at <a href="http://www.vmware.com/products/fusion/">http://www.vmware.com/products/fusion/</a>.</td></tr></table></div>
 
@@ -252,7 +253,21 @@ training@training-vm:~$ hadoop job -kill (jobid)
 
 <p>If you need to cancel a job and restart it (e.g., because you immediately thought of a bugfix after launching a job), make sure to properly kill the old job first.</p>
 
-				    
+<h2>Cloudera Desktop</h2>
+Cloudera Desktop is a web-based graphical interface configured to talk to your Hadoop cluster.
+Open Firefox inside the VM, and click on "Desktop" in the bookmark bar.  The URL is <tt>http://localhost:8088/</tt>.
+
+<h3>Logging In</h3>
+Cloudera Desktop will prompt you for a username and password.  In the training VM, these are "training" and "training".
+
+<h3>Using the File Browser</h3>
+Open the File Browser application by selecting it from the Launch menu in the top right.
+Browse to find the files you uploaded earlier using <tt>hadoop fs -put</tt>.  Double-click to
+view them.
+
+<h3>Other Functionality</h3>
+Cloudera Desktop can also help you monitor your cluster, launch and configure jobs,
+and look at the status of jobs running.
                     			    </td>
 		    </tr>
 	    </table>
